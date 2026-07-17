@@ -6,7 +6,7 @@ Environment/tooling patterns discovered while working on this repo. Read this *i
 
 - **OS**: Windows. Shells available: PowerShell (primary) and Git Bash. Use PowerShell for anything that needs a native Windows exe; Git Bash is fine for file/text operations.
 - **pnpm is not preinstalled** on this machine. If `pnpm` is missing, install it with `npm install -g pnpm` (corepack's `enable`/`prepare` fails here with an `EPERM` on `C:\Program Files\nodejs\yarnpkg` — don't bother with corepack, go straight to the global npm install).
-- **Turso CLI has no native Windows build** (only Linux/macOS binaries on GitHub releases, no winget package). Options: install WSL (requires reboot + admin — ask before doing this), or just use the **web dashboard** at `app.turso.tech` to create databases and generate tokens. The dashboard is faster for a single DB anyway.
+- **Turso CLI has no native Windows build** (only Linux/macOS binaries on GitHub releases, no winget package). Options: install WSL (requires reboot + admin — ask before doing this), or just use the **web dashboard** at `app.turso.tech` to create databases and generate tokens. The dashboard is faster for a single DB anyway. This only affects the `turso` CLI itself — `@libsql/client` (the driver `drizzle-kit`/the app use) is pure JS/HTTP and works fine on Windows against a cloud DB.
 - **Git identity**: the global `~/.gitconfig` already has per-folder `includeIf` rules (`Documents/GitHub/Personale/` → personal email, `Documents/GitHub/Aziendale/` → work email). Don't assume a repo-local identity is needed — verify with `git config --show-origin --get user.email` from inside the repo before concluding anything is misconfigured.
 
 ## pnpm build-script approval gate
@@ -18,14 +18,15 @@ pnpm 10+ blocks native/postinstall build scripts by default. When `pnpm install`
 - **`next lint` was removed.** Use `eslint .` directly as the `lint` script (`next.config.ts`/`eslint.config.mjs` from `create-next-app` already work with plain `eslint`).
 - **Turbopack is the default** for `next dev`/`next build`. `@serwist/next` (the PWA/service-worker plugin) only supports webpack — it injects a webpack config that Turbopack refuses to build with (`ERROR: This build is using Turbopack, with a webpack config and no turbopack config`). Fix: pass `--webpack` explicitly (`"dev": "next dev --webpack"`, `"build": "next build --webpack"`). Don't try to make Serwist coexist with Turbopack — `@serwist/turbopack` exists but is experimental and out of scope here.
 - Service worker source files (`src/app/sw.ts`) need `/// <reference lib="webworker" />` at the top or `tsc` fails on `ServiceWorkerGlobalScope` — the app's `tsconfig.json` uses the `dom` lib, not `webworker`.
+- `eslint.config.mjs`'s `globalIgnores` must list the Serwist-generated files by hand (`public/sw.js`, `public/sw.js.map`, `public/swe-worker*.js`) — ESLint 9 flat config does **not** read `.gitignore`, so a build artifact left over from a local `next build --webpack` gets linted and fails on generated code. Keep this list in sync with `.gitignore`'s own entries for the same files.
+
+## Running standalone scripts with `tsx`
+
+`tsx` (used for `db:seed` and any future one-off script) does **not** auto-load `.env` the way `next dev`/`next build` do. Pass `--env-file=.env` explicitly (already wired into the `db:seed` npm script) — otherwise `src/lib/env.ts` throws "Invalid or missing environment variables" even though `.env` exists on disk.
 
 ## shadcn/ui CLI v4
 
 The CLI moved from `style` + `--base-color` flags to a **preset system** (Nova/Vega/Maia/Lyra/Mira/Luma/Sera/Rhea/Custom). There is no `--base-color` flag anymore. Use `-d` for `--template=next --preset=base-nova` (closest match to the old "default style, neutral base color"), or `--preset <name>` to pick explicitly. Check `pnpm dlx shadcn@latest init --help` before assuming old-CLI flags still exist — this ecosystem changes fast.
-
-## Scaffolding into a non-empty repo root
-
-`create-next-app` refuses to run in a directory containing files it doesn't recognize (README.md, LICENSE, docs/, etc. all count as conflicts). Scaffold into a scratch directory instead, then copy the generated files into the repo root by hand — keep the repo's own `README.md`/`.gitignore` rather than overwriting them, and manually merge `.gitignore` if the generated one has entries the original didn't.
 
 ## Known non-issues (don't "fix" these)
 
