@@ -19,3 +19,28 @@ export function formatDateIt(ymd: string): string {
   const [year, month, day] = ymd.split("-");
   return `${day}/${month}/${year}`;
 }
+
+const RELATIVE_FORMATTER = new Intl.RelativeTimeFormat("it", { numeric: "auto" });
+
+const RELATIVE_UNITS: ReadonlyArray<[Intl.RelativeTimeFormatUnit, number]> = [
+  ["year", 365 * 24 * 60 * 60],
+  ["month", 30 * 24 * 60 * 60],
+  ["day", 24 * 60 * 60],
+  ["hour", 60 * 60],
+  ["minute", 60],
+];
+
+/**
+ * An ISO timestamp as Italian relative time ("2 ore fa"). Only ever used for
+ * things that already happened, so the result is always in the past.
+ */
+export function formatRelativeTimeIt(iso: string, now: Date = new Date()): string {
+  const elapsedSeconds = Math.max(0, (now.getTime() - new Date(iso).getTime()) / 1000);
+
+  for (const [unit, unitSeconds] of RELATIVE_UNITS) {
+    if (elapsedSeconds >= unitSeconds) {
+      return RELATIVE_FORMATTER.format(-Math.floor(elapsedSeconds / unitSeconds), unit);
+    }
+  }
+  return "adesso";
+}
