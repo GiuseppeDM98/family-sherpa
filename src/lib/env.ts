@@ -17,10 +17,13 @@ const serverSchema = z.object({
   AUTH_SECRET: z.string().min(1),
   // Comma-separated allowlist gating who may *create* a new family. Unset = open instance.
   AUTH_ALLOWED_EMAILS: z.string().optional(),
+  TELEGRAM_BOT_TOKEN: z.string().min(1),
+  TELEGRAM_WEBHOOK_SECRET: z.string().min(1),
 });
 
 const clientSchema = z.object({
   NEXT_PUBLIC_APP_URL: z.url(),
+  NEXT_PUBLIC_TELEGRAM_BOT_USERNAME: z.string().min(1),
 });
 
 function parseEnv() {

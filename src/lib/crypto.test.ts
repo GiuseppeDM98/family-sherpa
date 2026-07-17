@@ -5,6 +5,9 @@ const REQUIRED_VARS = {
   NEXT_PUBLIC_APP_URL: "http://localhost:3000",
   ENCRYPTION_KEY: "aoVBBVYd4h1kkuThTeS2I3F1TZDK9GUlXIsb9lWnkNI=",
   AUTH_SECRET: "test-auth-secret",
+  TELEGRAM_BOT_TOKEN: "test-bot-token",
+  TELEGRAM_WEBHOOK_SECRET: "test-webhook-secret",
+  NEXT_PUBLIC_TELEGRAM_BOT_USERNAME: "FamilySherpaBot",
 };
 
 async function loadCrypto() {
