@@ -13,7 +13,22 @@ export type InboundMessage = {
   telegram?: { chatId: string; fileId?: string };
 };
 
+/**
+ * What a channel must be able to say back. Telegram implements this in
+ * `src/lib/telegram/outbound.ts`; WhatsApp (post-MVP) implements the same
+ * surface without the pipeline changing.
+ */
 export interface OutboundChannel {
   sendText(chatId: string, text: string): Promise<void>;
-  // extended by spec 05 (confirmation keyboards) and spec 07 (reminders)
+  /**
+   * Sends the parse result with confirm/reject affordances when
+   * `inboxMessageId` is set, and returns the sent message's id so it can be
+   * edited once the user decides.
+   */
+  sendConfirmation(
+    chatId: string,
+    text: string,
+    inboxMessageId: string | null,
+  ): Promise<number | null>;
+  // extended by spec 07 (reminders)
 }
