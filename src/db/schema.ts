@@ -7,6 +7,21 @@ import {
   text,
   uniqueIndex,
 } from "drizzle-orm/sqlite-core";
+import {
+  ASSET_TYPES,
+  DEADLINE_CATEGORIES,
+  DEADLINE_SOURCES,
+  DEADLINE_STATUSES,
+  FAMILY_MEMBER_ROLES,
+  INBOX_CHANNELS,
+  INBOX_CONTENT_TYPES,
+  INBOX_STATUSES,
+  NOTIFICATION_CHANNELS,
+  NOTIFICATION_KINDS,
+  RECURRENCES,
+  THERAPY_INTAKE_STATUSES,
+  TRANSACTION_SOURCES,
+} from "./enums";
 
 // ---------------------------------------------------------------------------
 // Shared column builders
@@ -45,53 +60,26 @@ function generateInviteCode(): string {
 }
 
 // ---------------------------------------------------------------------------
-// Enums — exported as const arrays for reuse in Zod schemas and UI code.
+// Enums — defined in ./enums (importable from client components, which this
+// file is not: it pulls in node:crypto) and re-exported here so `@/db/schema`
+// remains the single import for schema consumers.
 // ---------------------------------------------------------------------------
 
-export const FAMILY_MEMBER_ROLES = ["admin", "member"] as const;
-export const ASSET_TYPES = ["vehicle", "person", "home", "other"] as const;
-export const DEADLINE_CATEGORIES = [
-  "bollo",
-  "revisione",
-  "rca",
-  "tagliando",
-  "documento",
-  "bolletta",
-  "condominio",
-  "tari",
-  "medico",
-  "farmaco",
-  "abbonamento",
-  "altro",
-] as const;
-export const RECURRENCES = [
-  "none",
-  "monthly",
-  "bimonthly",
-  "quarterly",
-  "semiannual",
-  "annual",
-  "biennial",
-] as const;
-export const DEADLINE_STATUSES = ["pending", "paid", "done", "skipped"] as const;
-export const DEADLINE_SOURCES = ["manual", "parser"] as const;
-export const TRANSACTION_SOURCES = ["manual", "parser", "deadline"] as const;
-export const INBOX_CHANNELS = ["telegram", "app"] as const;
-export const INBOX_CONTENT_TYPES = ["voice", "photo", "document", "text"] as const;
-export const INBOX_STATUSES = [
-  "received",
-  "parsed",
-  "confirmed",
-  "rejected",
-  "failed",
-] as const;
-export const THERAPY_INTAKE_STATUSES = ["pending", "taken", "skipped"] as const;
-export const NOTIFICATION_KINDS = [
-  "deadline_reminder",
-  "therapy_reminder",
-  "deadline_digest",
-] as const;
-export const NOTIFICATION_CHANNELS = ["push", "telegram"] as const;
+export {
+  ASSET_TYPES,
+  DEADLINE_CATEGORIES,
+  DEADLINE_SOURCES,
+  DEADLINE_STATUSES,
+  FAMILY_MEMBER_ROLES,
+  INBOX_CHANNELS,
+  INBOX_CONTENT_TYPES,
+  INBOX_STATUSES,
+  NOTIFICATION_CHANNELS,
+  NOTIFICATION_KINDS,
+  RECURRENCES,
+  THERAPY_INTAKE_STATUSES,
+  TRANSACTION_SOURCES,
+} from "./enums";
 
 // ---------------------------------------------------------------------------
 // Auth.js tables (per official Drizzle adapter shape — see spec 03).

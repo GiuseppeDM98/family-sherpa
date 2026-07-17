@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DEADLINE_CATEGORIES } from "@/db/schema";
+import { DEADLINE_CATEGORIES } from "@/db/enums";
 
 /**
  * The canonical shape of what Claude extracts from an inbound message
