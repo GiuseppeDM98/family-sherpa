@@ -39,6 +39,18 @@ which is what a reviewer of the diff would otherwise have to reconstruct.
   time, far from its cause. Nulling it degrades to "no asset linked", which the
   user can fix in the Inbox form.
 
+## Found by manual testing (post-implementation)
+
+**Every Telegram voice note failed.** Groq returned `400 file must be one of the
+following types: [flac mp3 mp4 mpeg mpga m4a ogg opus wav webm]`. The STT upload
+was named `audio.oga` because Telegram serves voice notes as `.oga`, and `oga`
+isn't on Whisper's list. Fixed by deriving the upload name from the mime type
+(`audio/ogg → audio.ogg`) and pinning the accepted-extension list in a test.
+Verified by re-running the actual failed voice note: transcribed correctly.
+Worth noting the pipeline behaved as designed around the bug — `status='failed'`,
+`parse_error` stored and visible in the Inbox detail, Italian apology in chat,
+webhook still 200 — which is how the cause was identifiable at all.
+
 ## Found by verification (worth knowing)
 
 Driving the real API surfaced a failure the schema could not: **the model copies

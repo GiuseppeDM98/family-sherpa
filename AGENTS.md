@@ -107,6 +107,18 @@ Placeholder ids in `src/lib/ai/prompts.ts` are deliberately **not** uuid-shaped
 `crypto.randomUUID()` and always gets nulled by `dropUnknownAssetIds`. Never
 "tidy" them into uuids.
 
+## Whisper (Groq/OpenAI) rejects Telegram's `.oga` extension
+
+Telegram serves voice notes as `.oga` (mime `audio/ogg`) — that's why
+`media.ts` maps `oga → audio/ogg`. But the Whisper endpoints validate the
+**uploaded file's name**, and their accepted list is
+`[flac mp3 mp4 mpeg mpga m4a ogg opus wav webm]` — no `oga`. Naming the upload
+after Telegram's own extension gets a `400 invalid_request_error` on every
+single voice note, even though the bytes are ordinary Ogg/Opus and the part's
+content-type is right. `sttFileName()` in `src/lib/ai/stt.ts` derives the name
+from the mime type instead, and a unit test pins that it can only ever emit an
+extension from that list. Don't "simplify" it to reuse Telegram's filename.
+
 ## Verifying the AI pipeline without touching the real DB
 
 `.env`'s `TURSO_DATABASE_URL` points at the cloud DB. To exercise
