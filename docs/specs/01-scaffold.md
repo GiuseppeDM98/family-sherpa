@@ -102,6 +102,8 @@ shadcn/ui: run `pnpm dlx shadcn@latest init` (style: default, base color: neutra
 
 ## Implementation prompt
 
+> **Run with:** Sonnet 5 (`claude-sonnet-5`), reasoning effort **medium** — set via `/model` before pasting. (Boilerplate-heavy, docs-driven setup.)
+
 ```
 Read docs/specs/00-overview.md first, then implement docs/specs/01-scaffold.md
 in this repository, following CLAUDE.md.

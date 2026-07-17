@@ -185,3 +185,5 @@ Canonical list — specs reference these exact names. (Introduced by: spec in pa
 ## Implementation prompt
 
 This spec has no implementation session — it is context for all the others. Every implementation prompt in specs 01–10 starts with: *"Read `docs/specs/00-overview.md` first."*
+
+Each spec's "Implementation prompt" section also states the **recommended model and reasoning effort** for its session (e.g. "Sonnet 5, high") — set them with `/model` before pasting the prompt. As a rule: Opus 4.8 for the specs with the subtlest logic (05, 07), Sonnet 5 elsewhere; high effort where exactness is critical (canonical schema, algorithms, webhooks), medium for prescriptive/boilerplate work.

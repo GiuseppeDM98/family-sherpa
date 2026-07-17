@@ -72,6 +72,8 @@ This part is executed with the user (accounts/secrets are theirs): Vercel projec
 
 ## Implementation prompt
 
+> **Run with:** Sonnet 5 (`claude-sonnet-5`), reasoning effort **medium** — set via `/model` before pasting. (Documentation and interactive deploy; no complex logic.)
+
 ```
 Read docs/specs/00-overview.md first, then implement docs/specs/10-launch.md
 in this repository, following CLAUDE.md.

@@ -51,6 +51,8 @@ The family's medicine cabinet: add a medicine by photographing its box (Claude v
 
 ## Implementation prompt
 
+> **Run with:** Sonnet 5 (`claude-sonnet-5`), reasoning effort **medium** — set via `/model` before pasting. (Mostly UI over existing pipelines and helpers.)
+
 ```
 Read docs/specs/00-overview.md first, then implement
 docs/specs/09-medicine-cabinet.md in this repository, following CLAUDE.md.

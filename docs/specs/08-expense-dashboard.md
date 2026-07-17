@@ -62,6 +62,8 @@ Add tab/section "Costi": period selector (ultimi 12 mesi / anno corrente), total
 
 ## Implementation prompt
 
+> **Run with:** Sonnet 5 (`claude-sonnet-5`), reasoning effort **medium** — set via `/model` before pasting. (Prescriptive spec; the pure aggregation functions are unit-tested.)
+
 ```
 Read docs/specs/00-overview.md first, then implement
 docs/specs/08-expense-dashboard.md in this repository, following CLAUDE.md.

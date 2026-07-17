@@ -75,6 +75,8 @@ export async function completeDeadline(deadlineId: string, opts: { paid: boolean
 
 ## Implementation prompt
 
+> **Run with:** Sonnet 5 (`claude-sonnet-5`), reasoning effort **high** — set via `/model` before pasting. (CF check-character algorithm and month-end recurrence math must be exact.)
+
 ```
 Read docs/specs/00-overview.md first, then implement docs/specs/06-assets-hub.md
 in this repository, following CLAUDE.md.

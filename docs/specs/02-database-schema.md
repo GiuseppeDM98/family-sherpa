@@ -93,6 +93,8 @@ All tables use `text` UUID PKs (default `crypto.randomUUID()` via `$defaultFn`),
 
 ## Implementation prompt
 
+> **Run with:** Sonnet 5 (`claude-sonnet-5`), reasoning effort **high** — set via `/model` before pasting. (The schema is canonical for the whole project: precision over speed.)
+
 ```
 Read docs/specs/00-overview.md first, then implement docs/specs/02-database-schema.md
 in this repository, following CLAUDE.md.

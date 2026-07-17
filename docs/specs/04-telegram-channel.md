@@ -96,6 +96,8 @@ For this spec: insert the `inbox_messages` row (`status: 'received'`, `telegram_
 
 ## Implementation prompt
 
+> **Run with:** Sonnet 5 (`claude-sonnet-5`), reasoning effort **high** — set via `/model` before pasting. (Webhook edge cases, serverless constraints, media handling.)
+
 ```
 Read docs/specs/00-overview.md first, then implement docs/specs/04-telegram-channel.md
 in this repository, following CLAUDE.md.

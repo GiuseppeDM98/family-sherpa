@@ -170,6 +170,8 @@ Include in `src/lib/ai/prompts.ts` a `FEW_SHOT_EXAMPLES` array (used as prior us
 
 ## Implementation prompt
 
+> **Run with:** Opus 4.8 (`claude-opus-4-8`), reasoning effort **high** — set via `/model` before pasting. (Core spec: multi-component pipeline, error paths, Telegram callback state.)
+
 ```
 Read docs/specs/00-overview.md first, then implement docs/specs/05-ai-parsing-pipeline.md
 in this repository, following CLAUDE.md.

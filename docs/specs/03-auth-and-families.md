@@ -70,6 +70,8 @@ Two cards:
 
 ## Implementation prompt
 
+> **Run with:** Sonnet 5 (`claude-sonnet-5`), reasoning effort **medium** — set via `/model` before pasting. (Well-trodden Auth.js patterns.)
+
 ```
 Read docs/specs/00-overview.md first, then implement docs/specs/03-auth-and-families.md
 in this repository, following CLAUDE.md.

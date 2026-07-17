@@ -66,6 +66,8 @@ Both under `src/app/api/cron/`, GET or POST, require header `Authorization: Bear
 
 ## Implementation prompt
 
+> **Run with:** Opus 4.8 (`claude-opus-4-8`), reasoning effort **medium** — set via `/model` before pasting. (Timezone/DST and idempotency bugs are sneaky; the spec already pins the tricky parts, so medium effort suffices.)
+
 ```
 Read docs/specs/00-overview.md first, then implement
 docs/specs/07-reminders-notifications.md in this repository, following CLAUDE.md.
