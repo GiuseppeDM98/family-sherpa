@@ -78,6 +78,13 @@ folder), not under the OS temp dir — Node's module resolution walks up from th
 own path looking for `node_modules`, so a script outside the repo can't find any
 dependency (`Cannot find module 'bcryptjs'` etc.) even with `--env-file`.
 
+## Telegram bot: local webhook tunneling
+
+- **Use cloudflared, not ngrok.** `ngrok` via `winget` installs an outdated build (3.3.1) that fails on some networks with a minimum-version/CRL-parsing error. Fix would be `ngrok update`, but `cloudflared` avoids the issue entirely — no account required, and it's more robust behind antivirus/VPN setups that do TLS inspection.
+- **Quick tunnels get a new public URL on every restart** (both ngrok and cloudflared without an account). Each time the tunnel restarts, update `NEXT_PUBLIC_APP_URL` in `.env` and re-run `pnpm telegram:setup`.
+- **A Telegram bot has only one active webhook at a time.** Reusing the same bot across dev and prod means re-running `pnpm telegram:setup` every time you switch environments — create separate dev/prod bots to avoid the friction.
+- **Telegram links are per-user, not per-family.** `telegram_links` keys on `user_id`, so every family member links their own Telegram account independently (via their own code from their own Settings page), even though they'll all be talking to the same bot.
+
 ## Known non-issues (don't "fix" these)
 
 - Next's metadata API emits `<meta name="mobile-web-app-capable">` rather than the older `apple-mobile-web-app-capable` when `appleWebApp.capable: true` is set. This is intentional (Apple now supports the standard tag) and has the same effect — not a bug.

@@ -28,14 +28,6 @@ Implemented: grammY bot in webhook mode (`src/lib/telegram/bot.ts`, route at `sr
 
 New env vars: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_WEBHOOK_SECRET` (server), `NEXT_PUBLIC_TELEGRAM_BOT_USERNAME` (client — not in 00-overview's original registry, added because the settings UI needs the bot's `@handle` to tell the user who to message; the token alone doesn't reveal it).
 
+Verified end-to-end manually with a real bot (`@familySherpa_bot`) and a `cloudflared` tunnel: webhook registration, `/collega` account linking, and a text message landing in `inbox_messages`. `SETUP.md` was added as the single consolidated setup guide (env vars, Turso, Telegram bot + tunnel, Windows gotchas); `README.md` now points there instead of duplicating the steps.
+
 Not yet implemented: LLM/STT parsing (spec 05 — the bot only acknowledges with a canned reply today), confirmation buttons, WhatsApp.
-
-### Previous — spec 03: auth and family onboarding (2026-07-17)
-
-Implemented: Auth.js v5 (`next-auth@beta`) in `src/auth.ts` with a Credentials-only (email/password, bcryptjs) provider — no OAuth — JWT sessions, and a hand-rolled Drizzle adapter (`src/lib/auth-adapter.ts`, needed because `@auth/drizzle-adapter` expects camelCase JS property names that don't match this repo's snake_case schema). `src/proxy.ts` (Next.js 16 renamed `middleware.ts` → `proxy.ts`, lives under `src/`) protects all `(app)` routes. `src/lib/session.ts` exports `requireUser`/`requireFamily`. Pages: sign-in (`(auth)/signin`), sign-up (`(auth)/signup`), onboarding — create/join family (`(auth)/onboarding`), settings (`(app)/settings` — family name, invite code with copy button, members list, sign-out). Top-bar avatar shows the session image if ever set, else a fallback initial.
-
-`AUTH_ALLOWED_EMAILS` (optional, comma-separated) gates **both** sign-up (`registerWithPassword`) and family creation (`createFamily`) — a fully closed instance where the public can see a landing page but can't register at all. `joinFamily` is never gated directly, but joining needs an account first, so every invitee's email must also be on the allowlist before they can sign up and use their invite code. Pure predicate: `src/lib/auth-allowlist.ts` (`isEmailAllowlisted`, unit-tested). New env vars `AUTH_SECRET` (required), `AUTH_ALLOWED_EMAILS` (optional) in `.env.example` and `src/lib/env.ts`.
-
-Specs 01, 02 and 03 are now marked `status: implemented` in their frontmatter.
-
-Not yet implemented: everything in specs 04–10. `(app)` pages beyond `/settings` don't call `requireFamily()` yet (still spec 01 placeholders). No OAuth provider, no password reset, no account deletion, no multi-family support (all explicitly non-scope for spec 03).

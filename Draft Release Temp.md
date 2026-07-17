@@ -8,6 +8,11 @@ Unreleased changes — kept up to date session by session, published at cut time
 - Added sign-up and sign-in with email and password.
 - Added the ability to create a new family or join an existing one with an invite code.
 - Added a settings page showing your family's name, a copyable invite code, the member list, and a sign-out button.
+- Added Telegram bot integration: link your account from Settings and send it voice notes, photos, PDFs, or text messages to have them logged (AI parsing of the content lands in a future release).
+
+## 📚 Documentation
+
+- Added SETUP.md with full step-by-step environment setup instructions (database, Telegram bot, local webhook tunneling, Windows-specific notes).
 
 ## 🔒 Security
 
