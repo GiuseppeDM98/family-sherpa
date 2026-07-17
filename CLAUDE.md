@@ -17,3 +17,16 @@ This project is built spec-by-spec. Each implementation session executes exactly
 - Money is always integer cents (`amount_cents`). Dates: `YYYY-MM-DD` strings for due dates, ISO 8601 UTC for timestamps. User timezone is `Europe/Rome`.
 - DB access only through Drizzle (`src/db/`). Sensitive fields are encrypted via `src/lib/crypto.ts` and end with `_enc`.
 - Never commit secrets. Every new env var must be added to `.env.example` with a comment.
+- Windows-specific tooling gotchas (pnpm not preinstalled, Turso CLI has no Windows binary, Next 16 needs `--webpack` for Serwist, shadcn CLI v4 preset system, etc.) are tracked in `AGENTS.md`, not here — check it before re-debugging something already solved.
+
+## Current status
+
+### Latest — spec 01: scaffold (2026-07-17)
+
+Implemented: Next.js 16 (App Router, TS strict + `noUncheckedIndexedAccess`) · Tailwind v4 + shadcn/ui (`base-nova` preset, neutral) · Zod-validated env accessor (`src/lib/env.ts`, server/client split) · Drizzle + `@libsql/client` wired to Turso, no domain tables yet · PWA via Serwist (manifest, icons, service worker) · app shell with bottom nav / side rail (Home, Scadenze, Inbox, Asset, Altro → Meds, Impostazioni placeholders) · GitHub Actions CI (lint/typecheck/test/build) · Vitest smoke test for env parsing.
+
+Also this session (ahead of spec 02/03, doc-only):
+- Created a real Turso dev database (`family-sherpa-dev`) and populated `.env` — verified with a live `select 1` roundtrip.
+- Updated `docs/specs/00-overview.md`, `02-database-schema.md`, `03-auth-and-families.md`: spec 03 now also specs a **Credentials (email/password)** Auth.js provider alongside Google, plus an optional `AUTH_ALLOWED_EMAILS` allowlist that gates who can *create* a new family (never gates joining via invite code). Rationale: a Vercel deploy has a publicly discoverable URL; this keeps a self-hosted single-family instance from becoming an open sign-up page. `users.password_hash` (nullable) added to the spec 02 schema.
+
+Not yet implemented: everything in specs 02–10 (DB schema/seed, auth, Telegram channel, AI parsing, assets hub, reminders, expense dashboard, medicine cabinet, launch packaging).

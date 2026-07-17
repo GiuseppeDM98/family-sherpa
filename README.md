@@ -4,7 +4,17 @@
 
 Italian families juggle an absurd amount of recurring bureaucracy: bollo auto, revisione, RCA, TARI, PagoPA notices, ID card renewals, utility bills, pediatrician appointments, antibiotic schedules. FamilySherpa makes tracking all of it *passive*: you forward a voice note, a photo, or a PDF to a Telegram bot (or upload it in the app), and the AI extracts what it is, when it's due, how much it costs, and which family asset it belongs to. You tap **Conferma** and forget about it — the app remembers for you.
 
-> ⚠️ **Work in progress.** The project is currently in the specification phase. The full architecture and implementation specs live in [`docs/specs/`](docs/specs/) — start with [`00-overview.md`](docs/specs/00-overview.md).
+> ⚠️ **Work in progress.** The app scaffold ([spec 01](docs/specs/01-scaffold.md)) is implemented — `pnpm dev` runs an installable PWA shell with placeholder screens. Everything else (database, auth, the AI parsing pipeline, the actual features) is still spec-only. The full architecture and implementation specs live in [`docs/specs/`](docs/specs/) — start with [`00-overview.md`](docs/specs/00-overview.md).
+
+## Getting started (scaffold only, for now)
+
+```
+pnpm install
+cp .env.example .env   # local dev defaults (file:local.db) work out of the box
+pnpm dev
+```
+
+Open `http://localhost:3000` — you'll see the app shell with bottom navigation. `pnpm build && pnpm start` produces the installable production build.
 
 ## Planned MVP features
 
@@ -15,7 +25,7 @@ Italian families juggle an absurd amount of recurring bureaucracy: bollo auto, r
 
 ## Stack
 
-Next.js 15 (PWA) · Turso + Drizzle · Auth.js · Claude API (BYOK) · Telegram Bot API · deployed on Vercel.
+Next.js 16 (PWA) · Turso + Drizzle · Auth.js (Google + email/password) · Claude API (BYOK) · Telegram Bot API · deployed on Vercel.
 
 Privacy: sensitive fields (codice fiscale, free-text medical notes) are encrypted at rest with an app-level key — the database is blind.
 
