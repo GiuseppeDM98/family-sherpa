@@ -11,6 +11,9 @@ next-env.d.ts
 build/
 dist/
 
+# TypeScript
+*.tsbuildinfo
+
 # Env files (keep .env.example)
 .env
 .env.*
