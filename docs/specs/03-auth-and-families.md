@@ -3,6 +3,7 @@ spec: 03
 title: Authentication, family creation and membership
 depends_on: [01, 02]
 complexity: medium
+status: implemented
 ---
 
 # 03 — Auth (email/password via Auth.js) and family onboarding

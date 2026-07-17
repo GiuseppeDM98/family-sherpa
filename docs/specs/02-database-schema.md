@@ -3,6 +3,7 @@ spec: 02
 title: Database schema, field encryption, migrations, seed
 depends_on: [01]
 complexity: medium
+status: implemented
 ---
 
 # 02 — Database schema, field encryption, migrations, seed

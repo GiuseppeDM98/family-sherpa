@@ -3,6 +3,7 @@ spec: 01
 title: Project scaffold, tooling, PWA shell, CI
 depends_on: [00]
 complexity: medium
+status: implemented
 ---
 
 # 01 — Scaffold: Next.js app, tooling, PWA shell, CI
