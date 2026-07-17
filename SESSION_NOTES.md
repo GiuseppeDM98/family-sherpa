@@ -5,6 +5,45 @@ The durable parts are already folded into `CLAUDE.md` (what was built) and
 `AGENTS.md` (gotchas); this file keeps the reasoning behind the judgement calls,
 which is what a reviewer of the diff would otherwise have to reconstruct.
 
+## Summary
+
+**What.** Spec 05 end to end, in 10 commits: the STT provider interface
+(`src/lib/ai/stt.ts` — Groq default, OpenAI optional); the Claude extraction
+client (`claude.ts` — forced tool use, Zod-validated, one re-prompt on a schema
+violation); the parse-result schema and the verbatim Italian prompt with its
+three few-shot examples (`parse-schema.ts`, `prompts.ts`); the real
+`ingestInboundMessage` body replacing spec 04's stub, keeping its signature
+(`inbound/ingest.ts`); the Telegram confirmation keyboard and `callback_query`
+handling (`telegram/outbound.ts`, `telegram/bot.ts`); transactional, idempotent
+materialization into `deadlines` / `transactions` / `therapies` / `medications`
+(`inbound/materialize.ts`); and the Inbox UI — list, per-item edit form, in-app
+upload and voice recording (`(app)/inbox`). Two supporting refactors: a shared
+test env fixture, and `src/db/enums.ts`. 123 unit tests; lint, typecheck, test
+and build green.
+
+**Why.** Three constraints shaped almost every call. (1) *This code runs inside
+the Telegram webhook*, so it must never throw: a non-200 makes Telegram retry,
+which re-runs STT and the LLM and re-bills both — hence failures become
+`status='failed'` plus an Italian apology, and the pipeline (not the bot) owns
+the outbound reply, because the confirmation keyboard and the id of the message
+to edit later are pipeline state. (2) *LLM output is untrusted input*, like a
+form post: Zod-validated, asset ids checked against the family, one bounded
+retry, never a raw value reaching the DB. (3) *The spec is the product*, so the
+prompt text, the schema and the few-shot examples are reproduced verbatim and
+the deviations below are all forced by something outside it (an API rule, a
+webpack constraint, a missing component) rather than by preference.
+
+**Note.** Three gotchas cost real time and are all written up below and in
+`AGENTS.md`: Whisper rejects Telegram's `.oga` extension (every voice note
+failed); the model copies few-shot asset ids verbatim, so they must not be
+uuid-shaped; and importing anything from `schema.ts` in a client component drags
+`node:crypto` into the browser bundle — a failure only `pnpm build` catches, not
+lint or typecheck. Still untested by hand: **PDF and photo** ingestion (text and
+voice are verified end-to-end against the real APIs, materialization against a
+throwaway SQLite). Also unresolved by design: a message can still get stuck at
+`status='received'` if the function dies mid-run (e.g. the 60 s Vercel limit) —
+recovering orphans needs a cron, so it belongs to spec 07.
+
 ## Decisions the spec left open
 
 - **Who sends the Telegram reply.** `ingestInboundMessage` keeps its spec 04
