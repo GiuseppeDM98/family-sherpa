@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Next.js
+.next/
+out/
+next-env.d.ts
+
+# Production
+build/
+dist/
+
+# Env files (keep .env.example)
+.env
+.env.*
+!.env.example
+
+# Vercel
+.vercel/
+
+# Turso / SQLite local dev
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Drizzle (generated snapshots are committed, local artifacts are not)
+drizzle/.tmp/
+
+# Testing
+coverage/
+
+# Serwist / PWA generated
+public/sw.js
+public/sw.js.map
+public/swe-worker*.js
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Local Claude settings
+.claude/settings.local.json
