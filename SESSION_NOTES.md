@@ -35,3 +35,40 @@ abstraction (stub reply — spec 05 replaces the body).
 Did **not** drive a live webhook/bot end-to-end (needs a real `TELEGRAM_BOT_TOKEN`
 + public tunnel) — `.env` currently has placeholder Telegram values, replace
 before manual testing.
+
+## 2026-07-17 — verifica manuale end-to-end e documentazione di setup
+
+**Cosa:** Verificato end-to-end il canale Telegram implementato sopra: bot reale
+(`@familySherpa_bot`), tunnel cloudflared verso `localhost:3000`, webhook
+registrato con `pnpm telegram:setup`, collegamento account via `/collega`, e
+un messaggio di testo confermato riga-per-riga in `inbox_messages` via
+query diretta al DB. Creato `SETUP.md` con la guida completa di setup
+dell'ambiente (env vars, Turso, bot Telegram + tunnel, gotcha Windows) e
+aggiornato `README.md` perché rimandi lì invece di duplicare informazioni.
+
+**Perché:** Per la Definition of Done (00-overview.md §9) le integrazioni
+esterne si verificano manualmente, non in autonomia nella sessione di
+codifica — questa sessione ha coperto quella verifica pratica sul canale
+appena costruito. `SETUP.md` nasce perché le istruzioni di setup erano
+sparse tra `AGENTS.md`, `.env.example` e la chat: consolidarle in un unico
+file riduce il rischio di perdere pezzi quando si rimette su l'ambiente da
+zero (es. da un altro PC).
+
+**Nota:**
+- `ngrok` installato via `winget` porta una versione vecchia (3.3.1) che
+  fallisce con un errore di versione minima non supportata / parsing ASN.1
+  della CRL su alcune reti. Fix: `ngrok update`, oppure passare a
+  `cloudflared` (scelto qui — nessun account richiesto, più robusto dietro
+  antivirus/VPN che fanno ispezione TLS).
+- Il bot Telegram non è legato a una famiglia: il collegamento
+  (`telegram_links`) è per singolo `user_id`, quindi tutti i membri della
+  stessa famiglia usano lo stesso bot, ciascuno con il proprio codice di
+  collegamento generato dalle proprie Impostazioni.
+- Un bot ha un solo webhook attivo alla volta: per riusare lo stesso bot su
+  dev e produzione bisogna rilanciare `pnpm telegram:setup` ogni volta che
+  si cambia ambiente — meglio creare due bot separati (dev/prod) per
+  evitare l'attrito.
+- I tunnel "quick" (ngrok senza account / cloudflared senza account)
+  generano un URL pubblico diverso a ogni riavvio: va aggiornato
+  `NEXT_PUBLIC_APP_URL` in `.env` e rilanciato `pnpm telegram:setup` ogni
+  volta che cambia.
