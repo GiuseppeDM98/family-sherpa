@@ -28,22 +28,50 @@ type OpenAiCompatibleConfig = {
   apiKeyEnvVar: string;
 };
 
+/**
+ * Extensions the Whisper endpoints accept in the uploaded file's name.
+ * Verbatim from Groq's own rejection message; OpenAI's list is the same.
+ *
+ * Note `oga` is **not** in it — which matters, because that's exactly what
+ * Telegram calls a voice note (`file_path` ends in `.oga`, hence the mapping in
+ * `src/lib/telegram/media.ts`). Naming the upload after Telegram's extension
+ * gets a 400 even though the bytes are ordinary Ogg/Opus.
+ */
+export const WHISPER_ACCEPTED_EXTENSIONS = [
+  "flac",
+  "mp3",
+  "mp4",
+  "mpeg",
+  "mpga",
+  "m4a",
+  "ogg",
+  "opus",
+  "wav",
+  "webm",
+] as const;
+
+const DEFAULT_EXTENSION = "ogg";
+
 const MIME_EXTENSIONS: Record<string, string> = {
-  "audio/ogg": "oga",
+  "audio/ogg": "ogg",
+  "audio/opus": "opus",
   "audio/mpeg": "mp3",
   "audio/mp4": "m4a",
   "audio/x-m4a": "m4a",
   "audio/wav": "wav",
+  "audio/x-wav": "wav",
   "audio/webm": "webm",
+  "audio/flac": "flac",
 };
 
 /**
  * Whisper endpoints reject an upload whose filename has no recognizable audio
- * extension, even when the part carries the right content type — so the name
- * has to be derived from the mime type, not left to the caller.
+ * extension, even when the part carries the right content type — so the name is
+ * derived from the mime type rather than taken from the caller (whose filename
+ * comes from Telegram and may well be `.oga`).
  */
-function fileNameFor(mimeType: string): string {
-  return `audio.${MIME_EXTENSIONS[mimeType] ?? "ogg"}`;
+export function sttFileName(mimeType: string): string {
+  return `audio.${MIME_EXTENSIONS[mimeType.toLowerCase()] ?? DEFAULT_EXTENSION}`;
 }
 
 function createOpenAiCompatibleProvider(config: OpenAiCompatibleConfig): SttProvider {
@@ -56,7 +84,11 @@ function createOpenAiCompatibleProvider(config: OpenAiCompatibleConfig): SttProv
       }
 
       const form = new FormData();
-      form.append("file", new Blob([new Uint8Array(audio)], { type: mimeType }), fileNameFor(mimeType));
+      form.append(
+        "file",
+        new Blob([new Uint8Array(audio)], { type: mimeType }),
+        sttFileName(mimeType),
+      );
       form.append("model", config.model);
       form.append("language", "it");
       form.append("response_format", "text");
