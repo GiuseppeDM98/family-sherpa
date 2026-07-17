@@ -1,0 +1,64 @@
+import { z } from "zod";
+import { ASSET_TYPES } from "@/db/schema";
+
+const YMD_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+
+export const VEHICLE_FUELS = [
+  "benzina",
+  "diesel",
+  "gpl",
+  "metano",
+  "elettrica",
+  "ibrida",
+] as const;
+
+export const VehicleMetadataSchema = z.object({
+  plate: z.string().optional(),
+  make: z.string().optional(),
+  model: z.string().optional(),
+  year: z.number().int().optional(),
+  fuel: z.enum(VEHICLE_FUELS).optional(),
+  matriculation_date: z.string().regex(YMD_REGEX).optional(),
+});
+export type VehicleMetadata = z.infer<typeof VehicleMetadataSchema>;
+
+export const PERSON_RELATIONSHIPS = ["adulto", "bambino", "altro"] as const;
+
+export const PersonMetadataSchema = z.object({
+  birth_date: z.string().regex(YMD_REGEX).optional(),
+  relationship: z.enum(PERSON_RELATIONSHIPS).optional(),
+});
+export type PersonMetadata = z.infer<typeof PersonMetadataSchema>;
+
+export const HOME_OWNERSHIPS = ["proprietà", "affitto"] as const;
+
+export const HomeMetadataSchema = z.object({
+  address: z.string().optional(),
+  ownership: z.enum(HOME_OWNERSHIPS).optional(),
+});
+export type HomeMetadata = z.infer<typeof HomeMetadataSchema>;
+
+export const OtherMetadataSchema = z.object({}).catchall(z.unknown());
+export type OtherMetadata = z.infer<typeof OtherMetadataSchema>;
+
+/** Metadata Zod schema per asset `type` (spec 02 §2). */
+export const ASSET_METADATA_SCHEMAS = {
+  vehicle: VehicleMetadataSchema,
+  person: PersonMetadataSchema,
+  home: HomeMetadataSchema,
+  other: OtherMetadataSchema,
+} satisfies Record<(typeof ASSET_TYPES)[number], z.ZodTypeAny>;
+
+export type AssetMetadata =
+  | VehicleMetadata
+  | PersonMetadata
+  | HomeMetadata
+  | OtherMetadata;
+
+/** Validates raw JSON against the metadata shape for the given asset type. */
+export function parseAssetMetadata(
+  type: (typeof ASSET_TYPES)[number],
+  raw: unknown,
+): AssetMetadata {
+  return ASSET_METADATA_SCHEMAS[type].parse(raw);
+}
