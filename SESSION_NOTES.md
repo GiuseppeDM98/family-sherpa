@@ -4,36 +4,38 @@ Working notes for this implementation session. Per CLAUDE.md's workflow this
 gets folded into CLAUDE.md/AGENTS.md/SETUP.md (and deleted) in a later
 "docs:" session, same as spec 05's notes were.
 
-## What / Why / Note
+## Riepilogo
 
-**What**: Implemented `docs/specs/06-assets-hub.md` — CRUD for all four asset
-types (vehicle/person/home/other), the asset detail page with a deadline
-timeline and a 12-month TCO teaser, the global `/deadlines` list with
-month-grouping and category filters, and the mark-as-paid/done →
-transaction + recurrence roll-over flow. Also `src/lib/cf.ts` (codice
-fiscale decode/validate) and `src/lib/reminders/recurrence.ts`
-(`nextDueDate`/`completeDeadline`, the exact signatures spec 07 depends on).
-
-**Why**: This is the manual counterpart to spec 05's AI pipeline — the app
-had no way to browse/manage assets or deadlines by hand before this session;
-everything had to come through the bot.
-
-**Note (real bug caught only by `next build --webpack`, not lint/typecheck)**:
-`src/lib/deadline-smart-defaults.ts` originally imported `addMonthsToYmd`
-from `src/lib/reminders/recurrence.ts`, which imports `src/db` (→
-`src/db/schema.ts` → `node:crypto`). Since `deadline-smart-defaults.ts` is
-imported by a `"use client"` component (`deadline-form-dialog.tsx`), this
-dragged `node:crypto` into the browser bundle and failed the production
-build with `UnhandledSchemeError` — the exact class of bug AGENTS.md already
-warns about ("Don't import src/db/schema.ts from a client component"), just
-one hop further away than the existing warning covers. Fixed by moving
-`addMonthsToYmd` into `src/lib/date.ts` (already client-safe) and moving the
-asset-metadata vocab arrays (`VEHICLE_FUELS`, `PERSON_RELATIONSHIPS`,
-`HOME_OWNERSHIPS`) into `src/db/enums.ts` for the same reason. **Worth adding
-to AGENTS.md**: typecheck and lint do not catch this class of bug — only an
-actual `next build --webpack` does. This session ran the build explicitly
-for that reason; future sessions touching anything imported by a client
-component and also imported by a server-only module should do the same.
+- **Cosa**: implementato `docs/specs/06-assets-hub.md` — CRUD per tutti e
+  quattro i tipi di asset (veicolo/persona/casa/altro), la pagina di
+  dettaglio asset con la timeline delle scadenze e un teaser TCO a 12 mesi,
+  la lista globale `/deadlines` con raggruppamento per mese e filtri per
+  categoria, e il flusso segna pagata/fatta → transazione + rollover della
+  ricorrenza. Inoltre `src/lib/cf.ts` (decodifica/validazione codice
+  fiscale) e `src/lib/reminders/recurrence.ts` (`nextDueDate`/
+  `completeDeadline`, con le firme esatte da cui dipenderà lo spec 07).
+- **Perché**: è la controparte manuale della pipeline AI dello spec 05 —
+  prima di questa sessione l'app non aveva alcun modo di sfogliare o
+  gestire asset e scadenze a mano, tutto doveva passare dal bot.
+- **Nota** (bug reale individuato solo da `next build --webpack`, non da
+  lint/typecheck): `src/lib/deadline-smart-defaults.ts` inizialmente
+  importava `addMonthsToYmd` da `src/lib/reminders/recurrence.ts`, che
+  importa `src/db` (→ `src/db/schema.ts` → `node:crypto`). Dato che
+  `deadline-smart-defaults.ts` viene importato da un componente
+  `"use client"` (`deadline-form-dialog.tsx`), questo trascinava
+  `node:crypto` nel bundle del browser e faceva fallire la build di
+  produzione con `UnhandledSchemeError` — esattamente la classe di bug già
+  segnalata in AGENTS.md ("Don't import src/db/schema.ts from a client
+  component"), solo un salto più lontano rispetto all'avviso esistente.
+  Risolto spostando `addMonthsToYmd` in `src/lib/date.ts` (già
+  client-safe) e gli array di vocabolario di asset-metadata
+  (`VEHICLE_FUELS`, `PERSON_RELATIONSHIPS`, `HOME_OWNERSHIPS`) in
+  `src/db/enums.ts` per lo stesso motivo. **Da aggiungere ad AGENTS.md**:
+  typecheck e lint non intercettano questa classe di bug — solo una vera
+  `next build --webpack` lo fa. Questa sessione ha eseguito la build
+  esplicitamente per questo motivo; le sessioni future che toccano
+  qualcosa importato sia da un componente client sia da un modulo
+  solo-server dovrebbero fare lo stesso.
 
 ## Deviations from the spec
 
