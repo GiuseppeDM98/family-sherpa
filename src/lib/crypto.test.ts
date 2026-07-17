@@ -1,18 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-
-const REQUIRED_VARS = {
-  TURSO_DATABASE_URL: "file:local.db",
-  NEXT_PUBLIC_APP_URL: "http://localhost:3000",
-  ENCRYPTION_KEY: "aoVBBVYd4h1kkuThTeS2I3F1TZDK9GUlXIsb9lWnkNI=",
-  AUTH_SECRET: "test-auth-secret",
-  TELEGRAM_BOT_TOKEN: "test-bot-token",
-  TELEGRAM_WEBHOOK_SECRET: "test-webhook-secret",
-  NEXT_PUBLIC_TELEGRAM_BOT_USERNAME: "FamilySherpaBot",
-};
+import { TEST_ENV } from "@/test/env-fixture";
 
 async function loadCrypto() {
   vi.resetModules();
-  process.env = { ...process.env, ...REQUIRED_VARS };
+  process.env = { ...process.env, ...TEST_ENV };
   return import("./crypto");
 }
 
