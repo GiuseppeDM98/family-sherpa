@@ -3,16 +3,23 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { db } from "@/db";
-import { familyMembers, families, users } from "@/db/schema";
+import { familyMembers, families, telegramLinks, users } from "@/db/schema";
+import { clientEnv } from "@/lib/env";
 import { requireFamily } from "@/lib/session";
 import { signOutAction } from "./actions";
 import { InviteCode } from "./invite-code";
+import { TelegramLinkCard } from "./telegram-link-card";
 
 export default async function SettingsPage() {
-  const { familyId } = await requireFamily();
+  const { familyId, userId } = await requireFamily();
 
   const [family] = await db.select().from(families).where(eq(families.id, familyId));
   if (!family) throw new Error(`Family ${familyId} not found`);
+
+  const [telegramLink] = await db
+    .select()
+    .from(telegramLinks)
+    .where(eq(telegramLinks.user_id, userId));
 
   const members = await db
     .select({
@@ -57,6 +64,18 @@ export default async function SettingsPage() {
               </Badge>
             </div>
           ))}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Collega Telegram</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <TelegramLinkCard
+            botUsername={clientEnv.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME}
+            link={telegramLink ? { username: telegramLink.telegram_username } : null}
+          />
         </CardContent>
       </Card>
 
