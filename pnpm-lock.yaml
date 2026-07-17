@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@auth/drizzle-adapter':
-        specifier: ^1.11.2
-        version: 1.11.2
       '@base-ui/react':
         specifier: ^1.6.0
         version: 1.6.0(@types/react@19.2.17)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -125,9 +122,6 @@ packages:
         optional: true
       nodemailer:
         optional: true
-
-  '@auth/drizzle-adapter@1.11.2':
-    resolution: {integrity: sha512-VOuj7REI8jfJjpSbsYwDM/Zrn55T6lS9Yc+29V+EXMcel8eqG7x+7LodNfd1WHjakfkLYi+qsbYUHB3E6aDA4w==}
 
   '@babel/code-frame@7.29.7':
     resolution: {integrity: sha512-Aup7aUOfpbAUg2ROOJN6Iw5f9DMBlzu0mIkm/malLQFN/YQgO48wCj0Kxa3sEHJvPVFg7siR+qRInwXd2qhQKw==}
@@ -4283,14 +4277,6 @@ snapshots:
       oauth4webapi: 3.8.6
       preact: 10.24.3
       preact-render-to-string: 6.5.11(preact@10.24.3)
-
-  '@auth/drizzle-adapter@1.11.2':
-    dependencies:
-      '@auth/core': 0.41.2
-    transitivePeerDependencies:
-      - '@simplewebauthn/browser'
-      - '@simplewebauthn/server'
-      - nodemailer
 
   '@babel/code-frame@7.29.7':
     dependencies:
