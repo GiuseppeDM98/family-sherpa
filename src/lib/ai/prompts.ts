@@ -77,13 +77,19 @@ export function buildExtractionSystemPrompt(
  * Dates are placeholders resolved against the real `today` at call time: the
  * examples teach relative-date resolution ("giovedì prossimo"), which only
  * works if the answer is consistent with the `{{today}}` in the system prompt.
- * The asset ids are placeholders too — the model is meant to imitate the shape
- * of a match, not these ids, and `dropUnknownAssetIds` catches it if it copies
- * one literally.
+ *
+ * The asset ids are deliberately *not* uuid-shaped. The model is meant to
+ * imitate the shape of a match — "the message names an asset you were given, so
+ * put its id here" — but it will sometimes copy an example's id verbatim
+ * instead (observed: a uuid-shaped example id was echoed for an unrelated
+ * message, and it happened to collide with a real asset of a different type).
+ * Real ids come from `crypto.randomUUID()` and can never look like these, so a
+ * copied id is always caught by `dropUnknownAssetIds` and degrades to "no asset
+ * linked" rather than silently linking the wrong one.
  */
-const EXAMPLE_VEHICLE_ID = "11111111-1111-1111-1111-111111111111";
-const EXAMPLE_HOME_ID = "22222222-2222-2222-2222-222222222222";
-const EXAMPLE_PERSON_ID = "33333333-3333-3333-3333-333333333333";
+const EXAMPLE_VEHICLE_ID = "esempio-asset-veicolo";
+const EXAMPLE_HOME_ID = "esempio-asset-casa";
+const EXAMPLE_PERSON_ID = "esempio-asset-persona";
 
 const NEXT_THURSDAY = "{{next_thursday}}";
 const TODAY = "{{today}}";
