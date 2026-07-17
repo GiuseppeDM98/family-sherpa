@@ -46,6 +46,11 @@ Then fill in `.env`. Each variable, and where it comes from:
 | `TELEGRAM_BOT_TOKEN` | From @BotFather — see §5. |
 | `TELEGRAM_WEBHOOK_SECRET` | `openssl rand -hex 16` |
 | `NEXT_PUBLIC_TELEGRAM_BOT_USERNAME` | The bot's `@handle` (without the `@`), also from @BotFather. |
+| `ANTHROPIC_API_KEY` | **Required.** [console.anthropic.com](https://console.anthropic.com) → Settings → API keys. Bring your own key; parsing is billed per message (a few cents per hundred). |
+| `ANTHROPIC_MODEL` | Optional, defaults to `claude-sonnet-5`. |
+| `STT_PROVIDER` | Optional, `groq` (default) or `openai`. Only used to transcribe voice notes. |
+| `GROQ_API_KEY` | Required when `STT_PROVIDER=groq`. Free tier: [console.groq.com](https://console.groq.com) → API Keys. |
+| `OPENAI_API_KEY` | Required only when `STT_PROVIDER=openai` — [platform.openai.com/api-keys](https://platform.openai.com/api-keys). |
 
 `src/lib/env.ts` validates all of these at startup with Zod — if one is
 missing or malformed, every command (`pnpm dev`, `pnpm test`, `pnpm build`,
@@ -133,11 +138,16 @@ Message your bot on Telegram:
 1. `/start` → greeting + linking instructions.
 2. In the app: **Impostazioni → Collega Telegram → Genera codice** (10-minute code).
 3. On the bot: `/collega <codice>` → "✅ Account collegato!".
-4. Send a voice note, a photo (with caption), a PDF, or plain text → each
-   gets a stub "📥 Ricevuto!" reply (real AI parsing lands in spec 05) and a
-   new row in `inbox_messages` (check with `pnpm db:studio`).
+4. Send a voice note, a photo (with caption), a PDF, or plain text → each is
+   transcribed if needed, parsed by Claude, and comes back as a summary with
+   **[✅ Conferma tutto] [❌ Annulla]** buttons, plus a new row in
+   `inbox_messages` (check with `pnpm db:studio`). Confirming writes to
+   `deadlines` / `transactions` / `therapies` / `medications`.
 5. `/aiuto` for the command list; a file over 10 MB or an unsupported type
    gets an Italian error instead of a row.
+
+Parsing runs inside the webhook request (STT + LLM, ~5–20 s), so the reply
+takes a few seconds to arrive — that's expected, not a hang.
 
 ### 6.5 One bot, multiple environments
 

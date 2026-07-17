@@ -85,6 +85,45 @@ dependency (`Cannot find module 'bcryptjs'` etc.) even with `--env-file`.
 - **A Telegram bot has only one active webhook at a time.** Reusing the same bot across dev and prod means re-running `pnpm telegram:setup` every time you switch environments — create separate dev/prod bots to avoid the friction.
 - **Telegram links are per-user, not per-family.** `telegram_links` keys on `user_id`, so every family member links their own Telegram account independently (via their own code from their own Settings page), even though they'll all be talking to the same bot.
 
+## Don't import `src/db/schema.ts` from a client component
+
+`schema.ts` imports `node:crypto` (invite-code generation), so a `"use client"`
+file that imports *anything* from it — even a plain `as const` enum array — drags
+`node:crypto` into the browser bundle and fails `next build --webpack` with
+`UnhandledSchemeError: Reading from "node:crypto" is not handled by plugins`.
+Typecheck and lint both pass; only the build catches it. The domain enums
+therefore live in **`src/db/enums.ts`** (no imports at all) and are re-exported by
+`schema.ts` — import them from `@/db/enums` in client components, from
+`@/db/schema` everywhere else.
+
+## LLM prompts: keep example ids un-copyable
+
+Few-shot examples that contain asset ids will occasionally have those ids copied
+verbatim into a real extraction instead of the model matching against the real
+asset list. Observed with uuid-shaped example ids: a "bolletta luce" came back
+linked to a *person* whose real id happened to match the example's home id.
+Placeholder ids in `src/lib/ai/prompts.ts` are deliberately **not** uuid-shaped
+(`esempio-asset-casa`) so that a copied id can never collide with a real
+`crypto.randomUUID()` and always gets nulled by `dropUnknownAssetIds`. Never
+"tidy" them into uuids.
+
+## Verifying the AI pipeline without touching the real DB
+
+`.env`'s `TURSO_DATABASE_URL` points at the cloud DB. To exercise
+materialization against a throwaway SQLite file instead, override the env vars
+*before* `--env-file` (Node does not overwrite variables already in the
+environment):
+
+```powershell
+$env:TURSO_DATABASE_URL="file:verify.db"; $env:TURSO_AUTH_TOKEN="dummy"
+pnpm drizzle-kit migrate
+pnpm tsx --env-file=.env your-scratch-script.ts
+```
+
+`drizzle-kit` with `dialect: "turso"` rejects an **empty** auth token even for a
+`file:` URL — any non-empty dummy string works. As always, the script must live
+inside the repo (see "Running one-off scripts against the DB").
+
 ## Known non-issues (don't "fix" these)
 
 - Next's metadata API emits `<meta name="mobile-web-app-capable">` rather than the older `apple-mobile-web-app-capable` when `appleWebApp.capable: true` is set. This is intentional (Apple now supports the standard tag) and has the same effect — not a bug.
