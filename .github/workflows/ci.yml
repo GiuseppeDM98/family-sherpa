@@ -10,6 +10,14 @@ env:
   TURSO_DATABASE_URL: file:ci.db
   TURSO_AUTH_TOKEN: ""
   NEXT_PUBLIC_APP_URL: http://localhost:3000
+  # Dummy values, never used against real services — just enough to satisfy
+  # src/lib/env.ts's Zod validation so `next build` can analyze route
+  # handlers. Never put real secrets in this file.
+  ENCRYPTION_KEY: "/6U3kt17XTChhhX17IsV0D7acEEoyDJrYlqQ3Obad+8="
+  AUTH_SECRET: "ci-dummy-auth-secret"
+  TELEGRAM_BOT_TOKEN: "ci-dummy-bot-token"
+  TELEGRAM_WEBHOOK_SECRET: "ci-dummy-webhook-secret"
+  NEXT_PUBLIC_TELEGRAM_BOT_USERNAME: "ci_dummy_bot"
 
 jobs:
   build:
