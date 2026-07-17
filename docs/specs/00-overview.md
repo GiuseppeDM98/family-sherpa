@@ -138,7 +138,7 @@ Canonical list — specs reference these exact names. (Introduced by: spec in pa
 |---|---|
 | `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN` | Turso connection; in local dev URL may be `file:local.db` and token empty (01) |
 | `AUTH_SECRET` | Auth.js JWT secret (03) |
-| `AUTH_ALLOWED_EMAILS` | optional, comma-separated; restricts who may **create** a new family (sign-up gate). Unset = open instance. Joining an existing family via invite code is never gated by this list (03) |
+| `AUTH_ALLOWED_EMAILS` | optional, comma-separated; restricts who may **sign up** (create an account) and who may **create** a new family. Unset = open instance. Joining an existing family via invite code is never gated by this list directly, but still requires an account first (03) |
 | `ENCRYPTION_KEY` | 32-byte base64 key for field encryption (02) |
 | `ANTHROPIC_API_KEY` | Claude API key — BYOK (05) |
 | `ANTHROPIC_MODEL` | optional, default `claude-sonnet-5` (05) |

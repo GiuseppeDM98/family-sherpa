@@ -37,13 +37,21 @@ info, invite code, members, sign out).
      which cannot bundle `node:crypto` (pulled in transitively by `src/db/schema.ts` and by
      `bcryptjs` via `src/auth.ts`) — this crashed with `UnhandledSchemeError: node:crypto`.
      `proxy.ts` defaults to the **Node.js runtime**, which resolves both issues at once.
-- **`AUTH_ALLOWED_EMAILS` gates `createFamily` only**, not `registerWithPassword`/sign-up.
-  Spec step 3.2 reads as if the allowlist should also block account creation, but the
-  spec's own acceptance criterion and the env var's definition in `00-overview.md` §7
-  ("restricts who may create a new family") both describe it as a family-creation gate;
-  the user's task prompt for this session confirmed the same reading explicitly. Documented
-  as the intended behavior, not a bug (and now the spec text itself agrees, see above).
-- `isEmailAllowedToCreateFamily` (`src/lib/auth-allowlist.ts`) takes the allowlist string
+- **`AUTH_ALLOWED_EMAILS` gates both `registerWithPassword`/sign-up and `createFamily`.**
+  This flipped mid-session: the first pass only gated `createFamily` (matching the task
+  prompt's literal wording and the original acceptance criteria), but the user then
+  clarified the actual product intent — a truly closed instance where the public can see
+  a future landing page but cannot register at all, not just an open sign-up funnel with a
+  family-creation gate. `registerWithPassword` now rejects with "Questa istanza non è
+  aperta a nuove registrazioni…" the same way `createFamily` rejects with "Solo alcuni
+  indirizzi email possono creare una nuova famiglia…". `joinFamily` is still **never**
+  gated directly, but since joining requires an account first, on a closed instance every
+  invitee's email must also be added to `AUTH_ALLOWED_EMAILS` before they can sign up and
+  use their invite code — the invite code alone no longer gets a stranger in the door.
+  `docs/specs/03-auth-and-families.md`, `.env.example` and `00-overview.md` §7 were updated
+  to describe this.
+- `isEmailAllowlisted` (`src/lib/auth-allowlist.ts`, renamed from
+  `isEmailAllowedToCreateFamily` once it gained a second caller) takes the allowlist string
   as an explicit parameter instead of reading `env` itself, so it stays unit-testable
   without loading `src/lib/env.ts` (which throws if required vars are missing).
 
@@ -78,7 +86,9 @@ final chat summary.
 1. No OAuth/Google provider — Credentials only (user's explicit decision mid-session;
    spec 03 and related docs updated to match).
 2. Custom adapter instead of `@auth/drizzle-adapter` (technical necessity, see above).
-3. `AUTH_ALLOWED_EMAILS` gates `createFamily` only, not sign-up (see above).
+3. `AUTH_ALLOWED_EMAILS` gates both sign-up and `createFamily` (see above; this itself is
+   a deliberate product decision, not a spec violation — the spec text was updated to
+   match).
 4. Route protection file is `src/proxy.ts`, not `middleware.ts` at the repo root (Next.js
    16 convention rename + `src/` layout requirement).
 

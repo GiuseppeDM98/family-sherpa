@@ -6,6 +6,8 @@ import { z } from "zod";
 import { signIn } from "@/auth";
 import { db } from "@/db";
 import { users } from "@/db/schema";
+import { isEmailAllowlisted } from "@/lib/auth-allowlist";
+import { env } from "@/lib/env";
 
 const registerSchema = z
   .object({
@@ -28,6 +30,13 @@ export async function registerWithPassword(
   const parsed = registerSchema.safeParse({ name, email, password, confirmPassword });
   if (!parsed.success) {
     return { ok: false, error: parsed.error.issues[0]?.message ?? "Dati non validi." };
+  }
+
+  if (!isEmailAllowlisted(parsed.data.email, env.AUTH_ALLOWED_EMAILS)) {
+    return {
+      ok: false,
+      error: "Questa istanza non è aperta a nuove registrazioni. Chiedi un invito a chi la gestisce.",
+    };
   }
 
   const [existing] = await db

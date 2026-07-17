@@ -4,7 +4,7 @@ import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/db";
 import { familyMembers, families, users } from "@/db/schema";
-import { isEmailAllowedToCreateFamily } from "@/lib/auth-allowlist";
+import { isEmailAllowlisted } from "@/lib/auth-allowlist";
 import { env } from "@/lib/env";
 import { requireUser } from "@/lib/session";
 
@@ -21,7 +21,7 @@ export async function createFamily(
   const [user] = await db.select().from(users).where(eq(users.id, userId));
   if (!user) return { ok: false, error: "Utente non trovato." };
 
-  if (!isEmailAllowedToCreateFamily(user.email, env.AUTH_ALLOWED_EMAILS)) {
+  if (!isEmailAllowlisted(user.email, env.AUTH_ALLOWED_EMAILS)) {
     return {
       ok: false,
       error: "Solo alcuni indirizzi email possono creare una nuova famiglia su questa istanza.",
