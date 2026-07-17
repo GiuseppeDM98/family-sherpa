@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { formatDateIt, formatEuroCents, formatRelativeTimeIt } from "./format";
+import {
+  formatDateIt,
+  formatDueDateRelativeIt,
+  formatEuroCents,
+  formatRelativeTimeIt,
+} from "./format";
 
 /** Intl separates the amount from "€" with U+00A0; compare against plain spaces. */
 function normalized(cents: number): string {
@@ -55,5 +60,23 @@ describe("formatRelativeTimeIt", () => {
     expect(formatRelativeTimeIt(new Date(now.getTime() + 5_000).toISOString(), now)).toBe(
       "adesso",
     );
+  });
+});
+
+describe("formatDueDateRelativeIt", () => {
+  const today = "2026-07-17";
+
+  it("labels today and tomorrow", () => {
+    expect(formatDueDateRelativeIt("2026-07-17", today)).toBe("oggi");
+    expect(formatDueDateRelativeIt("2026-07-18", today)).toBe("domani");
+  });
+
+  it("labels a future date in days", () => {
+    expect(formatDueDateRelativeIt("2026-07-22", today)).toBe("tra 5 giorni");
+  });
+
+  it("labels yesterday and older overdue dates distinctly from the future wording", () => {
+    expect(formatDueDateRelativeIt("2026-07-16", today)).toBe("scaduta da 1 giorno");
+    expect(formatDueDateRelativeIt("2026-07-10", today)).toBe("scaduta da 7 giorni");
   });
 });

@@ -44,3 +44,22 @@ export function formatRelativeTimeIt(iso: string, now: Date = new Date()): strin
   }
   return "adesso";
 }
+
+/**
+ * A due date's Italian relative label for scheduling UI: "oggi", "domani",
+ * "tra 5 giorni", "scaduta da 3 giorni". Unlike `formatRelativeTimeIt`
+ * (always past), a due date can be future, today, or overdue — overdue gets
+ * its own wording since "3 giorni fa" doesn't read naturally for a deadline.
+ */
+export function formatDueDateRelativeIt(dueDate: string, todayYmd: string): string {
+  const diffDays = Math.round(
+    (new Date(`${dueDate}T00:00:00.000Z`).getTime() -
+      new Date(`${todayYmd}T00:00:00.000Z`).getTime()) /
+      (24 * 60 * 60 * 1000),
+  );
+  if (diffDays < 0) {
+    const overdueDays = Math.abs(diffDays);
+    return `scaduta da ${overdueDays} ${overdueDays === 1 ? "giorno" : "giorni"}`;
+  }
+  return RELATIVE_FORMATTER.format(diffDays, "day");
+}

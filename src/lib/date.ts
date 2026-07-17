@@ -36,6 +36,30 @@ export function addDaysToYmd(ymd: string, days: number): string {
 }
 
 /**
+ * Adds `months` to a `YYYY-MM-DD` date, clamping to the target month's last
+ * day instead of rolling over (31 gen + 1 mese -> 28/29 feb, never 3 mar).
+ * Lives here (not src/lib/reminders/recurrence.ts, its main caller) so that
+ * deadline-smart-defaults.ts — imported from client form components — can
+ * use it without pulling in recurrence.ts's `db` import, which drags
+ * node:crypto into the browser bundle (AGENTS.md "Don't import
+ * src/db/schema.ts from a client component").
+ */
+export function addMonthsToYmd(ymd: string, months: number): string {
+  const [year, month, day] = ymd.split("-").map(Number) as [number, number, number];
+
+  const totalMonths = year * 12 + (month - 1) + months;
+  const targetYear = Math.floor(totalMonths / 12);
+  const targetMonthIndex = totalMonths % 12; // 0-based (0 = January)
+
+  const daysInTargetMonth = new Date(Date.UTC(targetYear, targetMonthIndex + 1, 0)).getUTCDate();
+  const targetDay = Math.min(day, daysInTargetMonth);
+
+  const mm = String(targetMonthIndex + 1).padStart(2, "0");
+  const dd = String(targetDay).padStart(2, "0");
+  return `${targetYear}-${mm}-${dd}`;
+}
+
+/**
  * The next occurrence of `weekday` strictly after `fromYmd` (0 = Sunday …
  * 6 = Saturday) — Italian "giovedì prossimo" said on a Thursday means the
  * Thursday a week out, not today.

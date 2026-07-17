@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { addDaysToYmd, nextWeekdayAfter, todayInRome } from "./date";
+import { addDaysToYmd, addMonthsToYmd, nextWeekdayAfter, todayInRome } from "./date";
 
 describe("todayInRome", () => {
   it("uses the Rome calendar date, not UTC's", () => {
@@ -35,6 +35,40 @@ describe("addDaysToYmd", () => {
   it("is unaffected by the Rome DST switch", () => {
     // CEST starts on 29 March 2026; a date-only shift must not lose a day.
     expect(addDaysToYmd("2026-03-28", 2)).toBe("2026-03-30");
+  });
+});
+
+describe("addMonthsToYmd", () => {
+  it("clamps end-of-month instead of rolling over (31 Jan + 1 month -> 28 Feb)", () => {
+    expect(addMonthsToYmd("2026-01-31", 1)).toBe("2026-02-28");
+  });
+
+  it("clamps to 29 Feb in a leap year", () => {
+    expect(addMonthsToYmd("2028-01-31", 1)).toBe("2028-02-29");
+  });
+
+  it("does not clamp when the day exists in the target month", () => {
+    expect(addMonthsToYmd("2026-01-15", 1)).toBe("2026-02-15");
+  });
+
+  it("wraps across a year boundary", () => {
+    expect(addMonthsToYmd("2026-12-15", 1)).toBe("2027-01-15");
+  });
+
+  it("wraps across multiple years for a biennial recurrence", () => {
+    expect(addMonthsToYmd("2026-07-17", 24)).toBe("2028-07-17");
+  });
+
+  it("clamps 31 Mar + 1 month to 30 Apr", () => {
+    expect(addMonthsToYmd("2026-03-31", 1)).toBe("2026-04-30");
+  });
+
+  it("keeps 28 Feb on a non-leap year 4 years out (matriculation + 4y case)", () => {
+    expect(addMonthsToYmd("2025-02-28", 48)).toBe("2029-02-28");
+  });
+
+  it("subtracts months (negative offset), e.g. the last-12-months TCO window", () => {
+    expect(addMonthsToYmd("2026-07-17", -12)).toBe("2025-07-17");
   });
 });
 

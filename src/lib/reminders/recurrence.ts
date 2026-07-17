@@ -1,7 +1,12 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { deadlines, transactions, type RECURRENCES } from "@/db/schema";
-import { todayInRome } from "@/lib/date";
+import { addMonthsToYmd, todayInRome } from "@/lib/date";
+
+// Re-exported for callers that already import the month-math helper from
+// here; the implementation lives in @/lib/date so client-safe modules
+// (deadline-smart-defaults.ts) can use it without this file's `db` import.
+export { addMonthsToYmd };
 
 /**
  * Recurrence math and the "mark as paid/done" completion flow
@@ -35,28 +40,6 @@ const RECURRENCE_MONTHS: Record<Recurrence, number | null> = {
   annual: 12,
   biennial: 24,
 };
-
-/**
- * Adds `months` to a `YYYY-MM-DD` date, clamping to the target month's last
- * day instead of rolling over (31 gen + 1 mese -> 28/29 feb, never 3 mar).
- * Done in UTC on purpose, like the rest of src/lib/date.ts: a date-only
- * string carries no timezone, so whole-month arithmetic can't hit a DST
- * boundary — only clock-time math (spec 07) needs to reason about Rome time.
- */
-export function addMonthsToYmd(ymd: string, months: number): string {
-  const [year, month, day] = ymd.split("-").map(Number) as [number, number, number];
-
-  const totalMonths = year * 12 + (month - 1) + months;
-  const targetYear = Math.floor(totalMonths / 12);
-  const targetMonthIndex = totalMonths % 12; // 0-based (0 = January)
-
-  const daysInTargetMonth = new Date(Date.UTC(targetYear, targetMonthIndex + 1, 0)).getUTCDate();
-  const targetDay = Math.min(day, daysInTargetMonth);
-
-  const mm = String(targetMonthIndex + 1).padStart(2, "0");
-  const dd = String(targetDay).padStart(2, "0");
-  return `${targetYear}-${mm}-${dd}`;
-}
 
 /** The next occurrence after `dueDate`, or `null` when the recurrence is `'none'`. */
 export function nextDueDate(dueDate: string, recurrence: Recurrence): string | null {

@@ -1,13 +1,18 @@
-import type { DEADLINE_CATEGORIES } from "@/db/enums";
-import { addMonthsToYmd, type Recurrence } from "@/lib/reminders/recurrence";
+import type { DEADLINE_CATEGORIES, RECURRENCES } from "@/db/enums";
+import { addMonthsToYmd } from "@/lib/date";
 
 /**
  * Italian smart defaults for vehicle deadlines (docs/specs/06 §2, asset
  * detail "Aggiungi scadenza"). These are suggestions the form pre-fills when
  * the user picks a category — never enforced, always editable.
+ *
+ * Imports only client-safe modules (no `@/db/schema`, no `db`): this file is
+ * used directly from deadline-form-dialog.tsx, a "use client" component
+ * (AGENTS.md "Don't import src/db/schema.ts from a client component").
  */
 
 type Category = (typeof DEADLINE_CATEGORIES)[number];
+type Recurrence = (typeof RECURRENCES)[number];
 
 export type SmartDeadlineDefault = { recurrence: Recurrence; dueDate: string | null };
 

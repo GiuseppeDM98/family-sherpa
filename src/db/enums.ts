@@ -11,6 +11,14 @@
 
 export const FAMILY_MEMBER_ROLES = ["admin", "member"] as const;
 export const ASSET_TYPES = ["vehicle", "person", "home", "other"] as const;
+
+// Asset metadata vocabularies (spec 06 §2 — src/lib/asset-metadata.ts owns
+// the Zod shapes, re-exporting these). Kept here, not there, because
+// asset-metadata.ts's schemas are for server-side validation while these
+// plain arrays also back client-side <select> options (asset-form-dialog.tsx).
+export const VEHICLE_FUELS = ["benzina", "diesel", "gpl", "metano", "elettrica", "ibrida"] as const;
+export const PERSON_RELATIONSHIPS = ["adulto", "bambino", "altro"] as const;
+export const HOME_OWNERSHIPS = ["proprietà", "affitto"] as const;
 export const DEADLINE_CATEGORIES = [
   "bollo",
   "revisione",

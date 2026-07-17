@@ -1,16 +1,18 @@
 import { z } from "zod";
-import { ASSET_TYPES } from "@/db/schema";
+import {
+  ASSET_TYPES,
+  HOME_OWNERSHIPS,
+  PERSON_RELATIONSHIPS,
+  VEHICLE_FUELS,
+} from "@/db/enums";
+
+// Re-exported so existing importers of "@/lib/asset-metadata" keep working —
+// the arrays themselves live in @/db/enums because they also back
+// client-side <select> options, and this file is server-only (it imports
+// zod's full runtime for the schemas below).
+export { HOME_OWNERSHIPS, PERSON_RELATIONSHIPS, VEHICLE_FUELS };
 
 const YMD_REGEX = /^\d{4}-\d{2}-\d{2}$/;
-
-export const VEHICLE_FUELS = [
-  "benzina",
-  "diesel",
-  "gpl",
-  "metano",
-  "elettrica",
-  "ibrida",
-] as const;
 
 export const VehicleMetadataSchema = z.object({
   plate: z.string().optional(),
@@ -22,15 +24,11 @@ export const VehicleMetadataSchema = z.object({
 });
 export type VehicleMetadata = z.infer<typeof VehicleMetadataSchema>;
 
-export const PERSON_RELATIONSHIPS = ["adulto", "bambino", "altro"] as const;
-
 export const PersonMetadataSchema = z.object({
   birth_date: z.string().regex(YMD_REGEX).optional(),
   relationship: z.enum(PERSON_RELATIONSHIPS).optional(),
 });
 export type PersonMetadata = z.infer<typeof PersonMetadataSchema>;
-
-export const HOME_OWNERSHIPS = ["proprietà", "affitto"] as const;
 
 export const HomeMetadataSchema = z.object({
   address: z.string().optional(),

@@ -3,55 +3,15 @@ import { TEST_ENV } from "@/test/env-fixture";
 
 // recurrence.ts imports src/db (which validates the whole environment at
 // import time), so it needs the shared TEST_ENV fixture even though these
-// tests only exercise the pure date math (AGENTS.md "Vitest: any test that
-// touches env").
+// tests only exercise the pure `nextDueDate` mapping (AGENTS.md "Vitest: any
+// test that touches env"). The underlying month-math (end-of-month clamping,
+// leap years, year wraps) is unit-tested in src/lib/date.test.ts, where
+// `addMonthsToYmd` actually lives.
 async function loadRecurrence() {
   vi.resetModules();
   process.env = { ...process.env, ...TEST_ENV };
   return import("./recurrence");
 }
-
-describe("addMonthsToYmd", () => {
-  const originalEnv = { ...process.env };
-  beforeEach(() => {
-    process.env = { ...originalEnv };
-  });
-
-  it("clamps end-of-month instead of rolling over (31 Jan + 1 month -> 28 Feb)", async () => {
-    const { addMonthsToYmd } = await loadRecurrence();
-    expect(addMonthsToYmd("2026-01-31", 1)).toBe("2026-02-28");
-  });
-
-  it("clamps to 29 Feb in a leap year", async () => {
-    const { addMonthsToYmd } = await loadRecurrence();
-    expect(addMonthsToYmd("2028-01-31", 1)).toBe("2028-02-29");
-  });
-
-  it("does not clamp when the day exists in the target month", async () => {
-    const { addMonthsToYmd } = await loadRecurrence();
-    expect(addMonthsToYmd("2026-01-15", 1)).toBe("2026-02-15");
-  });
-
-  it("wraps across a year boundary", async () => {
-    const { addMonthsToYmd } = await loadRecurrence();
-    expect(addMonthsToYmd("2026-12-15", 1)).toBe("2027-01-15");
-  });
-
-  it("wraps across multiple years for a biennial recurrence", async () => {
-    const { addMonthsToYmd } = await loadRecurrence();
-    expect(addMonthsToYmd("2026-07-17", 24)).toBe("2028-07-17");
-  });
-
-  it("clamps 31 Mar + 1 month to 30 Apr", async () => {
-    const { addMonthsToYmd } = await loadRecurrence();
-    expect(addMonthsToYmd("2026-03-31", 1)).toBe("2026-04-30");
-  });
-
-  it("keeps 28 Feb on a non-leap year 4 years out (matriculation + 4y case)", async () => {
-    const { addMonthsToYmd } = await loadRecurrence();
-    expect(addMonthsToYmd("2025-02-28", 48)).toBe("2029-02-28");
-  });
-});
 
 describe("nextDueDate", () => {
   const originalEnv = { ...process.env };
