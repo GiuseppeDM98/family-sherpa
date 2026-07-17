@@ -7,6 +7,13 @@ import { z } from "zod";
 const serverSchema = z.object({
   TURSO_DATABASE_URL: z.string().min(1),
   TURSO_AUTH_TOKEN: z.string().optional(),
+  ENCRYPTION_KEY: z.string().refine((value) => {
+    try {
+      return Buffer.from(value, "base64").length === 32;
+    } catch {
+      return false;
+    }
+  }, "ENCRYPTION_KEY must be a base64-encoded 32-byte key"),
 });
 
 const clientSchema = z.object({

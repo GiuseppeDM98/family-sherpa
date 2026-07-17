@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 const REQUIRED_VARS = {
   TURSO_DATABASE_URL: "file:local.db",
   NEXT_PUBLIC_APP_URL: "http://localhost:3000",
+  ENCRYPTION_KEY: "aoVBBVYd4h1kkuThTeS2I3F1TZDK9GUlXIsb9lWnkNI=",
 };
 
 describe("env", () => {
