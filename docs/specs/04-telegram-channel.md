@@ -3,6 +3,7 @@ spec: 04
 title: Telegram inbound channel and account linking
 depends_on: [02, 03]
 complexity: medium-high
+status: implemented
 ---
 
 # 04 — Telegram channel: bot, webhook, linking, media intake

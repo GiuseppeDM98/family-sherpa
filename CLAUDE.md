@@ -22,7 +22,15 @@ This project is built spec-by-spec. Each implementation session executes exactly
 
 ## Current status
 
-### Latest — spec 03: auth and family onboarding (2026-07-17)
+### Latest — spec 04: Telegram channel (2026-07-17)
+
+Implemented: grammY bot in webhook mode (`src/lib/telegram/bot.ts`, route at `src/app/api/telegram/webhook/route.ts`, `maxDuration = 60`, secret header checked with `crypto.timingSafeEqual`, always returns 200 on unhandled errors so Telegram doesn't retry-flood the function). Commands `/start`, `/collega <codice>`, `/aiuto`. Account linking: settings page gained a "Collega Telegram" card (`createTelegramLinkCode`/`unlinkTelegram` actions, `telegram-link-card.tsx`) generating a 6-digit code (`src/lib/telegram/link-code.ts`, 10-minute expiry) the user sends to the bot. Message classification (`src/lib/telegram/classify.ts`, pure/unit-tested) maps voice/audio → voice, photo → photo, PDF document → document, image document → photo, plain text → text, rejecting unsupported types and anything over 10 MB. Media download (`src/lib/telegram/media.ts`) and outbound send (`src/lib/telegram/outbound.ts`, HTML-escaped) wrap the raw Bot API. The channel abstraction (`src/lib/inbound/types.ts`: `InboundMessage`, `OutboundChannel`) and `ingestInboundMessage()` (`src/lib/inbound/ingest.ts`) insert the `inbox_messages` row and return a stub Italian reply — spec 05 replaces the body, keeping the signature. `scripts/telegram-setup.ts` (`pnpm telegram:setup`) registers the webhook + commands and prints `getWebhookInfo`.
+
+New env vars: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_WEBHOOK_SECRET` (server), `NEXT_PUBLIC_TELEGRAM_BOT_USERNAME` (client — not in 00-overview's original registry, added because the settings UI needs the bot's `@handle` to tell the user who to message; the token alone doesn't reveal it).
+
+Not yet implemented: LLM/STT parsing (spec 05 — the bot only acknowledges with a canned reply today), confirmation buttons, WhatsApp.
+
+### Previous — spec 03: auth and family onboarding (2026-07-17)
 
 Implemented: Auth.js v5 (`next-auth@beta`) in `src/auth.ts` with a Credentials-only (email/password, bcryptjs) provider — no OAuth — JWT sessions, and a hand-rolled Drizzle adapter (`src/lib/auth-adapter.ts`, needed because `@auth/drizzle-adapter` expects camelCase JS property names that don't match this repo's snake_case schema). `src/proxy.ts` (Next.js 16 renamed `middleware.ts` → `proxy.ts`, lives under `src/`) protects all `(app)` routes. `src/lib/session.ts` exports `requireUser`/`requireFamily`. Pages: sign-in (`(auth)/signin`), sign-up (`(auth)/signup`), onboarding — create/join family (`(auth)/onboarding`), settings (`(app)/settings` — family name, invite code with copy button, members list, sign-out). Top-bar avatar shows the session image if ever set, else a fallback initial.
 

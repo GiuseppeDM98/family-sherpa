@@ -147,6 +147,7 @@ Canonical list — specs reference these exact names. (Introduced by: spec in pa
 | `OPENAI_API_KEY` | optional, only if `STT_PROVIDER=openai` (05) |
 | `TELEGRAM_BOT_TOKEN` | from @BotFather (04) |
 | `TELEGRAM_WEBHOOK_SECRET` | random string validated on webhook calls (04) |
+| `NEXT_PUBLIC_TELEGRAM_BOT_USERNAME` | bot's `@handle`, also from @BotFather — shown in the app's "Collega Telegram" copy; not derivable from the token alone (04) |
 | `CRON_SECRET` | bearer token for `/api/cron/*` (07) |
 | `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` | web push (07); `NEXT_PUBLIC_VAPID_PUBLIC_KEY` mirrors the public key |
 | `NEXT_PUBLIC_APP_URL` | canonical app URL, e.g. `https://familysherpa.vercel.app` (01) |
