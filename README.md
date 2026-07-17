@@ -21,4 +21,4 @@ Privacy: sensitive fields (codice fiscale, free-text medical notes) are encrypte
 
 ## License
 
-[MIT](LICENSE)
+[AGPL-3.0](LICENSE) — you can use, modify and self-host FamilySherpa freely; if you distribute a modified version or offer it as a network service, you must publish your source code under the same license.

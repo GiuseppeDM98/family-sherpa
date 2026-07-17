@@ -18,7 +18,7 @@ FamilySherpa removes the *mental load* of running an Italian family. The core be
 3. The user gets a confirmation message with **[✅ Conferma] [✏️ Modifica] [❌ Annulla]** buttons. On confirm, the item lands in the family's shared hub: deadlines, expenses, or medicine cabinet.
 4. The app pays it back with **reminders** (push + Telegram) and **foresight** (predictive monthly cash flow, per-asset cost of ownership).
 
-The project is **open source (MIT)** and designed to be **self-hostable for free**: free tiers of Vercel + Turso + Telegram + Groq, bring-your-own Anthropic API key.
+The project is **open source (AGPL-3.0)** and designed to be **self-hostable for free**: free tiers of Vercel + Turso + Telegram + Groq, bring-your-own Anthropic API key.
 
 ## 2. MVP scope
 

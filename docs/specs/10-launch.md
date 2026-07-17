@@ -23,7 +23,7 @@ Make the repo something a stranger can star, understand in 90 seconds, and self-
 ## 1. README.md (rewrite)
 
 Structure, in English:
-1. Logo/title + one-liner + badges (license MIT, PRs welcome, CI status).
+1. Logo/title + one-liner + badges (license AGPL-3.0, PRs welcome, CI status).
 2. **The problem** (3 lines on Italian family mental load — bollo, TARI, PagoPA, pediatra) and **the fix** (forward it to a bot, tap Conferma).
 3. **Demo**: GIF or 3–4 screenshots side by side (Telegram parse+confirm, dashboard, asset timeline, meds). Store in `docs/assets/`. Capture from the seeded demo family — never real personal data.
 4. **Features** (the 4 MVP pillars, one line + screenshot each).

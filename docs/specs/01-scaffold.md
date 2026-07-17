@@ -28,6 +28,7 @@ A running Next.js 15 app with the full toolchain configured (TypeScript strict, 
 
 - In the repo root run `create-next-app` (latest) with: TypeScript, ESLint, Tailwind, `src/` directory, App Router, import alias `@/*`. Package manager **pnpm**.
 - `tsconfig.json`: ensure `"strict": true` and add `"noUncheckedIndexedAccess": true`.
+- `package.json`: set `"license": "AGPL-3.0-only"` and `"private": true`.
 - Add scripts to `package.json`:
   ```json
   {
