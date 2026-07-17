@@ -1,0 +1,7 @@
+# Never upload local env files to a CLI-triggered deploy — production
+# config lives in Vercel's own environment variables (see SETUP.md).
+# Git-triggered deploys never see these either (they're gitignored), but
+# `vercel --prod` uploads the local working directory directly.
+.env
+.env.*
+!.env.example
