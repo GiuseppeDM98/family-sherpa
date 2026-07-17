@@ -14,6 +14,9 @@ const serverSchema = z.object({
       return false;
     }
   }, "ENCRYPTION_KEY must be a base64-encoded 32-byte key"),
+  AUTH_SECRET: z.string().min(1),
+  // Comma-separated allowlist gating who may *create* a new family. Unset = open instance.
+  AUTH_ALLOWED_EMAILS: z.string().optional(),
 });
 
 const clientSchema = z.object({
