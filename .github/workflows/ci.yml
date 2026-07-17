@@ -18,6 +18,8 @@ env:
   TELEGRAM_BOT_TOKEN: "ci-dummy-bot-token"
   TELEGRAM_WEBHOOK_SECRET: "ci-dummy-webhook-secret"
   NEXT_PUBLIC_TELEGRAM_BOT_USERNAME: "ci_dummy_bot"
+  ANTHROPIC_API_KEY: "ci-dummy-anthropic-key"
+  GROQ_API_KEY: "ci-dummy-groq-key"
 
 jobs:
   build:
