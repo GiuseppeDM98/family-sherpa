@@ -86,11 +86,10 @@ export type MedicationParseItem = z.infer<typeof MedicationItem>;
  * validation, and a hand-kept copy is exactly the kind of thing that drifts.
  */
 export const PARSE_RESULT_JSON_SCHEMA = (() => {
+  const schema = z.toJSONSchema(ParseResultSchema, { target: "draft-7" });
   // `$schema` is a document-level annotation; a tool's `input_schema` is a
   // bare schema object, so drop it rather than send a key it has no use for.
-  const { $schema: _ignored, ...schema } = z.toJSONSchema(ParseResultSchema, {
-    target: "draft-7",
-  });
+  delete schema.$schema;
   return schema;
 })();
 
