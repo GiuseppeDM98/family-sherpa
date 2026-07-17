@@ -4,21 +4,24 @@
 
 Italian families juggle an absurd amount of recurring bureaucracy: bollo auto, revisione, RCA, TARI, PagoPA notices, ID card renewals, utility bills, pediatrician appointments, antibiotic schedules. FamilySherpa makes tracking all of it *passive*: you forward a voice note, a photo, or a PDF to a Telegram bot (or upload it in the app), and the AI extracts what it is, when it's due, how much it costs, and which family asset it belongs to. You tap **Conferma** and forget about it — the app remembers for you.
 
-> ⚠️ **Work in progress.** The app scaffold ([spec 01](docs/specs/01-scaffold.md)) and the database schema/encryption/seed layer ([spec 02](docs/specs/02-database-schema.md)) are implemented — `pnpm dev` runs an installable PWA shell with placeholder screens, backed by a real (empty, until seeded) database. Auth, the AI parsing pipeline and every actual feature are still spec-only. The full architecture and implementation specs live in [`docs/specs/`](docs/specs/) — start with [`00-overview.md`](docs/specs/00-overview.md).
+> ⚠️ **Work in progress.** The app scaffold, database schema/encryption/seed layer, and authentication + family onboarding ([specs 01–03](docs/specs/)) are implemented — you can sign up with email/password, create or join a family, and use the installable PWA shell (placeholder screens beyond that). The Telegram bot, AI parsing pipeline and every domain feature (assets, deadlines, expenses, meds) are still spec-only. The full architecture and implementation specs live in [`docs/specs/`](docs/specs/) — start with [`00-overview.md`](docs/specs/00-overview.md).
 
-## Getting started (scaffold + database only, for now)
+## Getting started (auth + database only, for now)
 
 ```
 pnpm install
 cp .env.example .env
 # Fill in ENCRYPTION_KEY (generate with: openssl rand -base64 32)
+# Fill in AUTH_SECRET (generate with: npx auth secret, or: openssl rand -base64 32)
 # Local dev DB defaults to file:local.db and needs no Turso account.
 pnpm db:generate && pnpm db:migrate
 pnpm db:seed      # optional: populates a demo family with sample data
 pnpm dev
 ```
 
-Open `http://localhost:3000` — you'll see the app shell with bottom navigation. `pnpm build && pnpm start` produces the installable production build.
+Open `http://localhost:3000` — you'll be redirected to sign in. Sign up with an email/password, then create a family (or join one with an invite code from `/settings`). `pnpm build && pnpm start` produces the installable production build.
+
+Leave `AUTH_ALLOWED_EMAILS` empty for an open instance; set it to a comma-separated list of emails to restrict who can sign up and create a new family on a private deployment (see `.env.example`).
 
 ## Planned MVP features
 

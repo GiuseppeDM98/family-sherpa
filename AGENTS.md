@@ -44,6 +44,40 @@ renamed `middleware` → `proxy`). Two things bit us discovering this:
   restriction — this is the actual reason to migrate, not just following the deprecation
   warning.
 
+## Auth.js: write your own adapter if the schema uses snake_case
+
+`@auth/drizzle-adapter` forwards Auth.js's own field names (`emailVerified`, `userId`,
+`providerAccountId`) straight into Drizzle `.values()`/`.set()` calls — it only works if
+your Drizzle schema's *JS property names* match those exactly (camelCase). This repo's
+schema uses snake_case property names (`email_verified`, `user_id`,
+`provider_account_id`) to keep DB columns and row-object keys consistent everywhere else
+in the app, so the official adapter silently drops those fields instead of erroring.
+Fix: write a small hand-rolled `Adapter` (see `src/lib/auth-adapter.ts`) that maps
+between the two conventions, implementing only the methods your session strategy/
+providers actually call (check `next-auth/adapters` — every method is optional; with JWT
+sessions and no Email provider, `sessions`/`verificationToken` tables and their adapter
+methods aren't needed at all).
+
+## Server Actions can't be driven with `curl`
+
+The action reference Next.js posts to (`Next-Action` header + body encoding) is a hash
+baked into the built RSC payload — there's no stable URL/form-encoding to reconstruct by
+hand. For manual/scripted verification of a feature built on Server Actions:
+- Auth.js's own routes (`/api/auth/callback/credentials`, `/api/auth/session`,
+  `/api/auth/providers`, …) are plain REST endpoints and *can* be curled — use them to
+  verify sign-in/session end-to-end.
+- For everything else (e.g. `createFamily`, `joinFamily`), either drive it through a real
+  browser, or replicate the same Drizzle queries in a throwaway script to verify the
+  underlying logic/DB state — that's not the same as testing the wiring, say so in the
+  session summary.
+
+## Running one-off scripts against the DB
+
+A `tsx` script must live *inside* the project directory (e.g. a gitignored scratch
+folder), not under the OS temp dir — Node's module resolution walks up from the script's
+own path looking for `node_modules`, so a script outside the repo can't find any
+dependency (`Cannot find module 'bcryptjs'` etc.) even with `--env-file`.
+
 ## Known non-issues (don't "fix" these)
 
 - Next's metadata API emits `<meta name="mobile-web-app-capable">` rather than the older `apple-mobile-web-app-capable` when `appleWebApp.capable: true` is set. This is intentional (Apple now supports the standard tag) and has the same effect — not a bug.
