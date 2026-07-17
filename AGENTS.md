@@ -70,18 +70,39 @@ providers actually call (check `next-auth/adapters` — every method is optional
 sessions and no Email provider, `sessions`/`verificationToken` tables and their adapter
 methods aren't needed at all).
 
-## Server Actions can't be driven with `curl`
+## Server Actions can't be driven with `curl` — but pages can, once you're signed in
 
 The action reference Next.js posts to (`Next-Action` header + body encoding) is a hash
 baked into the built RSC payload — there's no stable URL/form-encoding to reconstruct by
 hand. For manual/scripted verification of a feature built on Server Actions:
 - Auth.js's own routes (`/api/auth/callback/credentials`, `/api/auth/session`,
   `/api/auth/providers`, …) are plain REST endpoints and *can* be curled — use them to
-  verify sign-in/session end-to-end.
+  get an authenticated session cookie, then `curl -b` any server-rendered page (not a
+  Server Action) to check it renders real DB data without a 500, without ever opening a
+  browser:
+  ```bash
+  jar=/tmp/cookies.txt
+  csrf=$(curl -s -c "$jar" -b "$jar" http://localhost:3000/api/auth/csrf \
+    | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>console.log(JSON.parse(d).csrfToken))")
+  curl -s -c "$jar" -b "$jar" -X POST http://localhost:3000/api/auth/callback/credentials \
+    --data-urlencode "email=you@example.com" --data-urlencode "password=..." \
+    --data-urlencode "csrfToken=$csrf" --data-urlencode "json=true"
+  curl -s -b "$jar" http://localhost:3000/assets   # now an authenticated GET
+  ```
+  The seed user (`demo@familysherpa.dev`) has no `password_hash` by design (spec 02) —
+  to sign in as it this way, set one temporarily with a scratch script, then run
+  `pnpm db:seed` again afterward, which wipes and recreates the demo family (and its
+  user) from scratch, clearing the password back to `null`.
 - For everything else (e.g. `createFamily`, `joinFamily`), either drive it through a real
   browser, or replicate the same Drizzle queries in a throwaway script to verify the
   underlying logic/DB state — that's not the same as testing the wiring, say so in the
   session summary.
+
+**The dev `.env` may point at a real database with real personal data**, not just the
+seed family — `TURSO_DATABASE_URL` isn't necessarily a throwaway. An unscoped query
+(`select().from(assets)` with no `where`) can return rows from the owner's actual family
+alongside the demo one. Always filter scratch verification queries by the family/user you
+just created or seeded, never assume the DB only has demo data in it.
 
 ## Running one-off scripts against the DB
 
@@ -97,7 +118,7 @@ dependency (`Cannot find module 'bcryptjs'` etc.) even with `--env-file`.
 - **A Telegram bot has only one active webhook at a time.** Reusing the same bot across dev and prod means re-running `pnpm telegram:setup` every time you switch environments — create separate dev/prod bots to avoid the friction.
 - **Telegram links are per-user, not per-family.** `telegram_links` keys on `user_id`, so every family member links their own Telegram account independently (via their own code from their own Settings page), even though they'll all be talking to the same bot.
 
-## Don't import `src/db/schema.ts` from a client component
+## Don't import `src/db/schema.ts` from a client component (watch the *transitive* case too)
 
 `schema.ts` imports `node:crypto` (invite-code generation), so a `"use client"`
 file that imports *anything* from it — even a plain `as const` enum array — drags
@@ -107,6 +128,15 @@ Typecheck and lint both pass; only the build catches it. The domain enums
 therefore live in **`src/db/enums.ts`** (no imports at all) and are re-exported by
 `schema.ts` — import them from `@/db/enums` in client components, from
 `@/db/schema` everywhere else.
+
+This bites one hop further away than it looks: a module with no direct
+`schema.ts` import can still be unsafe for a client component if *it* imports
+something that imports `src/db` (e.g. `src/lib/reminders/recurrence.ts`, which
+pulls in `db` for its DB-touching functions). A pure helper living in that file
+(`addMonthsToYmd`) had to move to `src/lib/date.ts` before a client form could
+use it. Rule of thumb: before calling a change to a `"use client"` file done,
+run `pnpm build` (not just `lint`/`typecheck`) at least once — it's the only
+thing that walks the real bundle graph.
 
 ## LLM prompts: keep example ids un-copyable
 

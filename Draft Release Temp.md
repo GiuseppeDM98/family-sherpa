@@ -16,12 +16,19 @@ Unreleased changes — kept up to date session by session, published at cut time
 - Added automatic recognition of Italian bureaucracy: bollo is recognised as an annual deadline, revisione as biennial, TARI instalments become separate deadlines, and a PagoPA notice's codice avviso is kept in the item's notes. "Ho pagato…" is filed as an expense, "devo pagare…" as an upcoming deadline.
 - Added automatic creation of assets the app doesn't know yet: mention a vehicle or a family member it has never seen, and confirming the item creates it for you.
 - Added therapy scheduling from plain language: "antibiotico a Sofia 2 volte al giorno per 5 giorni" becomes a therapy with sensible intake times and the right start and end dates.
+- Added the asset hub: add and manage your vehicles, family members, home, and anything else worth tracking, each with its own details and notes.
+- Added a codice fiscale field when adding a family member — the birth date is filled in automatically and checked for validity as you type.
+- Added Italian smart defaults when adding a vehicle deadline: bollo and RCA default to yearly, revisione to every two years — and for a newly added vehicle, revisione even suggests the right due date from its registration date.
+- Added a dedicated Scadenze screen: every upcoming deadline across the family, grouped by month, with quick filters for vehicles, home, people, or everything else.
+- Added "segna pagata"/"segna fatta": mark any deadline as paid or done in one tap. It logs the expense and, for recurring deadlines like bollo or RCA, automatically schedules the next occurrence for you.
+- Added a rolling 12-month spending summary on each vehicle and home page.
 
 ## 🔒 Security
 
 - Added encryption at rest for sensitive personal data (like codice fiscale and free-text notes) using AES-256-GCM — the database never stores this information in plain text. Notes the AI extracts from your documents are encrypted the same way.
 - Added an optional allowlist for self-hosted instances: restrict who can sign up or start a new family to a pre-approved list of email addresses.
 - Your family's codice fiscale is never sent to the AI provider.
+- Added a show/hide toggle for codice fiscale on a family member's page — it stays masked by default.
 
 ## 📚 Documentation
 
