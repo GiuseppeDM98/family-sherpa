@@ -3,6 +3,7 @@ spec: 06
 title: Assets hub and deadlines UI
 depends_on: [02, 03, 05]
 complexity: medium-high
+status: implemented
 ---
 
 # 06 — Hub "I tuoi asset" e gestione scadenze

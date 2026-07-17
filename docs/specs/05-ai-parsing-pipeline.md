@@ -3,6 +3,7 @@ spec: 05
 title: AI parsing pipeline (STT, Claude extraction, confirmation flow)
 depends_on: [02, 03, 04]
 complexity: high
+status: implemented
 ---
 
 # 05 — AI parsing pipeline: STT → Claude → conferma → materializzazione
