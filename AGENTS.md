@@ -24,6 +24,18 @@ pnpm 10+ blocks native/postinstall build scripts by default. When `pnpm install`
 
 `tsx` (used for `db:seed` and any future one-off script) does **not** auto-load `.env` the way `next dev`/`next build` do. Pass `--env-file=.env` explicitly (already wired into the `db:seed` npm script) — otherwise `src/lib/env.ts` throws "Invalid or missing environment variables" even though `.env` exists on disk.
 
+## Vitest: any test that touches `env` needs the shared fixture
+
+`src/lib/env.ts` validates the **whole** environment at import time, and vitest
+doesn't load `.env`. So a test file that imports anything pulling `env` in
+transitively (`crypto.ts`, `stt.ts`, `db/index.ts`, …) fails at import with
+"Invalid or missing environment variables" — even when the code under test never
+reads an env var. Use `TEST_ENV` from `src/test/env-fixture.ts`, assigning it
+*before* the module loads (dynamic `import()` inside `beforeAll`, as
+`crypto.test.ts` and `stt.test.ts` do). **Adding a new required env var breaks
+unrelated test files** until it's added to that fixture — that's the fixture's
+whole reason to exist, so don't re-inline the variable list per test file.
+
 ## shadcn/ui CLI v4
 
 The CLI moved from `style` + `--base-color` flags to a **preset system** (Nova/Vega/Maia/Lyra/Mira/Luma/Sera/Rhea/Custom). There is no `--base-color` flag anymore. Use `-d` for `--template=next --preset=base-nova` (closest match to the old "default style, neutral base color"), or `--preset <name>` to pick explicitly. Check `pnpm dlx shadcn@latest init --help` before assuming old-CLI flags still exist — this ecosystem changes fast.

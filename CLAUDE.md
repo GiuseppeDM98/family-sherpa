@@ -20,13 +20,27 @@ This project is built spec-by-spec. Each implementation session executes exactly
 - Every server action/page under `(app)` must start with `requireUser()`/`requireFamily()` from `src/lib/session.ts`. A missing family scope is a security bug.
 - Windows-specific tooling gotchas (pnpm not preinstalled, Turso CLI has no Windows binary, Next 16 needs `--webpack` for Serwist, shadcn CLI v4 preset system, etc.) are tracked in `AGENTS.md`, not here — check it before re-debugging something already solved.
 
+## What exists today (specs 01–05)
+
+The durable map of the codebase. Per-session detail lives in `git log`; this section is what is *true now*.
+
+- **App shell** — Next.js 16 App Router, PWA via Serwist, Tailwind v4 + shadcn/ui (`@base-ui` based). Route groups: `(app)` authenticated shell, `(auth)` sign-in/onboarding. Route protection is `src/proxy.ts` (**not** `middleware.ts` — see `AGENTS.md`).
+- **DB** — Turso/libSQL + Drizzle. All tables in `src/db/schema.ts`; the enum value arrays live in `src/db/enums.ts` (importable from client components) and are re-exported by `schema.ts`. Field encryption in `src/lib/crypto.ts` (`_enc` columns). Dev seed: `pnpm db:seed`.
+- **Auth** — Auth.js v5, Credentials provider, JWT sessions, hand-rolled Drizzle adapter (`src/lib/auth-adapter.ts` — the official one drops snake_case fields). Scoping helpers `requireUser()`/`requireFamily()` in `src/lib/session.ts`.
+- **Telegram channel** — grammY in webhook mode (`src/lib/telegram/bot.ts`, route `api/telegram/webhook`, `maxDuration = 60`, secret header via `timingSafeEqual`, always 200 on unhandled errors). Commands `/start`, `/collega <codice>`, `/aiuto`. Account linking via a 6-digit, 10-minute code (`link-code.ts`) generated from Settings. `classify.ts` (pure) maps voice/audio → voice, photo → photo, PDF → document, image → photo, text → text, rejecting unsupported types and >10 MB. `media.ts` downloads, `outbound.ts` sends/edits. `pnpm telegram:setup` registers webhook + commands.
+- **AI pipeline** — `src/lib/ai/` (STT, Claude client, prompt, parse schema) + `src/lib/inbound/` (channel types, ingest, materialize, reply, therapy times, upload classifier). See the status entry below.
+- **Inbox** — `(app)/inbox`: list, detail with per-item edit form, in-app upload/record.
+- **Channel abstraction** — `src/lib/inbound/types.ts` (`InboundMessage`, `OutboundChannel`). Telegram is the only implementation; WhatsApp must fit this seam without touching the pipeline.
+
+Placeholder screens (spec-only so far): Home, Scadenze, Asset, Medicine cabinet. Not implemented: reminders/cron (07), dashboard (08), medicine-box enrichment (09), conversational editing and WhatsApp (post-MVP).
+
 ## Current status
 
 ### Latest — spec 05: AI parsing pipeline (2026-07-17)
 
 Implemented the core of the product: an inbound message is transcribed if needed, parsed by Claude into structured items, proposed for confirmation, and materialized into the domain tables.
 
-- **STT** (`src/lib/ai/stt.ts`): `SttProvider` interface, `getSttProvider()` switching on `STT_PROVIDER`. Groq (`whisper-large-v3-turbo`, default, free tier) and OpenAI (`whisper-1`) share the same OpenAI-compatible multipart endpoint, so it's plain `fetch` + `FormData`, no SDK. Failures throw `SttError`.
+- **STT** (`src/lib/ai/stt.ts`): `SttProvider` interface, `getSttProvider()` switching on `STT_PROVIDER`. Groq (`whisper-large-v3-turbo`, default, free tier) and OpenAI (`whisper-1`) share the same OpenAI-compatible multipart endpoint, so it's plain `fetch` + `FormData`, no SDK. Failures throw `SttError`. The upload's filename comes from `sttFileName()`, derived from the mime type — Whisper rejects Telegram's own `.oga` extension (see `AGENTS.md`).
 - **Claude** (`src/lib/ai/claude.ts`): structured output via forced tool use — one `report_extraction` tool whose `input_schema` is derived from the Zod schema with `z.toJSONSchema()` (never hand-written: a divergence fails every extraction). `max_tokens: 2048`, `thinking: { type: "disabled" }`. Zod-validates the tool input; on a schema violation it appends the validation error as an `is_error` tool_result and retries **once**, then throws `LlmError`.
 - **Schema** (`src/lib/ai/parse-schema.ts`): `ParseResultSchema` verbatim from the spec + `dropUnknownAssetIds()`, which nulls asset ids not belonging to the family (defends against hallucinated/copied ids reaching the DB as FK violations).
 - **Prompt** (`src/lib/ai/prompts.ts`): `EXTRACTION_SYSTEM_PROMPT` verbatim, `{{today}}`/`{{assets_list}}` interpolated at call time; CF is never sent. `FEW_SHOT_EXAMPLES` holds the spec's 3 examples with `{{today}}`/`{{tomorrow}}`/`{{next_thursday}}` date placeholders resolved per call (`resolveFewShotExample`) — a frozen date would contradict the prompt's `{{today}}`. Few-shot turns are sent as prior user/assistant turns; each example's `tool_use` is answered by a `tool_result` riding at the head of the next user turn (the API requires both role alternation and a result per tool_use).
@@ -39,14 +53,8 @@ New env vars: `ANTHROPIC_API_KEY` (required), `ANTHROPIC_MODEL` (default `claude
 
 Verified against the real Claude API (text messages) and against a throwaway local SQLite for materialization: bollo → `deadlines` (8750, annual, linked vehicle, encrypted notes), "ho pagato 60 euro di luce" → `transactions` + created "Casa" asset, "antibiotico a Sofia 2 volte al giorno per 5 giorni" → therapy with `["08:00","20:00"]` and correct start/end, double confirm rejected without duplicates, small talk → empty items and no buttons.
 
-Not yet implemented: reminders/cron (07), dashboard (08), medicine-box photo enrichment (09), conversational editing and WhatsApp (post-MVP).
+### Known limits carried forward
 
-### Previously — spec 04: Telegram channel (2026-07-17)
-
-Implemented: grammY bot in webhook mode (`src/lib/telegram/bot.ts`, route at `src/app/api/telegram/webhook/route.ts`, `maxDuration = 60`, secret header checked with `crypto.timingSafeEqual`, always returns 200 on unhandled errors so Telegram doesn't retry-flood the function). Commands `/start`, `/collega <codice>`, `/aiuto`. Account linking: settings page gained a "Collega Telegram" card (`createTelegramLinkCode`/`unlinkTelegram` actions, `telegram-link-card.tsx`) generating a 6-digit code (`src/lib/telegram/link-code.ts`, 10-minute expiry) the user sends to the bot. Message classification (`src/lib/telegram/classify.ts`, pure/unit-tested) maps voice/audio → voice, photo → photo, PDF document → document, image document → photo, plain text → text, rejecting unsupported types and anything over 10 MB. Media download (`src/lib/telegram/media.ts`) and outbound send (`src/lib/telegram/outbound.ts`, HTML-escaped) wrap the raw Bot API. The channel abstraction (`src/lib/inbound/types.ts`: `InboundMessage`, `OutboundChannel`) and `ingestInboundMessage()` (`src/lib/inbound/ingest.ts`) insert the `inbox_messages` row and return a stub Italian reply — spec 05 replaces the body, keeping the signature. `scripts/telegram-setup.ts` (`pnpm telegram:setup`) registers the webhook + commands and prints `getWebhookInfo`.
-
-New env vars: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_WEBHOOK_SECRET` (server), `NEXT_PUBLIC_TELEGRAM_BOT_USERNAME` (client — not in 00-overview's original registry, added because the settings UI needs the bot's `@handle` to tell the user who to message; the token alone doesn't reveal it).
-
-Verified end-to-end manually with a real bot (`@familySherpa_bot`) and a `cloudflared` tunnel: webhook registration, `/collega` account linking, and a text message landing in `inbox_messages`. `SETUP.md` was added as the single consolidated setup guide (env vars, Turso, Telegram bot + tunnel, Windows gotchas); `README.md` now points there instead of duplicating the steps.
-
-(Spec 05 replaced the stub reply and `ingestInboundMessage`'s body; the transport, linking and classification described here are unchanged.)
+- A message can still get stuck at `status='received'` if the function dies mid-run (e.g. the 60 s Vercel limit): the Inbox card stays on "In elaborazione…" forever. Recovering orphans needs a cron → spec 07.
+- Manually untested: **PDF and photo** ingestion (text and voice are verified end-to-end).
+- `NEXT_PUBLIC_TELEGRAM_BOT_USERNAME` is not in 00-overview's original env registry — added in spec 04 because the Settings UI needs the bot's `@handle`, which the token alone doesn't reveal.

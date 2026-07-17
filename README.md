@@ -4,7 +4,7 @@
 
 Italian families juggle an absurd amount of recurring bureaucracy: bollo auto, revisione, RCA, TARI, PagoPA notices, ID card renewals, utility bills, pediatrician appointments, antibiotic schedules. FamilySherpa makes tracking all of it *passive*: you forward a voice note, a photo, or a PDF to a Telegram bot (or upload it in the app), and the AI extracts what it is, when it's due, how much it costs, and which family asset it belongs to. You tap **Conferma** and forget about it — the app remembers for you.
 
-> ⚠️ **Work in progress.** The app scaffold, database schema/encryption/seed layer, authentication + family onboarding, and the Telegram inbound channel ([specs 01–04](docs/specs/)) are implemented — you can sign up with email/password, create or join a family, link your Telegram account to the bot and send it voice/photo/PDF/text (stored, stub reply for now), and use the installable PWA shell (placeholder screens beyond that). The AI parsing pipeline and every domain feature (assets, deadlines, expenses, meds) are still spec-only. The full architecture and implementation specs live in [`docs/specs/`](docs/specs/) — start with [`00-overview.md`](docs/specs/00-overview.md).
+> ⚠️ **Work in progress.** The app scaffold, database schema/encryption/seed layer, authentication + family onboarding, the Telegram inbound channel, and the AI parsing pipeline ([specs 01–05](docs/specs/)) are implemented. **The core loop works end to end**: send the bot a voice note, a photo, a PDF or a text message, and it comes back with what it understood plus one-tap confirm/cancel buttons; confirming writes real deadlines, expenses, therapies and medicines, which you can review and correct first from the in-app Inbox. What's still spec-only: reminders and notifications (07), the expense dashboard (08), the medicine cabinet (09), and the screens that display all of it — Home, Scadenze and Asset are still placeholders, so for now confirmed items are best inspected with `pnpm db:studio`. The full architecture and implementation specs live in [`docs/specs/`](docs/specs/) — start with [`00-overview.md`](docs/specs/00-overview.md).
 
 ## Getting started
 
@@ -19,20 +19,22 @@ pnpm dev
 
 Open `http://localhost:3000` — you'll be redirected to sign in. Sign up with an email/password, then create a family (or join one with an invite code from `/settings`). `pnpm build && pnpm start` produces the installable production build.
 
+Every variable in `.env.example` is validated at startup, so a missing one fails fast with its name. Two are new and easy to miss: **`ANTHROPIC_API_KEY`** (bring your own key — parsing is billed per message) and **`GROQ_API_KEY`** (free tier, transcribes voice notes; set `STT_PROVIDER=openai` + `OPENAI_API_KEY` to use OpenAI instead).
+
 **Full step-by-step setup** (env vars, Turso, Telegram bot + tunnel, Windows gotchas) is in [`SETUP.md`](SETUP.md).
 
-## Planned MVP features
+## MVP features
 
-- **Inbound + AI parser** — voice/photo/PDF via Telegram or in-app upload → Claude extracts deadlines, amounts, and asset associations → one-tap confirmation.
+- **Inbound + AI parser** ✅ *working* — voice/photo/PDF/text via Telegram or in-app upload → Claude extracts deadlines, amounts, and asset associations → one-tap confirmation. Prompted specifically for Italian bureaucracy: bollo → annual, revisione → biennial, TARI instalments → separate deadlines, PagoPA codice avviso kept in the notes.
 - **Asset hub** — vehicles, people, home. Each asset has its deadline timeline (bollo, revisione, RCA, documents, bills) with smart Italian recurrence defaults.
 - **Expense dashboard** — predictive cash flow ("September: €800 between TARI and insurance") and per-asset total cost of ownership.
 - **Medicine cabinet** — photo of a medicine box → recognized and tracked with expiry; "antibiotico bimba 2 volte al giorno per una settimana" → scheduled reminders.
 
 ## Stack
 
-Next.js 16 (PWA) · Turso + Drizzle · Auth.js (email/password) · Claude API (BYOK) · Telegram Bot API · deployed on Vercel.
+Next.js 16 (PWA) · Turso + Drizzle · Auth.js (email/password) · Claude API (BYOK) · Groq Whisper for speech-to-text · Telegram Bot API · deployed on Vercel.
 
-Privacy: sensitive fields (codice fiscale, free-text medical notes) are encrypted at rest with an app-level key — the database is blind.
+Privacy: sensitive fields (codice fiscale, free-text medical notes) are encrypted at rest with an app-level key — the database is blind. Codice fiscale is never sent to the AI provider, and media (voice/photo/PDF) is processed in memory and never stored.
 
 ## License
 
