@@ -29,7 +29,7 @@ Open `http://localhost:3000` — you'll see the app shell with bottom navigation
 
 ## Stack
 
-Next.js 16 (PWA) · Turso + Drizzle · Auth.js (Google + email/password) · Claude API (BYOK) · Telegram Bot API · deployed on Vercel.
+Next.js 16 (PWA) · Turso + Drizzle · Auth.js (email/password) · Claude API (BYOK) · Telegram Bot API · deployed on Vercel.
 
 Privacy: sensitive fields (codice fiscale, free-text medical notes) are encrypted at rest with an app-level key — the database is blind.
 

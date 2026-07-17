@@ -39,8 +39,8 @@ All tables use `text` UUID PKs (default `crypto.randomUUID()` via `$defaultFn`),
 
 ### Auth.js tables (per official Drizzle adapter shape)
 
-- `users`: `id`, `name`, `email` (unique), `email_verified` (timestamp), `image`, `password_hash` (nullable — set only for accounts created via email/password sign-up in spec 03; Google-only users have `null` and cannot log in via the credentials form).
-- `accounts`: standard Auth.js Drizzle adapter columns (provider, provider_account_id PK composite, tokens…). Not used by the credentials provider (it authenticates directly against `users.password_hash`, no `accounts` row).
+- `users`: `id`, `name`, `email` (unique), `email_verified` (timestamp), `image`, `password_hash` (set for every account — spec 03 uses the Credentials (email/password) provider only).
+- `accounts`: standard Auth.js Drizzle adapter columns (provider, provider_account_id PK composite, tokens…). Not used by the credentials provider (it authenticates directly against `users.password_hash`, no `accounts` row) — kept in the schema in case an OAuth provider is added post-MVP.
 - (JWT session strategy → **no** `sessions` table; no `verification_tokens`.)
 
 ### Domain tables

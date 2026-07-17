@@ -21,7 +21,15 @@ This project is built spec-by-spec. Each implementation session executes exactly
 
 ## Current status
 
-### Latest — spec 02: database schema, encryption, migrations, seed (2026-07-17)
+### Latest — spec 03: auth and family onboarding (2026-07-17)
+
+Implemented: Auth.js v5 (`next-auth@beta`) in `src/auth.ts` with a Credentials (email/password, bcryptjs) provider — no OAuth, see deviations — JWT sessions, a hand-rolled Drizzle adapter (`src/lib/auth-adapter.ts` — see deviations); `src/proxy.ts` (Next.js 16 renamed `middleware.ts` → `proxy.ts`, must live under `src/`) protecting all `(app)` routes; `src/lib/session.ts` (`requireUser`/`requireFamily`); sign-in (`(auth)/signin`), sign-up (`(auth)/signup`), onboarding — create/join family (`(auth)/onboarding`); settings page with family name, invite code (copy button), members list, sign-out; top-bar avatar shows the session image if ever set, else a fallback initial. New env vars `AUTH_SECRET`, `AUTH_ALLOWED_EMAILS` in `.env.example` and `src/lib/env.ts`. `src/lib/auth-allowlist.ts` (`isEmailAllowedToCreateFamily`, unit-tested).
+
+Deviations from spec worth knowing: no Google/OAuth provider — Credentials only (the user explicitly dropped Google mid-session; spec 03 and the other docs that mentioned it — 00-overview.md, 02-database-schema.md, 10-launch.md, README.md — were rewritten to match, `accounts` table kept unused for a possible future OAuth provider); custom Auth.js adapter instead of `@auth/drizzle-adapter` (the official one expects JS property names like `emailVerified`/`userId` that don't match our spec-02 snake_case schema); `AUTH_ALLOWED_EMAILS` gates `createFamily` only, not `registerWithPassword`; route-protection file is `src/proxy.ts`, not `middleware.ts` (Next 16 rename, discovered by actually running the dev server — see AGENTS.md for the node:crypto/Edge-runtime angle).
+
+Not yet implemented: everything in specs 04–10. `(app)` pages beyond `/settings` don't call `requireFamily()` yet (still spec 01 placeholders).
+
+### Previous — spec 02: database schema, encryption, migrations, seed (2026-07-17)
 
 Implemented: complete Drizzle schema in `src/db/schema.ts` (15 tables: Auth.js `users`/`accounts` + 13 domain tables — families, family_members, assets, deadlines, transactions, inbox_messages, medications, therapies, therapy_intakes, telegram_links, telegram_link_codes, push_subscriptions, notifications_log), all enums/indexes/inferred types per spec · `src/lib/crypto.ts` AES-256-GCM field encryption (`encryptField`/`decryptField`/`isEncrypted`) with `ENCRYPTION_KEY` env var · `src/lib/asset-metadata.ts` Zod schemas for the vehicle/person/home/other metadata JSON shapes · migration generated and applied to the dev Turso DB (`family-sherpa-dev`) · `src/db/seed.ts` (`pnpm db:seed`), idempotent "Famiglia Demo" dataset (1 user, 1 family, 3 assets, 8 deadlines, 10 transactions, 2 medications, 1 therapy + 6 intakes). Drive-by fix: `eslint.config.mjs` now ignores the generated Serwist service-worker files (see AGENTS.md).
 

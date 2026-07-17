@@ -37,7 +37,7 @@ Structure, in English:
 Numbered end-to-end walkthrough, tested by actually following it during this session:
 1. Fork/clone; `pnpm install`.
 2. Turso: create DB, get URL+token (CLI commands).
-3. Google OAuth client (console steps, both localhost and prod redirect URIs).
+3. `AUTH_SECRET` generation and, if running a private instance, `AUTH_ALLOWED_EMAILS`.
 4. Telegram: @BotFather steps, `pnpm telegram:setup`.
 5. Keys: Anthropic, Groq, `ENCRYPTION_KEY`, VAPID generation, `CRON_SECRET` — the full `.env.example` annotated.
 6. Local run: migrate, seed, dev, tunnel for the webhook.

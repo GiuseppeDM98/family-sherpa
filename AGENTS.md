@@ -28,6 +28,22 @@ pnpm 10+ blocks native/postinstall build scripts by default. When `pnpm install`
 
 The CLI moved from `style` + `--base-color` flags to a **preset system** (Nova/Vega/Maia/Lyra/Mira/Luma/Sera/Rhea/Custom). There is no `--base-color` flag anymore. Use `-d` for `--template=next --preset=base-nova` (closest match to the old "default style, neutral base color"), or `--preset <name>` to pick explicitly. Check `pnpm dlx shadcn@latest init --help` before assuming old-CLI flags still exist — this ecosystem changes fast.
 
+## Route protection: `src/proxy.ts`, not `middleware.ts`
+
+Next.js 16 renamed the `middleware.ts` file convention to `proxy.ts` (same shape, function
+renamed `middleware` → `proxy`). Two things bit us discovering this:
+
+- With this project's `src/` layout, the file **must** live at `src/proxy.ts` (or
+  `src/middleware.ts`), not at the repo root — a root-level file is silently ignored (every
+  route returns 200, no redirect, no error, no log).
+- Classic `middleware.ts` runs on the **Edge runtime** by default, which cannot bundle
+  `node:crypto` — and our `src/db/schema.ts` (invite code generation) and `src/auth.ts`
+  (via `bcryptjs`) both pull it in transitively, causing a webpack
+  `UnhandledSchemeError: node:crypto` build failure the moment `auth()` is used from
+  middleware. `proxy.ts` defaults to the **Node.js runtime**, which has no such
+  restriction — this is the actual reason to migrate, not just following the deprecation
+  warning.
+
 ## Known non-issues (don't "fix" these)
 
 - Next's metadata API emits `<meta name="mobile-web-app-capable">` rather than the older `apple-mobile-web-app-capable` when `appleWebApp.capable: true` is set. This is intentional (Apple now supports the standard tag) and has the same effect — not a bug.
