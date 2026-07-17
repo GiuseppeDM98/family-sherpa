@@ -4,10 +4,10 @@
  * Run with: pnpm telegram:setup
  *
  * Local development needs a public HTTPS tunnel first — Telegram cannot call
- * localhost. Start one (e.g. `ngrok http 3000` or `cloudflared tunnel --url
- * http://localhost:3000`), set NEXT_PUBLIC_APP_URL in .env to the printed
- * https URL, then run this script. Re-run it again whenever the tunnel URL
- * changes (ngrok's free tier issues a new one on every restart).
+ * localhost. Start one with `cloudflared tunnel --url http://localhost:3000`,
+ * set NEXT_PUBLIC_APP_URL in .env to the printed https URL, then run this
+ * script. Re-run it again whenever the tunnel URL changes (the no-account
+ * "quick tunnel" issues a new one on every restart).
  */
 import { Api } from "grammy";
 import { clientEnv, env } from "@/lib/env";

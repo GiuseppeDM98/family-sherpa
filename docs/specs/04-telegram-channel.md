@@ -28,7 +28,7 @@ A Telegram bot that any family member links to their account, which receives **v
 ### 1. Env & setup
 
 - Env: `TELEGRAM_BOT_TOKEN` (from @BotFather), `TELEGRAM_WEBHOOK_SECRET` (random string, e.g. `openssl rand -hex 16`). Append to `.env.example` with comments (how to create a bot with @BotFather, suggested name "FamilySherpa Bot", enable no privacy concerns since it's a private bot).
-- Script `scripts/telegram-setup.ts` (`pnpm telegram:setup`): calls `setWebhook` with `${NEXT_PUBLIC_APP_URL}/api/telegram/webhook`, `secret_token: TELEGRAM_WEBHOOK_SECRET`, `allowed_updates: ["message","callback_query"]`; also calls `setMyCommands` (`/start`, `/collega`, `/aiuto`). Print `getWebhookInfo` after. Document in the script header that local dev needs a tunnel (e.g. `ngrok http 3000` or `cloudflared`) and re-running setup with the tunnel URL.
+- Script `scripts/telegram-setup.ts` (`pnpm telegram:setup`): calls `setWebhook` with `${NEXT_PUBLIC_APP_URL}/api/telegram/webhook`, `secret_token: TELEGRAM_WEBHOOK_SECRET`, `allowed_updates: ["message","callback_query"]`; also calls `setMyCommands` (`/start`, `/collega`, `/aiuto`). Print `getWebhookInfo` after. Document in the script header that local dev needs a tunnel (`cloudflared tunnel --url http://localhost:3000` — see SETUP.md) and re-running setup with the tunnel URL.
 
 ### 2. Webhook route — `src/app/api/telegram/webhook/route.ts`
 
@@ -110,6 +110,6 @@ Commit in logical steps.
 
 When you are finished: summarize what was implemented, list any deviations from
 the spec and why, and tell me exactly what to test manually and how — including
-the @BotFather steps, the ngrok/tunnel setup for local webhook testing, and a
+the @BotFather steps, the cloudflared tunnel setup for local webhook testing, and a
 checklist of messages to send to the bot with the expected replies and DB rows.
 ```

@@ -91,11 +91,9 @@ matter — the bot is only used in private chats).
 ### 6.2 Expose your local server with a tunnel
 
 Telegram needs to reach your webhook over a public HTTPS URL — `localhost`
-won't do. Two options:
-
-**cloudflared (recommended)** — no account needed, and more reliable behind
-some networks/antivirus setups than ngrok (see the troubleshooting note
-below):
+won't do. This project standardizes on **cloudflared** — no account needed,
+and more reliable than ngrok behind some networks/antivirus setups (see the
+troubleshooting note below):
 
 ```bash
 # Windows: winget install --id Cloudflare.cloudflared
@@ -103,28 +101,18 @@ below):
 cloudflared tunnel --url http://localhost:3000
 ```
 
-It prints a random `https://<something>.trycloudflare.com` URL — that's your tunnel.
+It prints a random `https://<something>.trycloudflare.com` URL — that's your
+tunnel. **This URL changes every time you restart it** (it's an account-less
+"quick tunnel") — update `NEXT_PUBLIC_APP_URL` in `.env` and re-run the setup
+script (§6.3) whenever it does.
 
-**ngrok (alternative)** — needs a free account and `ngrok config
-add-authtoken <token>` (get it from [dashboard.ngrok.com](https://dashboard.ngrok.com)):
-
-```bash
-# Windows: winget install ngrok.ngrok
-ngrok http 3000
-```
-
-> **Known issue**: an old ngrok build from winget (e.g. 3.3.1) fails with
-> `authentication failed: ... minimum supported agent version ...` or a CRL /
-> ASN.1 parsing error on some networks. Fix: `ngrok update` (or reinstall
-> from [ngrok.com/download](https://ngrok.com/download)) to get a current
-> version. If it still fails with a `failed to fetch CRL` / `asn1: structure
-> error`, that's almost always TLS interception by security software
-> (antivirus HTTPS scanning, a corporate VPN/EDR agent) — switch to
-> cloudflared rather than debugging it further.
-
-Either way, **the tunnel URL changes every time you restart it** (free/no-account
-mode) — update `NEXT_PUBLIC_APP_URL` in `.env` and re-run the setup script
-(§6.3) whenever it does.
+> **If you reach for ngrok instead**: an old build installed via `winget`
+> (e.g. 3.3.1) fails with `authentication failed: ... minimum supported agent
+> version ...`, or with a CRL / ASN.1 parsing error, on some networks. Fix:
+> `ngrok update`. If it still fails with `failed to fetch CRL` / `asn1:
+> structure error`, that's almost always TLS interception by security
+> software (antivirus HTTPS scanning, a corporate VPN/EDR agent) — cloudflared
+> avoids the issue entirely, which is why it's the default here.
 
 ### 6.3 Register the webhook
 
