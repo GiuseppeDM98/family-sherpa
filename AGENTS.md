@@ -193,6 +193,14 @@ inside the repo (see "Running one-off scripts against the DB").
   `src/auth.ts`, unless a spec says otherwise.
 - **`web-push` exports `generateVAPIDKeys`** (VAPID uppercase), not
   `generateVapidKeys`. The CLI form is `npx web-push generate-vapid-keys`.
+- **Don't call `webpush.setVapidDetails()` at module top level.** It validates
+  the key format synchronously, and `next build`'s "Collecting page data" phase
+  imports the cron route modules (→ `src/lib/reminders/send.ts`) — so a module-top
+  call fails the build under CI's dummy VAPID keys, even though no push is sent
+  there. `send.ts` configures VAPID lazily on the first real send
+  (`ensureVapidConfigured()`); keep it that way. General rule: route modules must
+  be import-safe under the CI dummy env (`.github/workflows/ci.yml`) — no
+  import-time work that needs a *valid* secret, only a *present* one.
 - To exercise the cron endpoints without a browser, seed a throwaway `file:` DB
   (see "Verifying the AI pipeline…" above) and import the route's `GET`/`POST`
   directly in a scratch script, calling it with a `Request` carrying the
