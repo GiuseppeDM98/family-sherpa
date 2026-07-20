@@ -13,6 +13,7 @@ import {
 } from "@/db/schema";
 import { encryptField } from "@/lib/crypto";
 import { addDaysToYmd, todayInRome } from "@/lib/date";
+import { syncMedicationExpiryDeadline } from "@/lib/meds";
 import { defaultTherapyTimes } from "./therapy-times";
 
 /**
@@ -245,8 +246,19 @@ export async function materializeInboxMessage(
               format: item.format,
               expiry_date: item.expiry_date,
             })
-            .returning({ id: medications.id });
-          if (row) result.medicationIds.push(row.id);
+            .returning({
+              id: medications.id,
+              family_id: medications.family_id,
+              name: medications.name,
+              expiry_date: medications.expiry_date,
+            });
+          if (row) {
+            result.medicationIds.push(row.id);
+            // A box photo with a readable expiry date is a creation path too
+            // (spec 09 §1 "on create/update of a medication") — not just the
+            // manual cabinet form.
+            await syncMedicationExpiryDeadline(tx, row);
+          }
           break;
         }
       }
