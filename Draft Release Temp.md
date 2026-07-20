@@ -22,6 +22,14 @@ Unreleased changes — kept up to date session by session, published at cut time
 - Added a dedicated Scadenze screen: every upcoming deadline across the family, grouped by month, with quick filters for vehicles, home, people, or everything else.
 - Added "segna pagata"/"segna fatta": mark any deadline as paid or done in one tap. It logs the expense and, for recurring deadlines like bollo or RCA, automatically schedules the next occurrence for you.
 - Added a rolling 12-month spending summary on each vehicle and home page.
+- Added deadline reminders: FamilySherpa now notifies you when a deadline is 30, 7, 1, or 0 days away — and once more the day after it lapses — so nothing slips by. Each reminder shows the title, the asset it belongs to, the amount, and the due date.
+- Added medicine reminders: when a scheduled therapy dose is due, you get a notification with the medicine, the person, and the dosage.
+- Added push notifications: turn them on per device from Settings (or the prompt on the Home screen), see your registered devices, and remove any you no longer use. On iPhone, add the app to your Home Screen first, then enable them.
+- Added automatic Telegram reminders: once your account is linked, the same reminders also arrive as messages from the bot — no extra setup.
+
+## 🔧 Improvements
+
+- Improved the Home screen with a gentle prompt to enable notifications, which disappears once they're on.
 
 ## 🔒 Security
 
@@ -34,3 +42,4 @@ Unreleased changes — kept up to date session by session, published at cut time
 
 - Added SETUP.md with full step-by-step environment setup instructions (database, Telegram bot, local webhook tunneling, Windows-specific notes).
 - Documented the AI provider keys you need to supply: an Anthropic API key for parsing, and a Groq key (free tier) for voice transcription — with OpenAI as an alternative transcription provider.
+- Documented how to schedule the reminder jobs when self-hosting (`docs/CRON_SETUP.md`): Vercel Cron, or the free cron-job.org alternative for sub-daily runs, plus the VAPID and CRON_SECRET keys to generate.

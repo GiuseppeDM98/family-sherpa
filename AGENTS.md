@@ -178,6 +178,26 @@ pnpm tsx --env-file=.env your-scratch-script.ts
 `file:` URL — any non-empty dummy string works. As always, the script must live
 inside the repo (see "Running one-off scripts against the DB").
 
+## Testing web push locally (spec 07)
+
+- **The service worker is disabled in `next dev`** (`next.config.ts` sets
+  `disable: process.env.NODE_ENV === "development"` on `withSerwistInit`). Push
+  cannot be tested with `pnpm dev` at all — `pushManager.subscribe()` has no SW to
+  attach to. Use a production build: `pnpm build && pnpm start`, then subscribe
+  from Settings → Notifiche. `localhost` counts as a secure context, so push works
+  over plain HTTP there (no HTTPS/tunnel needed for the desktop test).
+- **`pnpm start` (local prod) trips Auth.js `UntrustedHost`.** In a production
+  build Auth.js v5 refuses to trust the `Host` header unless told to. On Vercel
+  it's auto-detected; locally set `AUTH_TRUST_HOST=true` in `.env`. It's an
+  auth/deploy concern, not part of spec 07 — keep it in `.env` only, not in
+  `src/auth.ts`, unless a spec says otherwise.
+- **`web-push` exports `generateVAPIDKeys`** (VAPID uppercase), not
+  `generateVapidKeys`. The CLI form is `npx web-push generate-vapid-keys`.
+- To exercise the cron endpoints without a browser, seed a throwaway `file:` DB
+  (see "Verifying the AI pipeline…" above) and import the route's `GET`/`POST`
+  directly in a scratch script, calling it with a `Request` carrying the
+  `Authorization: Bearer $CRON_SECRET` header — the handlers are plain functions.
+
 ## Known non-issues (don't "fix" these)
 
 - Next's metadata API emits `<meta name="mobile-web-app-capable">` rather than the older `apple-mobile-web-app-capable` when `appleWebApp.capable: true` is set. This is intentional (Apple now supports the standard tag) and has the same effect — not a bug.
