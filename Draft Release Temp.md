@@ -42,4 +42,4 @@ Unreleased changes — kept up to date session by session, published at cut time
 
 - Added SETUP.md with full step-by-step environment setup instructions (database, Telegram bot, local webhook tunneling, Windows-specific notes).
 - Documented the AI provider keys you need to supply: an Anthropic API key for parsing, and a Groq key (free tier) for voice transcription — with OpenAI as an alternative transcription provider.
-- Documented how to schedule the reminder jobs when self-hosting (`docs/CRON_SETUP.md`): Vercel Cron, or the free cron-job.org alternative for sub-daily runs, plus the VAPID and CRON_SECRET keys to generate.
+- Documented how to schedule the reminder jobs when self-hosting (`SETUP.md` §9): Vercel Cron, or the free cron-job.org alternative for sub-daily runs, plus the VAPID and CRON_SECRET keys to generate and the production environment variables.

@@ -51,6 +51,10 @@ Then fill in `.env`. Each variable, and where it comes from:
 | `STT_PROVIDER` | Optional, `groq` (default) or `openai`. Only used to transcribe voice notes. |
 | `GROQ_API_KEY` | Required when `STT_PROVIDER=groq`. Free tier: [console.groq.com](https://console.groq.com) → API Keys. |
 | `OPENAI_API_KEY` | Required only when `STT_PROVIDER=openai` — [platform.openai.com/api-keys](https://platform.openai.com/api-keys). |
+| `CRON_SECRET` | `openssl rand -hex 32`. Bearer token protecting the `/api/cron/*` reminder endpoints (§9). |
+| `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` | Web-push key pair — generate both at once with `npx web-push generate-vapid-keys`. |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | The **same value** as `VAPID_PUBLIC_KEY` — the browser needs it to subscribe. |
+| `VAPID_SUBJECT` | A contact URI for push services: a `mailto:` address (e.g. `mailto:you@example.com`) or your app's `https://` URL. |
 
 `src/lib/env.ts` validates all of these at startup with Zod — if one is
 missing or malformed, every command (`pnpm dev`, `pnpm test`, `pnpm build`,
@@ -178,3 +182,61 @@ native Turso CLI (use the web dashboard), `next dev`/`next build` need
 `--webpack` (already wired into `package.json`'s scripts) because Serwist
 doesn't support Turbopack, and `src/proxy.ts` (not `middleware.ts`) for route
 protection. Read it before re-debugging something already solved there.
+
+## 9. Reminders & cron scheduling (spec 07)
+
+The app sends deadline and medicine-dose reminders over **web push** and
+**Telegram**, driven by two secret-protected endpoints. *What* triggers them is
+your choice — the app assumes no specific scheduler.
+
+| Endpoint | Cadence | Purpose |
+|---|---|---|
+| `POST/GET /api/cron/daily` | once a day, **07:00 Europe/Rome** | deadline reminders (30/7/1/0 days + "scaduta ieri") and therapy-intake generation |
+| `POST/GET /api/cron/therapy` | **every 15 minutes** | dose-time reminders |
+
+Both require `Authorization: Bearer $CRON_SECRET`; without it they return 401 and
+do nothing. This bearer is the single auth mechanism.
+
+### Testing push locally
+
+Web push needs a **production build** — the service worker is disabled in
+`next dev`. Run `pnpm build && pnpm start`, then Settings → Notifiche → *Attiva le
+notifiche* (`localhost` is a secure context, so no HTTPS needed). `pnpm start`
+locally also needs `AUTH_TRUST_HOST=true` in `.env` (Auth.js refuses to trust the
+Host header in a production build otherwise; on Vercel it's auto-detected).
+
+Trigger a cron by hand (PowerShell):
+
+```powershell
+$secret = (Get-Content .env | Select-String '^CRON_SECRET=').ToString().Split('=')[1]
+curl.exe -i -H "Authorization: Bearer $secret" http://localhost:3000/api/cron/daily
+```
+
+### Scheduling in production
+
+**Vercel Cron (`vercel.json`)** already declares both crons. But the **Hobby
+plan runs cron jobs at most once per day**, so the `*/15` therapy cron will not
+fire on Hobby (the daily one is fine).
+
+**Free alternative — [cron-job.org](https://cron-job.org)** (works on any plan).
+Create a job per endpoint, each with a custom request header
+`Authorization: Bearer <your CRON_SECRET>`:
+
+- `https://<your-app>/api/cron/daily` — schedule 07:00, job timezone Europe/Rome.
+- `https://<your-app>/api/cron/therapy` — every 15 minutes.
+
+On **Vercel Pro** the `vercel.json` crons run natively and you can drop
+cron-job.org.
+
+### Production environment variables (Vercel)
+
+Set every variable from §3 in the Vercel dashboard (Project → Settings →
+Environment Variables, **Production** scope), with these differences:
+
+- `NEXT_PUBLIC_APP_URL` → your real domain (e.g. `https://familysherpa.vercel.app`).
+- `TURSO_DATABASE_URL` / `TURSO_AUTH_TOKEN` → your cloud Turso DB, not `file:`.
+- `NEXT_PUBLIC_*` are inlined at **build** time — after adding or changing one,
+  **redeploy**.
+- `AUTH_TRUST_HOST` is **not** needed on Vercel (auto-detected).
+- If you name the cron bearer exactly `CRON_SECRET`, Vercel Cron sends it as the
+  `Authorization` header automatically.

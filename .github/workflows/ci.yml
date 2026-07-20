@@ -20,6 +20,11 @@ env:
   NEXT_PUBLIC_TELEGRAM_BOT_USERNAME: "ci_dummy_bot"
   ANTHROPIC_API_KEY: "ci-dummy-anthropic-key"
   GROQ_API_KEY: "ci-dummy-groq-key"
+  CRON_SECRET: "ci-dummy-cron-secret"
+  VAPID_PUBLIC_KEY: "ci-dummy-vapid-public-key"
+  VAPID_PRIVATE_KEY: "ci-dummy-vapid-private-key"
+  VAPID_SUBJECT: "mailto:ci@example.com"
+  NEXT_PUBLIC_VAPID_PUBLIC_KEY: "ci-dummy-vapid-public-key"
 
 jobs:
   build:
