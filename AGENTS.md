@@ -246,6 +246,99 @@ even though the *trigger* label always renders. Pass the tab's query param
   directly in a scratch script, calling it with a `Request` carrying the
   `Authorization: Bearer $CRON_SECRET` header — the handlers are plain functions.
 
+## Transactional helpers that also run standalone
+
+Some helpers (e.g. `syncMedicationExpiryDeadline` in `src/lib/meds.ts`) need
+to work both on their own and inside an existing `db.transaction()` callback.
+Type the parameter as a union of both so the caller can pass either:
+
+```ts
+type Executor = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
+```
+
+Never let a helper that writes through the **plain** `db` connection (not
+`tx`) run before an enclosing transaction commits. If a later statement in
+that transaction rolls back, the helper's write already landed and can end up
+referencing a row that no longer exists — e.g. `generateIntakesForDate`
+(writes via plain `db`) inserting a therapy's intake rows before the
+`materializeInboxMessage` transaction that creates the therapy has actually
+committed. Collect what needs the side effect during the transaction, then
+run it in a loop after `await db.transaction(...)` resolves.
+
+## ESLint react-hooks: purity and set-state-in-effect
+
+Two `eslint-plugin-react-hooks` rules bite non-obviously in this codebase:
+
+- **`react-hooks/purity`**: assigning `Date.now()` to a variable and doing
+  arithmetic on it anywhere in a component's render body — even a *Server*
+  Component, even before the `return` — is flagged as an impure call.
+  `new Date()` formatted inline inside JSX (as `HomePage`'s greeting date
+  does) is fine, and so is `new Date().getTime()` used inline instead of a
+  hoisted `Date.now()`. When a value genuinely needs to be time-sensitive at
+  render (e.g. the meds "in ritardo" badge), compute it once server-side in
+  the page's data query and pass the boolean down as a plain prop, rather
+  than computing it inside a client component's render.
+- **`react-hooks/set-state-in-effect`**: a `useEffect` that calls `setState`
+  to resync a dialog's form whenever it reopens
+  (`useEffect(() => { if (open) setState(...) }, [open])`) is flagged. Fix:
+  don't keep the dialog mounted with a toggling `open` prop — mount it only
+  while open (`{open ? <FormDialog open .../> : null}`), so `useState`'s lazy
+  initializer already has the right value on every fresh mount.
+  `DeadlineFormDialog`/`DeadlineRow` already follow this pattern; match it
+  for any new dialog instead of reaching for `useEffect`.
+
+## Screenshots / headless browser: no CLI installed on this machine
+
+There's no `chromium-cli` or other headless-browser tool available here. To
+capture app screenshots (e.g. for the README), temporarily add Playwright,
+use it, then remove it again — don't leave it in `package.json`:
+
+```bash
+pnpm add -D playwright
+pnpm dlx playwright install chromium   # downloads the browser binary once
+# ... run your script ...
+pnpm remove playwright
+```
+
+`page.screenshot({ path })` wants a plain string, not a `URL` object —
+passing `new URL(...)` throws `TypeError: path59.lastIndexOf is not a
+function`; use `fileURLToPath()` instead.
+
+To screenshot real app data without touching a live dev server (yours or
+someone else's) or seeding fake data into the real DB: point a **second**
+server instance at a throwaway file DB, on a different port, reusing the
+already-built `.next` output:
+
+```bash
+rm -f screenshot.db*
+TURSO_DATABASE_URL="file:screenshot.db" TURSO_AUTH_TOKEN="dummy" pnpm drizzle-kit migrate
+TURSO_DATABASE_URL="file:screenshot.db" TURSO_AUTH_TOKEN="dummy" pnpm db:seed
+TURSO_DATABASE_URL="file:screenshot.db" TURSO_AUTH_TOKEN="dummy" PORT=3100 pnpm start &
+```
+
+The seed user has no password (see "Server Actions can't be driven with
+curl" above) — set one temporarily on *this* throwaway DB only, sign in with
+Playwright, screenshot, then tear the whole thing down (stop the server,
+delete `screenshot.db*`).
+
+**Recharts renders blank under a `fullPage: true` Playwright screenshot** —
+axes and gridlines show, but the bars don't (its `ResponsiveContainer`
+appears to measure the wrong dimensions when the page is captured
+full-page). A normal viewport screenshot after scrolling to the chart
+renders it correctly; don't mistake the full-page blank chart for an app
+bug.
+
+## Building a favicon.ico with real raster content
+
+`sharp` (already a devDependency) can rasterize SVG to PNG but cannot encode
+`.ico`, and can't read one back either (`Input file contains unsupported
+image format`) — don't use it to verify the result. An `.ico` is just a
+small header, one directory entry per embedded size, and the raw image
+bytes; modern Windows/browsers accept PNG-compressed entries directly, so a
+few `sharp`-rendered PNGs can be wrapped into one by hand instead of adding
+an `ico`-writing dependency. Verify with the `file` CLI (`file favicon.ico`
+→ "MS Windows icon resource ... PNG image data ..."), not sharp.
+
 ## Known non-issues (don't "fix" these)
 
 - Next's metadata API emits `<meta name="mobile-web-app-capable">` rather than the older `apple-mobile-web-app-capable` when `appleWebApp.capable: true` is set. This is intentional (Apple now supports the standard tag) and has the same effect — not a bug.

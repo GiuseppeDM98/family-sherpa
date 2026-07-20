@@ -40,13 +40,34 @@ Not implemented: conversational editing, WhatsApp channel, AIC barcode/AIFA look
 
 ## Current status
 
-### Latest — Medicine cabinet and therapy tracking (2026-07-20)
+### Latest — Medicine cabinet, end-of-implementation cleanup, and app branding (2026-07-20)
 
-Turns the medications/therapies already modeled in the schema into a full UI, with an expiry-deadline bridge feeding the existing reminder pipeline.
+Closes out the MVP feature set with the medicine cabinet UI, then does the
+end-of-implementation housekeeping: removes the spec-driven scaffolding now
+that specs 01–09 are all implemented, and refreshes the app's public face.
 
-- **Deviation**: the medication expiry → deadline sync also runs on box-photo confirmations (not just the manual cabinet form) and on AI-parsed therapies created via Telegram/text (which now get today's intakes generated immediately after the confirming transaction commits, same as the manual "crea terapia" action) — otherwise those paths would silently lag behind the manual ones.
-- **Deviation**: no "resume" action for a paused therapy — only "pause" was requested; resuming would just be flipping `active` back to `true` if ever needed.
-- Verified end-to-end with a throwaway SQLite DB (`file:verify.db`, migrated, discarded after): the expiry bridge's create/update-in-place/delete-on-clear behavior, and `generateIntakesForDate`'s idempotency on repeated calls for the same day. `pnpm lint`, `pnpm typecheck`, `pnpm test`, and `pnpm build --webpack` all pass. The `/meds` UI itself and the box-photo → confirm → cabinet flow were verified live with the user via the Telegram dev bot.
+- **Medicine cabinet** (`/meds`) — see "What exists today" above for the full
+  feature description.
+- **Deviation**: the medication expiry → deadline sync runs on box-photo
+  confirmations too (not just the manual cabinet form), and AI-parsed
+  therapies created via Telegram/text now get today's intakes generated
+  immediately after the confirming transaction commits, same as the manual
+  "crea terapia" action — otherwise those paths silently lagged a cron cycle
+  behind the manual ones.
+- **Deviation**: no "resume" action for a paused therapy — only "pause" was
+  requested; resuming would just be flipping `active` back to `true`.
+- Verified: throwaway-DB scripts for the expiry bridge (create/update-in-place/
+  delete-on-clear) and `generateIntakesForDate`'s idempotency; the `/meds` UI
+  and the box-photo → confirm → cabinet flow verified live via the Telegram
+  dev bot with the user. `pnpm lint/typecheck/test/build` all pass.
+- **Repo housekeeping**: `docs/specs/*.md` deleted; every spec citation in
+  source comments, this file, `AGENTS.md`, `README.md`, and `SETUP.md`
+  rewritten to keep the WHY reasoning without the dangling pointer — the
+  project no longer works spec-by-spec (see the Rules above).
+- **Branding**: app icon/favicon redesigned (two peaks + a rising sun, using
+  the app's existing navy/orange colors, not new ones); demo screenshots
+  added to `docs/assets/` and the README, captured from a throwaway seeded
+  DB — never real family data.
 - No new env vars.
 
 ### Known limits carried forward
@@ -54,3 +75,4 @@ Turns the medications/therapies already modeled in the schema into a full UI, wi
 - A message can still get stuck at `status='received'` if the function dies mid-run (e.g. the 60 s Vercel limit): the Inbox card stays on "In elaborazione…" forever. Recovering orphans needs a dedicated recovery cron (not built).
 - Manually untested: **PDF** ingestion (text, voice, and photo are verified end-to-end).
 - Web push is testable only in a production build (`pnpm build && pnpm start`) — the SW is disabled in `next dev`. `pnpm start` locally also needs `AUTH_TRUST_HOST=true` (see `AGENTS.md`).
+- Packaging/launch polish (CONTRIBUTING.md, SECURITY.md, issue/PR templates, a dedicated self-hosting rewrite, the LinkedIn launch post) is intentionally not done — the user chose to keep `SETUP.md` as the self-hosting guide and skip the other community files; the launch post is deferred to a later session.

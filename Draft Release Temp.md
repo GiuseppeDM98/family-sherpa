@@ -29,10 +29,14 @@ Unreleased changes — kept up to date session by session, published at cut time
 - Added the Home dashboard: a greeting, your next five upcoming deadlines, a today's-medicine strip when a dose is due, and a 12-month cash-flow chart that highlights your peak spending month with a plain-language callout ("⚠️ A settembre hai 420 € di spese previste tra..."). Tap any month's bar to see exactly what's driving it.
 - Added a "Costo dei tuoi asset" summary on the Home dashboard: your last 12 months of spending per vehicle, person, or home, tap-through to each asset's full breakdown.
 - Added a "Costi" tab on every asset page: pick "ultimi 12 mesi" or "anno corrente", see the total and a breakdown by category, browse every past expense, and add one by hand with "Aggiungi spesa".
+- Added the medicine cabinet (Armadietto): every medicine in one list, sorted by what's expiring soonest, with a search box and colour-coded expiry badges. Add one by photographing the box — FamilySherpa reads the name, format, and expiry off it — or by hand.
+- Added the Terapie screen: a daily checklist of today's doses you can mark "Fatto" or "Salta", a card for each active therapy showing its schedule, day-by-day progress, and the last 7 days at a glance, plus the ability to pause a therapy, adjust its times, or create one by hand instead of through the bot.
+- Added expiry tracking for medicines: one nearing its expiry date shows up alongside your other deadlines and gets reminded on the same 30/7/1/0-day schedule.
 
 ## 🔧 Improvements
 
 - Improved the Home screen with a gentle prompt to enable notifications, which disappears once they're on.
+- Redesigned the app icon.
 
 ## 🔒 Security
 
@@ -46,3 +50,4 @@ Unreleased changes — kept up to date session by session, published at cut time
 - Added SETUP.md with full step-by-step environment setup instructions (database, Telegram bot, local webhook tunneling, Windows-specific notes).
 - Documented the AI provider keys you need to supply: an Anthropic API key for parsing, and a Groq key (free tier) for voice transcription — with OpenAI as an alternative transcription provider.
 - Documented how to schedule the reminder jobs when self-hosting (`SETUP.md` §9): Vercel Cron, or the free cron-job.org alternative for sub-daily runs, plus the VAPID and CRON_SECRET keys to generate and the production environment variables.
+- Added real screenshots of the app to the README.
