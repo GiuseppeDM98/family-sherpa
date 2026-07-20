@@ -14,7 +14,7 @@ Make the repo something a stranger can star, understand in 90 seconds, and self-
 ## Scope
 
 - Full README rewrite (with screenshots), SELF_HOSTING guide, CONTRIBUTING, issue/PR templates, security policy.
-- `vercel.json` review + production deploy walkthrough (executed together with the user).
+- Production deploy walkthrough (executed together with the user). Note: the repo intentionally ships **no `vercel.json` crons** — reminders are scheduled externally (see §2.8).
 - Demo seed polish and screenshot set.
 - LinkedIn launch kit (draft post + asset checklist) in `docs/launch/`.
 
@@ -42,7 +42,7 @@ Numbered end-to-end walkthrough, tested by actually following it during this ses
 5. Keys: Anthropic, Groq, `ENCRYPTION_KEY`, VAPID generation, `CRON_SECRET` — the full `.env.example` annotated.
 6. Local run: migrate, seed, dev, tunnel for the webhook.
 7. **Vercel deploy**: import repo, env vars checklist (every var from 00-overview §7), set `NEXT_PUBLIC_APP_URL`, run `pnpm telegram:setup` against prod, apply migrations against Turso.
-8. Cron scheduling: `vercel.json` crons (note Hobby limitations) **and** the free alternative — cron-job.org jobs hitting `/api/cron/daily` (07:00 Europe/Rome) and `/api/cron/therapy` (every 15 min) with the `Authorization: Bearer` header. Resolve the TODO pointer left by spec 07.
+8. Cron scheduling — already documented in `SETUP.md` §9 (folded in from spec 07); just reference it. **Default to an external scheduler (cron-job.org)** hitting `/api/cron/daily` (07:00 Europe/Rome) and `/api/cron/therapy` (every 15 min) with the `Authorization: Bearer $CRON_SECRET` header. **Do not add a `vercel.json` with crons by default:** Vercel Hobby rejects sub-daily cron schedules at deploy time — the `*/15` therapy cron *blocks the deployment* — and even a daily entry would just duplicate the external job. Offer the `vercel.json` crons (`0 5 * * *`, `*/15 * * * *`) only as a **Vercel Pro** alternative.
 9. Troubleshooting table (webhook 401, push not arriving on iOS, Turso auth errors).
 
 ## 3. Community files

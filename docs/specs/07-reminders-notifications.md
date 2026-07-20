@@ -49,7 +49,7 @@ Both under `src/app/api/cron/`, GET or POST, require header `Authorization: Bear
 
 ## 3. Scheduler wiring (document, don't build)
 
-- `vercel.json` with two cron entries (`0 5 * * *` daily, `*/15 * * * *` therapy) **plus** a README-in-code note: Vercel Hobby caps cron granularity — document the free alternative (cron-job.org hitting the endpoints with the Authorization header) in `docs/specs/10-launch.md`'s deploy guide (leave a TODO pointer there if 10 not yet implemented). Vercel Cron sends its own auth — keep the bearer check as the single mechanism (configure the secret as query/header per current Vercel docs).
+- Scheduling is a deployment choice; the app assumes no specific scheduler. **Implemented outcome (deviates from the original plan below):** the repo ships **no `vercel.json` crons**. Vercel Hobby rejects sub-daily cron schedules *at deploy time* — a `*/15` therapy entry blocks the deployment — so the default is an external trigger (cron-job.org) hitting the endpoints with the `Authorization: Bearer $CRON_SECRET` header. This is documented in `SETUP.md` §9; spec 10 §2.8 owns the deploy-guide wording. On **Vercel Pro** a `vercel.json` with `0 5 * * *` (daily) + `*/15 * * * *` (therapy) is offered as an alternative. Either way the bearer check stays the single auth mechanism.
 
 ## 4. Settings additions
 
