@@ -1,9 +1,9 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { signOut } from "@/auth";
 import { db } from "@/db";
-import { telegramLinkCodes, telegramLinks } from "@/db/schema";
+import { pushSubscriptions, telegramLinkCodes, telegramLinks } from "@/db/schema";
 import { generateLinkCode, linkCodeExpiryIso } from "@/lib/telegram/link-code";
 import { requireUser } from "@/lib/session";
 
@@ -37,5 +37,20 @@ export async function createTelegramLinkCode(): Promise<
 export async function unlinkTelegram(): Promise<{ ok: true } | { ok: false; error: string }> {
   const { userId } = await requireUser();
   await db.delete(telegramLinks).where(eq(telegramLinks.user_id, userId));
+  return { ok: true };
+}
+
+/**
+ * Removes one of the user's registered push devices. Scoped to the caller's own
+ * subscriptions (the id-plus-user_id filter) so nobody can delete another
+ * user's device by guessing its id.
+ */
+export async function deletePushSubscription(
+  id: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const { userId } = await requireUser();
+  await db
+    .delete(pushSubscriptions)
+    .where(and(eq(pushSubscriptions.id, id), eq(pushSubscriptions.user_id, userId)));
   return { ok: true };
 }

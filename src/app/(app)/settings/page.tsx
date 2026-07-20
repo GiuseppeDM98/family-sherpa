@@ -2,12 +2,14 @@ import { eq } from "drizzle-orm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PushPermission } from "@/components/push-permission";
 import { db } from "@/db";
-import { familyMembers, families, telegramLinks, users } from "@/db/schema";
+import { familyMembers, families, pushSubscriptions, telegramLinks, users } from "@/db/schema";
 import { clientEnv } from "@/lib/env";
 import { requireFamily } from "@/lib/session";
 import { signOutAction } from "./actions";
 import { InviteCode } from "./invite-code";
+import { PushDevices } from "./push-devices";
 import { TelegramLinkCard } from "./telegram-link-card";
 
 export default async function SettingsPage() {
@@ -20,6 +22,15 @@ export default async function SettingsPage() {
     .select()
     .from(telegramLinks)
     .where(eq(telegramLinks.user_id, userId));
+
+  const devices = await db
+    .select({
+      id: pushSubscriptions.id,
+      userAgent: pushSubscriptions.user_agent,
+      createdAt: pushSubscriptions.created_at,
+    })
+    .from(pushSubscriptions)
+    .where(eq(pushSubscriptions.user_id, userId));
 
   const members = await db
     .select({
@@ -76,6 +87,23 @@ export default async function SettingsPage() {
             botUsername={clientEnv.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME}
             link={telegramLink ? { username: telegramLink.telegram_username } : null}
           />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Notifiche</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <PushPermission vapidPublicKey={clientEnv.NEXT_PUBLIC_VAPID_PUBLIC_KEY} />
+          <div className="space-y-2">
+            <p className="text-sm font-medium">Dispositivi registrati</p>
+            <PushDevices devices={devices} />
+          </div>
+          <p className="text-muted-foreground text-sm">
+            I promemoria arrivano anche su Telegram, automaticamente, quando il tuo
+            account è collegato qui sopra.
+          </p>
         </CardContent>
       </Card>
 
