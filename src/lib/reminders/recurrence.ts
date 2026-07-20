@@ -9,9 +9,9 @@ import { addMonthsToYmd, todayInRome } from "@/lib/date";
 export { addMonthsToYmd };
 
 /**
- * Recurrence math and the "mark as paid/done" completion flow
- * (docs/specs/06-assets-hub.md §3). Spec 07 (reminders/cron) imports
- * `nextDueDate` and `completeDeadline` — keep their signatures stable.
+ * Recurrence math and the "mark as paid/done" completion flow. The
+ * reminders/cron module imports `nextDueDate` and `completeDeadline` —
+ * keep their signatures stable.
  */
 
 export type Recurrence = (typeof RECURRENCES)[number];

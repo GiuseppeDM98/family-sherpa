@@ -14,8 +14,8 @@ const FAILED_REPLY =
   "😓 Non sono riuscito ad analizzare il messaggio. Riprova o inseriscilo dall'app.";
 
 /**
- * Builds the asset list the prompt sees. Only the fields spec 05 §4 allows:
- * the codice fiscale is encrypted at rest and is never sent to the LLM.
+ * Builds the asset list the prompt sees. Only the fields the prompt schema
+ * allows: the codice fiscale is encrypted at rest and is never sent to the LLM.
  */
 async function loadPromptAssets(familyId: string): Promise<PromptAsset[]> {
   const rows = await db
@@ -70,9 +70,8 @@ async function parseMessage(
 }
 
 /**
- * Entry point for every inbound channel (docs/specs/04-telegram-channel.md §5,
- * body per 05 §5): persist the raw message, transcribe and parse it, then
- * propose the result for confirmation.
+ * Entry point for every inbound channel: persist the raw message, transcribe
+ * and parse it, then propose the result for confirmation.
  *
  * Runs inside the Telegram webhook invocation, so it must never throw: an
  * exception would be a non-200 to Telegram, which retries — replaying STT and

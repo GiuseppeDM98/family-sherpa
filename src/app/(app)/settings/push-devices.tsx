@@ -8,10 +8,9 @@ import { formatDateIt } from "@/lib/format";
 import { deletePushSubscription } from "./actions";
 
 /**
- * The user's registered push devices, each with a delete button
- * (docs/specs/07-reminders-notifications.md §4). Deleting here only drops the
- * server-side subscription row; the browser keeps its own until the user
- * re-subscribes, which upserts the same endpoint.
+ * The user's registered push devices, each with a delete button. Deleting
+ * here only drops the server-side subscription row; the browser keeps its
+ * own until the user re-subscribes, which upserts the same endpoint.
  */
 
 export type PushDevice = {

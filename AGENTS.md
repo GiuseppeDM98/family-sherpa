@@ -1,6 +1,6 @@
 # AGENTS.md — working notes for AI coding sessions
 
-Environment/tooling patterns discovered while working on this repo. Read this *in addition to* `CLAUDE.md` (workflow rules) and `docs/specs/00-overview.md` (architecture). This file is about *how to get things done on this machine/repo*, not what to build.
+Environment/tooling patterns discovered while working on this repo. Read this *in addition to* `CLAUDE.md` (workflow rules and architecture). This file is about *how to get things done on this machine/repo*, not what to build.
 
 ## Environment
 
@@ -89,7 +89,7 @@ hand. For manual/scripted verification of a feature built on Server Actions:
     --data-urlencode "csrfToken=$csrf" --data-urlencode "json=true"
   curl -s -b "$jar" http://localhost:3000/assets   # now an authenticated GET
   ```
-  The seed user (`demo@familysherpa.dev`) has no `password_hash` by design (spec 02) —
+  The seed user (`demo@familysherpa.dev`) has no `password_hash` by design —
   to sign in as it this way, set one temporarily with a scratch script, then run
   `pnpm db:seed` again afterward, which wipes and recreates the demo family (and its
   user) from scratch, clearing the password back to `null`.
@@ -178,7 +178,7 @@ pnpm tsx --env-file=.env your-scratch-script.ts
 `file:` URL — any non-empty dummy string works. As always, the script must live
 inside the repo (see "Running one-off scripts against the DB").
 
-## Recharts v3 Tooltip typing (spec 08)
+## Recharts v3 Tooltip typing
 
 The `content` render-prop on `<Tooltip>` wants the function itself
 (`content={ChartTooltip}`), not a JSX element (`content={<ChartTooltip />}`) —
@@ -219,7 +219,7 @@ but the actual HTML text — e.g. a button label inside it — won't grep-match)
 even though the *trigger* label always renders. Pass the tab's query param
 (`?tab=costi`) to actually render that panel's content server-side.
 
-## Testing web push locally (spec 07)
+## Testing web push locally
 
 - **The service worker is disabled in `next dev`** (`next.config.ts` sets
   `disable: process.env.NODE_ENV === "development"` on `withSerwistInit`). Push
@@ -230,8 +230,7 @@ even though the *trigger* label always renders. Pass the tab's query param
 - **`pnpm start` (local prod) trips Auth.js `UntrustedHost`.** In a production
   build Auth.js v5 refuses to trust the `Host` header unless told to. On Vercel
   it's auto-detected; locally set `AUTH_TRUST_HOST=true` in `.env`. It's an
-  auth/deploy concern, not part of spec 07 — keep it in `.env` only, not in
-  `src/auth.ts`, unless a spec says otherwise.
+  auth/deploy concern — keep it in `.env` only, not in `src/auth.ts`.
 - **`web-push` exports `generateVAPIDKeys`** (VAPID uppercase), not
   `generateVapidKeys`. The CLI form is `npx web-push generate-vapid-keys`.
 - **Don't call `webpush.setVapidDetails()` at module top level.** It validates

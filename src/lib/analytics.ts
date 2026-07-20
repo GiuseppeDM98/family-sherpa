@@ -5,8 +5,8 @@ import { addMonthsToYmd, todayInRome } from "@/lib/date";
 import { nextDueDate } from "@/lib/reminders/recurrence";
 
 /**
- * Cash-flow forecast and TCO aggregations (docs/specs/08-expense-dashboard.md).
- * The grouping/projection math is pure and unit-tested (`projectRecurrences`,
+ * Cash-flow forecast and TCO aggregations. The grouping/projection math is
+ * pure and unit-tested (`projectRecurrences`,
  * `groupByMonth`); the `get*` functions wrap it with the actual DB reads.
  */
 

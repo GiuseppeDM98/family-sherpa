@@ -39,7 +39,7 @@ export type HomeMetadata = z.infer<typeof HomeMetadataSchema>;
 export const OtherMetadataSchema = z.object({}).catchall(z.unknown());
 export type OtherMetadata = z.infer<typeof OtherMetadataSchema>;
 
-/** Metadata Zod schema per asset `type` (spec 02 §2). */
+/** Metadata Zod schema per asset `type`. */
 export const ASSET_METADATA_SCHEMAS = {
   vehicle: VehicleMetadataSchema,
   person: PersonMetadataSchema,

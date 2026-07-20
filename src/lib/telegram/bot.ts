@@ -35,10 +35,9 @@ async function findFamilyIdByUserId(userId: string): Promise<string | undefined>
 
 /**
  * Builds a fresh Bot instance — created per webhook invocation (serverless:
- * no long polling, no globals requiring warm state, see
- * docs/specs/04-telegram-channel.md §3). grammY's `webhookCallback` calls
- * `bot.init()` (one `getMe` request) the first time the returned handler
- * runs.
+ * no long polling, no globals requiring warm state). grammY's
+ * `webhookCallback` calls `bot.init()` (one `getMe` request) the first time
+ * the returned handler runs.
  */
 export function createBot(): Bot {
   const bot = new Bot(env.TELEGRAM_BOT_TOKEN);
@@ -191,7 +190,7 @@ function parseCallbackData(
 }
 
 /**
- * Handles the ✅/❌ buttons of a confirmation message (spec 05 §5).
+ * Handles the ✅/❌ buttons of a confirmation message.
  *
  * The callback carries only an inbox message id chosen by whoever pressed the
  * button, so the message's family is re-checked against the chat's linked user

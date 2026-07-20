@@ -1,15 +1,15 @@
 /**
  * Date-only (`YYYY-MM-DD`) helpers.
  *
- * All user-facing scheduling in FamilySherpa is anchored to Europe/Rome, never
- * the server's local time (docs/specs/00-overview.md §6) — on Vercel the server
- * runs in UTC, so "today" is wrong for two hours every evening if computed
+ * All user-facing scheduling in FamilySherpa is anchored to Europe/Rome,
+ * never the server's local time — on Vercel the server runs in UTC, so
+ * "today" is wrong for two hours every evening if computed
  * naively. Date *math* here is done in UTC on purpose: a `YYYY-MM-DD` is a
  * calendar label with no time attached, so shifting it by whole days can't hit
  * a DST boundary. Only the Rome-anchored `todayInRome` needs the timezone.
  *
- * (Spec 07 adds the clock-time side of this — mapping `HH:MM` in Rome to a UTC
- * instant — which does have to reason about DST.)
+ * (`src/lib/reminders/time.ts` adds the clock-time side of this — mapping
+ * `HH:MM` in Rome to a UTC instant — which does have to reason about DST.)
  */
 
 export const APP_TIME_ZONE = "Europe/Rome";

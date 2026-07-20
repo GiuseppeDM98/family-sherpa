@@ -27,7 +27,7 @@ function daysUntil(dueDate: string, todayYmd: string): number {
 /**
  * A single deadline: category chip, title, due date, amount, recurrence,
  * and (while pending) the segna pagata/modifica/elimina actions. Shared by
- * `/deadlines` and the asset detail timeline (spec 06 §2-3).
+ * `/deadlines` and the asset detail timeline.
  */
 export function DeadlineRow({
   deadline,

@@ -4,10 +4,9 @@ import { db } from "@/db";
 import { pushSubscriptions } from "@/db/schema";
 
 /**
- * Stores a browser's web-push subscription
- * (docs/specs/07-reminders-notifications.md §1). Upsert by endpoint: the same
- * device re-subscribing (keys rotate) updates its row rather than duplicating,
- * and a device that moved to another account gets reassigned.
+ * Stores a browser's web-push subscription. Upsert by endpoint: the same
+ * device re-subscribing (keys rotate) updates its row rather than
+ * duplicating, and a device that moved to another account gets reassigned.
  *
  * This is a Route Handler, not a Server Action, because the PWA posts the raw
  * PushSubscription JSON straight from `pushManager.subscribe()`.

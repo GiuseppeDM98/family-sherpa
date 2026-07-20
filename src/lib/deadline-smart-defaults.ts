@@ -2,9 +2,9 @@ import type { DEADLINE_CATEGORIES, RECURRENCES } from "@/db/enums";
 import { addMonthsToYmd } from "@/lib/date";
 
 /**
- * Italian smart defaults for vehicle deadlines (docs/specs/06 §2, asset
- * detail "Aggiungi scadenza"). These are suggestions the form pre-fills when
- * the user picks a category — never enforced, always editable.
+ * Italian smart defaults for vehicle deadlines (asset detail "Aggiungi
+ * scadenza"). These are suggestions the form pre-fills when the user picks
+ * a category — never enforced, always editable.
  *
  * Imports only client-safe modules (no `@/db/schema`, no `db`): this file is
  * used directly from deadline-form-dialog.tsx, a "use client" component
@@ -16,8 +16,8 @@ type Recurrence = (typeof RECURRENCES)[number];
 
 export type SmartDeadlineDefault = { recurrence: Recurrence; dueDate: string | null };
 
-// First revisione is due 4 years after matriculation (00-overview.md §8);
-// every one after that is biennial regardless of matriculation date.
+// First revisione is due 4 years after matriculation; every one after that
+// is biennial regardless of matriculation date.
 const FIRST_REVISIONE_MONTHS = 48;
 
 export function suggestVehicleDeadlineDefault(

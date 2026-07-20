@@ -1,5 +1,5 @@
 /**
- * Default intake times for a therapy (docs/specs/05-ai-parsing-pipeline.md §6).
+ * Default intake times for a therapy.
  *
  * "3 volte al giorno" from a doctor means roughly every 8 waking hours, not
  * every 8 hours around the clock — so the schedule is spread over an 08:00–22:00

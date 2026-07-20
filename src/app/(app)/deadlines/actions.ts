@@ -146,8 +146,8 @@ export async function getDeadlineNotes(
 
 /**
  * Marks a deadline paid/done via `completeDeadline` (src/lib/reminders/
- * recurrence.ts, shared with spec 07) and reports the next occurrence's due
- * date, if a recurring one was created, so the UI can toast it.
+ * recurrence.ts) and reports the next occurrence's due date, if a recurring
+ * one was created, so the UI can toast it.
  */
 export async function markDeadlineComplete(
   deadlineId: string,

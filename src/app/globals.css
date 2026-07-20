@@ -69,7 +69,7 @@
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
-  /* Dashboard chart palette (docs/specs/08 — dataviz skill, validated with
+  /* Dashboard chart palette (dataviz skill, validated with
      scripts/validate_palette.js): fixed categorical hue order, blue first. */
   --chart-1: #2a78d6; /* blue */
   --chart-2: #008300; /* green */

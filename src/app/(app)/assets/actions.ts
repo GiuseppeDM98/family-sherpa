@@ -133,8 +133,8 @@ export async function updateAsset(assetId: string, rawInput: unknown): Promise<A
 }
 
 /**
- * Delete = archive (00-overview.md §6, spec 06 §2): deadlines/transactions
- * keep their `asset_id`, so history stays queryable with no FK errors.
+ * Delete = archive: deadlines/transactions keep their `asset_id`, so history
+ * stays queryable with no FK errors.
  */
 export async function archiveAsset(assetId: string): Promise<ActionResult> {
   const { familyId } = await requireFamily();
@@ -159,8 +159,8 @@ const TransactionInputSchema = z.object({
 });
 
 /**
- * "Aggiungi spesa" on the asset cost tab (docs/specs/08-expense-dashboard.md
- * §3): a manual transaction not tied to any deadline (`source: 'manual'`).
+ * "Aggiungi spesa" on the asset cost tab: a manual transaction not tied to
+ * any deadline (`source: 'manual'`).
  */
 export async function createTransaction(
   assetId: string,

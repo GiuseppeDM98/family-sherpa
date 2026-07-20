@@ -19,8 +19,7 @@ import { generateIntakesForDate } from "@/lib/reminders/intakes";
 import { defaultTherapyTimes } from "./therapy-times";
 
 /**
- * Turns a confirmed inbox message into domain rows
- * (docs/specs/05-ai-parsing-pipeline.md §6).
+ * Turns a confirmed inbox message into domain rows.
  *
  * Everything happens in one transaction: a message that creates an asset and
  * three deadlines must land completely or not at all, otherwise a retry after a
@@ -266,8 +265,8 @@ export async function materializeInboxMessage(
           if (row) {
             result.medicationIds.push(row.id);
             // A box photo with a readable expiry date is a creation path too
-            // (spec 09 §1 "on create/update of a medication") — not just the
-            // manual cabinet form.
+            // ("on create/update of a medication") — not just the manual
+            // cabinet form.
             await syncMedicationExpiryDeadline(tx, row);
           }
           break;
@@ -285,7 +284,7 @@ export async function materializeInboxMessage(
 
   // start_date is always today for an AI-parsed therapy (set above), so every
   // therapy created here needs today's intakes right away — matching what the
-  // manual "crea terapia" action does (spec 09 §2), not just the next cron run.
+  // manual "crea terapia" action does, not just the next cron run.
   for (const therapy of newTherapies) {
     await generateIntakesForDate(therapy, therapy.start_date);
   }

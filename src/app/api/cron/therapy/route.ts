@@ -6,13 +6,12 @@ import { therapyReminderContent } from "@/lib/reminders/messages";
 import { notifyUser } from "@/lib/reminders/send";
 
 /**
- * Dose-time reminder job (docs/specs/07-reminders-notifications.md §2), run
- * every 15 minutes. Notifies family members about therapy intakes scheduled
- * around now, once per intake per member (dedupe key), leaving the intake
- * `pending` until it is ticked off in the UI (spec 09).
+ * Dose-time reminder job, run every 15 minutes. Notifies family members about
+ * therapy intakes scheduled around now, once per intake per member (dedupe
+ * key), leaving the intake `pending` until it is ticked off in the UI.
  *
- * Like the daily job, this sweeps every family and is authenticated only by the
- * cron bearer (00-overview.md §6).
+ * Like the daily job, this sweeps every family and is authenticated only by
+ * the cron bearer.
  */
 
 // Look slightly back and a touch forward: a dose is "due now" from 20 minutes

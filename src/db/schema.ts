@@ -26,10 +26,9 @@ import {
 // ---------------------------------------------------------------------------
 // Shared column builders
 //
-// Every table uses a text UUID primary key and ISO-8601 UTC text timestamps
-// (see docs/specs/00-overview.md §6). These return a *new* column builder on
-// each call — reusing a single builder instance across tables is unsafe in
-// Drizzle.
+// Every table uses a text UUID primary key and ISO-8601 UTC text timestamps.
+// These return a *new* column builder on each call — reusing a single
+// builder instance across tables is unsafe in Drizzle.
 // ---------------------------------------------------------------------------
 
 const id = () =>
@@ -82,7 +81,7 @@ export {
 } from "./enums";
 
 // ---------------------------------------------------------------------------
-// Auth.js tables (per official Drizzle adapter shape — see spec 03).
+// Auth.js tables (per official Drizzle adapter shape).
 // `accounts` is unused by the Credentials provider; it authenticates directly
 // against users.password_hash with no accounts row.
 // ---------------------------------------------------------------------------

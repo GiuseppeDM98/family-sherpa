@@ -40,7 +40,7 @@ function stateFromMedication(medication: CabinetMedication): FormState {
   };
 }
 
-/** "Aggiungi a mano" / edit dialog for a cabinet medication (spec 09 §1). */
+/** "Aggiungi a mano" / edit dialog for a cabinet medication. */
 export function MedicationFormDialog({
   open,
   onOpenChange,

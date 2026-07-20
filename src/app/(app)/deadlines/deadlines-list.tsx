@@ -39,7 +39,7 @@ function groupOf(row: DeadlineListRow): FilterGroup {
   return "altro";
 }
 
-/** Filter chips + month grouping for the global scadenze list (spec 06 §3). */
+/** Filter chips + month grouping for the global scadenze list. */
 export function DeadlinesList({
   rows,
   assets,

@@ -31,8 +31,7 @@ function ChartTooltip({ active, payload }: TooltipContentProps) {
 }
 
 /**
- * Cash-flow bar chart (docs/specs/08-expense-dashboard.md §2): one bar per
- * month, the peak month in a distinct fill. Tapping a bar (or its label,
+ * Cash-flow bar chart: one bar per month, the peak month in a distinct fill. Tapping a bar (or its label,
  * since bars can be narrow on mobile) expands that month's item list below
  * the chart — real DOM content, so the data survives without the chart.
  */

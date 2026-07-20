@@ -4,9 +4,8 @@ import { formatEuroCents, formatMonthLongIt } from "@/lib/format";
 const TOP_ITEMS_IN_CALLOUT = 3;
 
 /**
- * "⚠️ A settembre hai 800 € di spese previste tra TARI e assicurazione"
- * (docs/specs/08-expense-dashboard.md §2.3). `null` when every month is empty
- * (nothing to warn about).
+ * "⚠️ A settembre hai 800 € di spese previste tra TARI e assicurazione".
+ * `null` when every month is empty (nothing to warn about).
  */
 export function buildPeakCallout(forecast: MonthlyForecast[]): string | null {
   const peak = forecast.reduce<MonthlyForecast | null>(

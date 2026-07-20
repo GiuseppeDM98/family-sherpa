@@ -38,8 +38,7 @@ const MedicationInputSchema = z.object({
 
 /**
  * Every mutation revalidates both `/meds` (the cabinet/therapy list itself)
- * and `/` (the dashboard's today's-meds strip and pending-deadline count,
- * spec 08).
+ * and `/` (the dashboard's today's-meds strip and pending-deadline count).
  */
 function revalidateMedsSurfaces() {
   revalidatePath("/meds");
@@ -125,7 +124,7 @@ export async function archiveMedication(medicationId: string): Promise<ActionRes
 
   await db.update(medications).set({ archived: true }).where(eq(medications.id, medicationId));
   // Archiving clears the expiry too — no pending "Scadenza <nome>" deadline
-  // should linger for a medication no longer in the cabinet (spec 09 §1).
+  // should linger for a medication no longer in the cabinet.
   await syncMedicationExpiryDeadline(db, { ...existing, expiry_date: null });
 
   revalidateMedsSurfaces();
@@ -255,7 +254,7 @@ export async function deleteTherapy(therapyId: string): Promise<ActionResult> {
   return { ok: true };
 }
 
-/** Family-scoped intake lookup: the id comes straight from the client (00-overview.md §6). */
+/** Family-scoped intake lookup: the id comes straight from the client. */
 async function loadFamilyIntake(intakeId: string) {
   const { familyId } = await requireFamily();
   const [row] = await db

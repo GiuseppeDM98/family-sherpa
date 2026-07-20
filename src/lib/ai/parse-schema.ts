@@ -2,9 +2,9 @@ import { z } from "zod";
 import { DEADLINE_CATEGORIES } from "@/db/enums";
 
 /**
- * The canonical shape of what Claude extracts from an inbound message
- * (docs/specs/05-ai-parsing-pipeline.md §3). It is stored as a JSON string in
- * `inbox_messages.parse_result`, sent to Claude as the `report_extraction`
+ * The canonical shape of what Claude extracts from an inbound message. It is
+ * stored as a JSON string in `inbox_messages.parse_result`, sent to Claude
+ * as the `report_extraction`
  * tool's input schema, and re-validated when the Inbox edit form posts
  * user-corrected items back — so this module is the single definition of the
  * contract between the LLM, the DB and the UI.

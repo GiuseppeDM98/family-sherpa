@@ -2,12 +2,11 @@ import { addDaysToYmd, nextWeekdayAfter } from "@/lib/date";
 import type { ParseResult } from "./parse-schema";
 
 /**
- * The extraction prompt (docs/specs/05-ai-parsing-pipeline.md §4).
+ * The extraction prompt.
  *
- * The prompt text and the three few-shot examples are reproduced verbatim from
- * the spec — they are the product, not an implementation detail, so edit them
- * in the spec first. Per project convention (00-overview.md §6) everything the
- * LLM reads is Italian; the code around it stays English.
+ * The prompt text and the three few-shot examples are the product, not an
+ * implementation detail. Per project convention everything the LLM reads is
+ * Italian; the code around it stays English.
  */
 
 export const EXTRACTION_SYSTEM_PROMPT = `Sei l'assistente di FamilySherpa, un'app che gestisce le scadenze e le spese di una famiglia italiana. Ricevi messaggi (testo, trascrizioni di vocali, foto o PDF) inviati da un familiare e devi estrarre gli elementi actionable usando lo strumento report_extraction.
@@ -32,7 +31,7 @@ Regole di estrazione:
 
 export const EXTRACTION_TOOL_NAME = "report_extraction";
 
-/** An asset as the prompt sees it — never the encrypted CF (spec 05 §4). */
+/** An asset as the prompt sees it — never the encrypted CF. */
 export type PromptAsset = {
   id: string;
   type: "vehicle" | "person" | "home" | "other";
@@ -72,7 +71,7 @@ export function buildExtractionSystemPrompt(
 }
 
 /**
- * The three few-shot examples from spec 05 §4.
+ * The three few-shot examples.
  *
  * Dates are placeholders resolved against the real `today` at call time: the
  * examples teach relative-date resolution ("giovedì prossimo"), which only

@@ -10,13 +10,13 @@ import { requireFamily } from "@/lib/session";
 import { CabinetTab } from "./cabinet-tab";
 import { TherapyTab } from "./therapy-tab";
 
-// Expiring-first sort (spec 09 §1): expired, then expiring soon (nearest
-// first), then ok, then no expiry at all.
+// Expiring-first sort: expired, then expiring soon (nearest first), then
+// ok, then no expiry at all.
 const STATUS_SORT_ORDER = { expired: 0, expiring: 1, ok: 2, none: 3 } as const;
 
 const HISTORY_WINDOW_DAYS = 7;
-// A dose reminds from 20 minutes past its time (spec 07's cron window) — the
-// UI's "in ritardo" badge uses a coarser, human-facing threshold on top of that.
+// A dose reminds from 20 minutes past its time (the cron window) — the UI's
+// "in ritardo" badge uses a coarser, human-facing threshold on top of that.
 const LATE_THRESHOLD_MS = 2 * 60 * 60 * 1000;
 
 export default async function MedsPage({

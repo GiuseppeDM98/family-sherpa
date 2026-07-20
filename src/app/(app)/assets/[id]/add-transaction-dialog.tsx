@@ -21,7 +21,7 @@ import { CATEGORY_LABELS } from "@/lib/deadline-labels";
 
 type Category = (typeof DEADLINE_CATEGORIES)[number];
 
-/** Manual expense entry on the asset cost tab (docs/specs/08 §3). */
+/** Manual expense entry on the asset cost tab. */
 export function AddTransactionDialog({ assetId }: { assetId: string }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);

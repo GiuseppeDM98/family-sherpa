@@ -9,7 +9,7 @@ import { MedicationFormDialog } from "./medication-form-dialog";
 import { PhotoUploadButton } from "./photo-upload-button";
 import type { CabinetMedication } from "./types";
 
-/** Armadietto tab (spec 09 §1): search-as-you-filter list, sorted expiring-first by the server. */
+/** Armadietto tab: search-as-you-filter list, sorted expiring-first by the server. */
 export function CabinetTab({
   medications,
   todayYmd,

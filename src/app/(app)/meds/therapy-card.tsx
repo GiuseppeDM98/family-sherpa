@@ -14,7 +14,7 @@ import { deleteTherapy, pauseTherapy } from "./actions";
 import { EditTherapyTimesDialog } from "./edit-therapy-times-dialog";
 import type { HistoryDay, TherapyRow } from "./types";
 
-/** One active therapy: dosage, schedule chips, progress, 7-day adherence strip, actions (spec 09 §2). */
+/** One active therapy: dosage, schedule chips, progress, 7-day adherence strip, actions. */
 export function TherapyCard({
   therapy,
   personName,

@@ -10,7 +10,7 @@ import { ConfirmDialog } from "@/components/confirm-dialog";
 import { Button } from "@/components/ui/button";
 import type { ASSET_TYPES } from "@/db/enums";
 
-/** Edit + archive actions for the asset detail header (spec 06 §2). */
+/** Edit + archive actions for the asset detail header. */
 export function AssetDetailHeader({
   asset,
 }: {

@@ -15,7 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { updateTherapyTimes } from "./actions";
 
-/** "Modifica orari" action on a therapy card (spec 09 §2). */
+/** "Modifica orari" action on a therapy card. */
 export function EditTherapyTimesDialog({
   open,
   onOpenChange,

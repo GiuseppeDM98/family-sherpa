@@ -8,8 +8,8 @@ import { submitAppMessage } from "@/app/(app)/inbox/actions";
 import { Button } from "@/components/ui/button";
 
 /**
- * "Fotografa la scatola" (spec 09 §1): the same in-app upload pipeline as
- * the Inbox (spec 05 §7), just a file input pre-filtered to photos with the
+ * "Fotografa la scatola": the same in-app upload pipeline as the Inbox, just
+ * a file input pre-filtered to photos with the
  * rear camera preferred on mobile. No new ingestion code — this only builds
  * the `FormData` and hands it to the existing `submitAppMessage` action, then
  * sends the user to the confirm/edit screen for the extracted medication.

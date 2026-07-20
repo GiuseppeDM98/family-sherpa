@@ -1,5 +1,5 @@
 /**
- * The domain's fixed vocabularies (spec 02 §2).
+ * The domain's fixed vocabularies.
  *
  * These live apart from `schema.ts` — which re-exports them, so it stays the
  * one place to look — because client components need them (a category select, a
@@ -12,8 +12,8 @@
 export const FAMILY_MEMBER_ROLES = ["admin", "member"] as const;
 export const ASSET_TYPES = ["vehicle", "person", "home", "other"] as const;
 
-// Asset metadata vocabularies (spec 06 §2 — src/lib/asset-metadata.ts owns
-// the Zod shapes, re-exporting these). Kept here, not there, because
+// Asset metadata vocabularies (src/lib/asset-metadata.ts owns the Zod
+// shapes, re-exporting these). Kept here, not there, because
 // asset-metadata.ts's schemas are for server-side validation while these
 // plain arrays also back client-side <select> options (asset-form-dialog.tsx).
 export const VEHICLE_FUELS = ["benzina", "diesel", "gpl", "metano", "elettrica", "ibrida"] as const;

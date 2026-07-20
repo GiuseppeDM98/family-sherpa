@@ -1,9 +1,9 @@
 import type { InboundMessage } from "./types";
 
 /**
- * Normalizes an in-app upload into the `InboundMessage` content type
- * (docs/specs/05-ai-parsing-pipeline.md §7), mirroring what
- * `src/lib/telegram/classify.ts` does for a Telegram message. Same limits and
+ * Normalizes an in-app upload into the `InboundMessage` content type,
+ * mirroring what `src/lib/telegram/classify.ts` does for a Telegram message.
+ * Same limits and
  * same Italian rejections, so a PDF too big to send the bot is also too big to
  * upload — one rule for the user to learn.
  */

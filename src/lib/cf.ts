@@ -1,5 +1,5 @@
 /**
- * Italian codice fiscale (CF) decoding and validation (docs/specs/06 §1).
+ * Italian codice fiscale (CF) decoding and validation.
  *
  * Only the standard (non-omocodia) 16-character format is handled: the four
  * "letter for digit" substitutions the Agenzia delle Entrate applies to
@@ -7,8 +7,8 @@
  * (and undecodable without a lookup table) that we simply treat those codes
  * as unparseable rather than guess wrong.
  *
- * Honesty rule (spec review note): the CF encodes birth date and sex only —
- * it has no document-expiry information. Never derive more than that here.
+ * Honesty rule: the CF encodes birth date and sex only — it has no
+ * document-expiry information. Never derive more than that here.
  */
 
 const CF_REGEX = /^[A-Z]{6}\d{2}[ABCDEHLMPRST]\d{2}[A-Z]\d{3}[A-Z]$/;
@@ -123,7 +123,7 @@ export function decodeCodiceFiscale(cf: string): { birthDate: string; sex: "M" |
   const day = sex === "F" ? dayDigits - 40 : dayDigits;
   if (day < 1 || day > 31) return null;
 
-  // Two-digit year with no century marker: the spec's inference rule is
+  // Two-digit year with no century marker: the inference rule is
   // "greater than the current two-digit year -> 1900s", i.e. it assumes
   // nobody registering a CF today was born more than ~99 years from now.
   const currentTwoDigitYear = new Date().getFullYear() % 100;

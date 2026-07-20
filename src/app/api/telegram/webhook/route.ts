@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 import { env } from "@/lib/env";
 import { createBot } from "@/lib/telegram/bot";
 
-// STT + LLM parsing (spec 05) will run inside this same invocation.
+// STT + LLM parsing will run inside this same invocation.
 export const maxDuration = 60;
 
 function isValidSecretHeader(header: string | null): boolean {

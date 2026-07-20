@@ -1,7 +1,7 @@
 import { daysBetween } from "@/lib/reminders/time";
 
 /**
- * Expiry badge tier for a medication (docs/specs/09-medicine-cabinet.md §1).
+ * Expiry badge tier for a medication.
  * Client-safe (no `@/db` import, unlike `src/lib/meds.ts` — AGENTS.md "Don't
  * import src/db/schema.ts from a client component") so cabinet cards can
  * compute it without dragging `node:crypto` into the browser bundle.

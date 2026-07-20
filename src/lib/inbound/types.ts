@@ -1,7 +1,7 @@
 /**
- * Channel abstraction (docs/specs/04-telegram-channel.md §5). Every inbound
- * source (Telegram now, app upload and WhatsApp later) normalizes into this
- * shape before calling `ingestInboundMessage`.
+ * Channel abstraction. Every inbound source (Telegram now, app upload and
+ * WhatsApp later) normalizes into this shape before calling
+ * `ingestInboundMessage`.
  */
 export type InboundMessage = {
   channel: "telegram" | "app";
@@ -30,5 +30,5 @@ export interface OutboundChannel {
     text: string,
     inboxMessageId: string | null,
   ): Promise<number | null>;
-  // extended by spec 07 (reminders)
+  // extended for reminders
 }

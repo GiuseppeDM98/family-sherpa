@@ -1,7 +1,6 @@
 /**
  * Italian display formatting for the two value types that appear everywhere in
- * the app: money (always integer cents) and date-only strings
- * (docs/specs/00-overview.md §6).
+ * the app: money (always integer cents) and date-only strings.
  */
 
 const EURO_FORMATTER = new Intl.NumberFormat("it-IT", {
@@ -22,7 +21,7 @@ export function formatDateIt(ymd: string): string {
 
 const MONTH_SHORT_FORMATTER = new Intl.DateTimeFormat("it-IT", { month: "short" });
 
-/** "2026-08" -> "ago" (dashboard cash-flow chart X-axis ticks, docs/specs/08 §2). */
+/** "2026-08" -> "ago" (dashboard cash-flow chart X-axis ticks). */
 export function formatMonthShortIt(monthKey: string): string {
   const [year, month] = monthKey.split("-").map(Number) as [number, number];
   return MONTH_SHORT_FORMATTER.format(new Date(Date.UTC(year, month - 1, 1))).replace(".", "");

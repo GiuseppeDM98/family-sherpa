@@ -4,12 +4,12 @@ import { db } from "@/db";
 import { accounts, users } from "@/db/schema";
 
 /**
- * Hand-rolled Auth.js adapter for the users/accounts tables from spec 02.
+ * Hand-rolled Auth.js adapter for the users/accounts tables.
  *
  * `@auth/drizzle-adapter` forwards Auth.js's own field names (`emailVerified`,
  * `userId`, `providerAccountId`) straight into `.values()`/`.set()`, which
  * only works if the Drizzle schema's JS property names match those exactly.
- * Spec 02 fixed our schema to snake_case (`email_verified`, `user_id`,
+ * Our schema uses snake_case (`email_verified`, `user_id`,
  * `provider_account_id`) to keep DB columns and row-object keys consistent
  * with the rest of the app, so we map between the two naming conventions
  * here instead. We also have no `sessions`/`verificationToken` tables (JWT

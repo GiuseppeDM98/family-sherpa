@@ -3,15 +3,15 @@
 Step-by-step environment setup for FamilySherpa, from a fresh clone/fork to a
 running dev server with the Telegram bot wired up. Written for anyone forking
 the repo — for the project's architecture and conventions, see
-[`docs/specs/00-overview.md`](docs/specs/00-overview.md); for day-to-day
-tooling gotchas (mostly Windows-specific), see [`AGENTS.md`](AGENTS.md).
+[`CLAUDE.md`](CLAUDE.md); for day-to-day tooling gotchas (mostly
+Windows-specific), see [`AGENTS.md`](AGENTS.md).
 
 ## 1. Prerequisites
 
 - **Node.js 20+** (this repo is developed against Node 24; anything 20+ should work).
 - **pnpm** — if missing: `npm install -g pnpm` (on Windows, `corepack enable` can fail with an `EPERM`; go straight to the global npm install instead).
 - **git**.
-- A **Telegram account**, to create a bot via [@BotFather](https://t.me/BotFather) — only needed if you want to test the Telegram channel (spec 04+); auth/family/DB features work without it.
+- A **Telegram account**, to create a bot via [@BotFather](https://t.me/BotFather) — only needed if you want to test the Telegram channel; auth/family/DB features work without it.
 
 ## 2. Clone and install
 
@@ -81,7 +81,7 @@ Open `http://localhost:3000` → you'll be redirected to `/signin`. Sign up
 with an email/password, then create a family (or join one with an invite
 code, from `/settings`).
 
-## 6. Telegram bot (optional, needed for spec 04+)
+## 6. Telegram bot (optional)
 
 ### 6.1 Create the bot
 
@@ -173,7 +173,7 @@ pnpm test
 pnpm build
 ```
 
-All four must pass — see `docs/specs/00-overview.md` §9 ("Definition of done").
+All four must pass before considering a change done.
 
 ## 8. Windows-specific gotchas
 
@@ -183,7 +183,7 @@ native Turso CLI (use the web dashboard), `next dev`/`next build` need
 doesn't support Turbopack, and `src/proxy.ts` (not `middleware.ts`) for route
 protection. Read it before re-debugging something already solved there.
 
-## 9. Reminders & cron scheduling (spec 07)
+## 9. Reminders & cron scheduling
 
 The app sends deadline and medicine-dose reminders over **web push** and
 **Telegram**, driven by two secret-protected endpoints. *What* triggers them is

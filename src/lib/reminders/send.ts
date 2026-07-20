@@ -11,7 +11,7 @@ import { env } from "@/lib/env";
 import { sendTelegramText } from "@/lib/telegram/outbound";
 
 /**
- * Notification fan-out (docs/specs/07-reminders-notifications.md §1).
+ * Notification fan-out.
  *
  * `notifyUser` is the single entry point the cron jobs call. It delivers one
  * logical notification to a user across two channels — web push (all their
@@ -76,7 +76,7 @@ async function claimChannel(
 /**
  * Sends the payload to every push subscription of the user, deleting any that
  * the push service reports as gone (404/410) — an unsubscribed or expired
- * endpoint (spec §1, acceptance criterion 5).
+ * endpoint.
  *
  * @returns 1 if the push channel was dispatched now, 0 if there was nothing to
  *   send to or it had already been sent (dedupe) — so a re-run reports honestly.

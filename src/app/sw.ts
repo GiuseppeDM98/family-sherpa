@@ -23,7 +23,7 @@ const serwist = new Serwist({
 serwist.addEventListeners();
 
 // ---------------------------------------------------------------------------
-// Web push (spec 07 §1)
+// Web push
 //
 // `notifyUser` (src/lib/reminders/send.ts) sends a JSON payload of
 // { title, body, url }; we surface it as a system notification and, on click,

@@ -5,7 +5,7 @@ import { clientEnv, env } from "@/lib/env";
  *
  * These wrap raw HTTP rather than going through grammY's `Context` because
  * their callers often don't have one: the ingestion pipeline knows a chat id,
- * and spec 07's cron reminders have no incoming update at all.
+ * and the cron reminders have no incoming update at all.
  */
 
 function escapeHtml(text: string): string {
@@ -54,9 +54,9 @@ export async function sendTelegramText(chatId: string, text: string): Promise<vo
 }
 
 /**
- * The confirmation keyboard of spec 05 §5. "Modifica" is a URL button deep-linking
- * into the app rather than a callback: editing items in chat is post-MVP
- * (00-overview.md §10), and the app already has the form.
+ * The confirmation keyboard. "Modifica" is a URL button deep-linking into
+ * the app rather than a callback: editing items in chat is post-MVP, and
+ * the app already has the form.
  */
 function confirmationKeyboard(inboxMessageId: string): InlineKeyboard {
   return {

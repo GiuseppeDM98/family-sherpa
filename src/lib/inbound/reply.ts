@@ -2,9 +2,9 @@ import { formatDateIt, formatEuroCents } from "@/lib/format";
 import type { ParseResult, ParseResultItem } from "@/lib/ai/parse-schema";
 
 /**
- * The Italian reply the user gets back after a message is parsed
- * (docs/specs/05-ai-parsing-pipeline.md §5.4). Kept pure and separate from the
- * pipeline so the wording is testable without an LLM or a Telegram chat.
+ * The Italian reply the user gets back after a message is parsed. Kept pure
+ * and separate from the pipeline so the wording is testable without an LLM
+ * or a Telegram chat.
  */
 
 const TYPE_EMOJI: Record<ParseResultItem["type"], string> = {

@@ -28,8 +28,8 @@ export const RECURRENCE_LABELS: Record<(typeof RECURRENCES)[number], string> = {
 };
 
 /**
- * Fixed category -> chart color mapping (docs/specs/08 §2, dataviz skill: "assign
- * categorical hues in fixed order, never cycled"). Slots are the `--chart-1..8`
+ * Fixed category -> chart color mapping (dataviz skill: "assign categorical
+ * hues in fixed order, never cycled"). Slots are the `--chart-1..8`
  * tokens (src/app/globals.css). Categories sharing a slot never co-occur in the
  * same chart in practice — each asset's TCO breakdown only ever shows the
  * categories relevant to its own type (vehicle: bollo/revisione/rca/tagliando;

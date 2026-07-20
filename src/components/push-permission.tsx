@@ -6,7 +6,7 @@ import { useEffect, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 
 /**
- * Web-push opt-in (docs/specs/07-reminders-notifications.md §1).
+ * Web-push opt-in.
  *
  * Rendered on Settings as a `card` and on Home as a `banner`. It requests
  * `Notification` permission, subscribes via `pushManager`, and POSTs the

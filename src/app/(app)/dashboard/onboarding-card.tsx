@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-/** Fresh-family empty state (docs/specs/08 §2.5): no charts, point at the bot/inbox instead. */
+/** Fresh-family empty state: no charts, point at the bot/inbox instead. */
 export function OnboardingCard() {
   return (
     <Card>

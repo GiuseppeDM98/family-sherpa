@@ -14,7 +14,7 @@ import {
 } from "./prompts";
 
 /**
- * The Claude extraction call (docs/specs/05-ai-parsing-pipeline.md §2).
+ * The Claude extraction call.
  *
  * Structured output is obtained through *forced tool use*: one tool whose
  * input schema is the parse-result schema, with `tool_choice` pinned to it, so
@@ -52,7 +52,7 @@ const EXTRACTION_TOOL: Anthropic.Tool = {
   input_schema: PARSE_RESULT_JSON_SCHEMA as Anthropic.Tool.InputSchema,
 };
 
-/** Turns the inbound message into the content blocks of the final user turn (spec 05 §2). */
+/** Turns the inbound message into the content blocks of the final user turn. */
 function buildMessageContent(request: ExtractionRequest): Anthropic.ContentBlockParam[] {
   const caption = request.text?.trim();
 
@@ -159,8 +159,8 @@ function findExtractionCall(content: Anthropic.ContentBlock[]): Anthropic.ToolUs
 
 /**
  * Runs the extraction. On a schema violation the validation error is appended
- * to the conversation and the call is retried **once** (spec 05 §2) — a second
- * failure throws `LlmError`, which the pipeline turns into `status='failed'`
+ * to the conversation and the call is retried **once** — a second failure
+ * throws `LlmError`, which the pipeline turns into `status='failed'`
  * and an Italian apology rather than a crashed webhook.
  */
 export async function extractParseResult(request: ExtractionRequest): Promise<ParseResult> {

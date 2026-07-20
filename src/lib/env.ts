@@ -27,7 +27,7 @@ const serverSchema = z
     STT_PROVIDER: z.enum(STT_PROVIDERS).default("groq"),
     GROQ_API_KEY: z.string().optional(),
     OPENAI_API_KEY: z.string().optional(),
-    // Reminders / cron (spec 07).
+    // Reminders / cron.
     CRON_SECRET: z.string().min(1),
     VAPID_PUBLIC_KEY: z.string().min(1),
     VAPID_PRIVATE_KEY: z.string().min(1),

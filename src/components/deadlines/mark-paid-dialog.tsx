@@ -20,8 +20,8 @@ import { formatDateIt } from "@/lib/format";
 import type { DeadlineRowData } from "./types";
 
 /**
- * "Segna pagata/fatta" (spec 06 §3): a deadline with an amount goes through
- * the paid flow (importo effettivo + data pagamento -> a transaction), one
+ * "Segna pagata/fatta": a deadline with an amount goes through the paid
+ * flow (importo effettivo + data pagamento -> a transaction), one
  * without goes through the done flow (no money involved, e.g. a visit).
  */
 export function MarkPaidDialog({

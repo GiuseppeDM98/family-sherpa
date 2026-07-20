@@ -26,7 +26,7 @@ type ActionResult<T = undefined> =
 /**
  * Loads an inbox message **scoped to the caller's family**. Every action here
  * takes an id straight from the client, so the family filter is the access
- * check, not an optimization (00-overview.md §6).
+ * check, not an optimization.
  */
 async function loadFamilyMessage(inboxMessageId: string) {
   const { familyId, userId } = await requireFamily();
@@ -106,8 +106,8 @@ export async function rejectInboxMessage(inboxMessageId: string): Promise<Action
 }
 
 /**
- * The in-app upload channel (spec 05 §7): the same pipeline as Telegram, only
- * the transport differs.
+ * The in-app upload channel: the same pipeline as Telegram, only the
+ * transport differs.
  */
 export async function submitAppMessage(
   formData: FormData,

@@ -3,9 +3,9 @@ import { therapyIntakes, type Therapy } from "@/db/schema";
 import { romeTimeToUtcIso } from "./time";
 
 /**
- * Therapy intake generation (docs/specs/09-medicine-cabinet.md §2), shared by
- * the spec 07 daily cron (sweeps every active therapy) and the "crea terapia"
- * UI action (generates today's doses immediately when `start_date` is today).
+ * Therapy intake generation, shared by the daily cron (sweeps every active
+ * therapy) and the "crea terapia" UI action (generates today's doses
+ * immediately when `start_date` is today).
  */
 
 type TherapyForIntakes = Pick<Therapy, "id" | "times" | "start_date" | "end_date">;

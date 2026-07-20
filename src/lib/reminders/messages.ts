@@ -1,5 +1,5 @@
 /**
- * Notification copy (docs/specs/07-reminders-notifications.md §2).
+ * Notification copy.
  *
  * Kept as pure functions — no DB, no I/O — so the exact Italian wording and the
  * "which title for which day count" logic can be unit-tested. `notifyUser`

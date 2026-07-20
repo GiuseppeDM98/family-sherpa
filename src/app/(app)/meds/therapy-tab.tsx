@@ -28,7 +28,7 @@ function dayAdherence(dayIntakes: RecentIntake[], isToday: boolean): HistoryDay[
   return "✗";
 }
 
-/** Terapie tab (spec 09 §2): today's checklist, active therapy cards, "crea terapia". */
+/** Terapie tab: today's checklist, active therapy cards, "crea terapia". */
 export function TherapyTab({
   therapies,
   personAssets,

@@ -22,7 +22,7 @@ import type { CabinetMedication, PersonAsset } from "./types";
 const TIMES_PER_DAY_OPTIONS = [1, 2, 3, 4, 5, 6];
 const FREE_TEXT_MEDICATION = "free";
 
-/** "Crea terapia manualmente" (spec 09 §2). */
+/** "Crea terapia manualmente". */
 export function TherapyFormDialog({
   personAssets,
   cabinetMedications,

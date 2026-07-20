@@ -140,8 +140,8 @@ function buildMetadata(type: AssetType, state: FormState): Record<string, unknow
 }
 
 /**
- * Create/edit dialog for all four asset types (spec 06 §2). One component,
- * branching on `type`, rather than four near-identical forms — the fields
+ * Create/edit dialog for all four asset types. One component, branching on
+ * `type`, rather than four near-identical forms — the fields
  * barely overlap but the create/edit/submit plumbing is identical.
  */
 export function AssetFormDialog({ open, onOpenChange, mode, type, asset }: Props) {

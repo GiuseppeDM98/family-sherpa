@@ -2,9 +2,9 @@ import { timingSafeEqual } from "node:crypto";
 import { env } from "@/lib/env";
 
 /**
- * Bearer check shared by both `/api/cron/*` routes
- * (docs/specs/07-reminders-notifications.md §2). The single auth mechanism is
- * this `Authorization: Bearer <CRON_SECRET>` header — whatever schedules the
+ * Bearer check shared by both `/api/cron/*` routes. The single auth
+ * mechanism is this `Authorization: Bearer <CRON_SECRET>` header — whatever
+ * schedules the
  * endpoint (Vercel Cron, cron-job.org) must send it. Constant-time compare so
  * the header never leaks where it first differs from the secret.
  */

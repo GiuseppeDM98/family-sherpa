@@ -1,12 +1,12 @@
 import { env } from "@/lib/env";
 
 /**
- * Speech-to-text for voice notes (docs/specs/05-ai-parsing-pipeline.md §1).
+ * Speech-to-text for voice notes.
  *
  * Both providers speak the same OpenAI-compatible multipart endpoint, so this
  * is plain `fetch` + `FormData` rather than two SDKs. Groq is the default: it
  * has a free tier, which matters because the project is meant to be
- * self-hostable for free (00-overview.md §1).
+ * self-hostable for free.
  */
 
 export class SttError extends Error {

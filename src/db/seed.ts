@@ -31,8 +31,8 @@ function addDays(ymd: string, days: number): string {
 
 /**
  * Europe/Rome -> UTC using a fixed CEST (+02:00) offset. Good enough for a
- * dev seed script anchored to "today"; spec 07 introduces the DST-safe
- * helper (src/lib/reminders/time.ts) the running app actually relies on.
+ * dev seed script anchored to "today"; the DST-safe helper
+ * (src/lib/reminders/time.ts) is what the running app actually relies on.
  */
 function romeTimeToUtcIso(dateYmd: string, hhmm: string): string {
   return new Date(`${dateYmd}T${hhmm}:00+02:00`).toISOString();
@@ -120,7 +120,7 @@ async function seed() {
         name: "Sofia",
         metadata: { birth_date: "2016-03-12", relationship: "bambino" },
         // Synthetic CF for seed data only — not guaranteed to pass the real
-        // check-character algorithm (implemented in spec 06).
+        // check-character algorithm.
         codice_fiscale_enc: encryptField("RSSSFO16C52F205X"),
       },
       {

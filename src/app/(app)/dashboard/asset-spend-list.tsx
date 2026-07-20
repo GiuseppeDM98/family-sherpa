@@ -11,7 +11,7 @@ const TYPE_EMOJI: Record<(typeof ASSET_TYPES)[number], string> = {
   other: "📦",
 };
 
-/** "Costo dei tuoi asset (ultimi 12 mesi)" — sorted desc, links to each asset's cost tab (docs/specs/08 §2.4). */
+/** "Costo dei tuoi asset (ultimi 12 mesi)" — sorted desc, links to each asset's cost tab. */
 export function AssetSpendList({ byAsset }: { byAsset: FamilySpendSummary["byAsset"] }) {
   return (
     <Card>

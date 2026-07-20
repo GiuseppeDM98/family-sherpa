@@ -22,7 +22,7 @@ function ChartTooltip({ active, payload }: TooltipContentProps) {
   );
 }
 
-/** "Costi" tab (docs/specs/08-expense-dashboard.md §3): period selector, total, breakdown by category, transaction list. */
+/** "Costi" tab: period selector, total, breakdown by category, transaction list. */
 export function AssetCostTab({
   assetId,
   tco12m,

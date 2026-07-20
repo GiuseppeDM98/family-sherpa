@@ -31,8 +31,7 @@ function trimmedOrUndefined(value: string | undefined): string | undefined {
 
 /**
  * Normalizes a raw Telegram message into the shape `ingestInboundMessage`
- * expects, or an Italian error reply for unsupported/oversized content (see
- * docs/specs/04-telegram-channel.md §3).
+ * expects, or an Italian error reply for unsupported/oversized content.
  */
 export function classifyTelegramMessage(message: TelegramMessageLike): ClassifiedMessage {
   const rawText = trimmedOrUndefined(message.caption);

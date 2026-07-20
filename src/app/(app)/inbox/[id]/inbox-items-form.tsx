@@ -83,8 +83,8 @@ function AssetSelect({
 
 /**
  * Euro input backed by integer cents. The value stays in cents in state (the
- * app's money convention, 00-overview.md §6); the number input handles the
- * locale's decimal separator, so no comma parsing here.
+ * app's money convention); the number input handles the locale's decimal
+ * separator, so no comma parsing here.
  */
 function EuroInput({
   value,

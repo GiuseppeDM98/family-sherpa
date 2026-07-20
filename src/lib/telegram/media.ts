@@ -30,7 +30,7 @@ function inferMimeTypeFromPath(filePath: string): string {
 /**
  * Downloads a Telegram file via the Bot API's two-step dance: `getFile`
  * resolves a `file_id` to a `file_path`, then the file itself is fetched
- * from the file host (see docs/specs/04-telegram-channel.md §4).
+ * from the file host.
  */
 export async function downloadTelegramFile(fileId: string): Promise<DownloadedTelegramFile> {
   const getFileUrl = `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/getFile?file_id=${encodeURIComponent(fileId)}`;

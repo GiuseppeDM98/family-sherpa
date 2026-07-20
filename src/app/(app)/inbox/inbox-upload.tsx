@@ -13,8 +13,8 @@ const ACCEPTED_FILE_TYPES = "audio/*,image/*,application/pdf";
 const RECORDING_MIME_TYPE = "audio/webm";
 
 /**
- * The in-app upload channel (docs/specs/05-ai-parsing-pipeline.md §7): a text
- * field, a file picker, and a minimal record/stop control. `MediaRecorder`
+ * The in-app upload channel: a text field, a file picker, and a minimal
+ * record/stop control. `MediaRecorder`
  * produces `audio/webm`, which Groq Whisper accepts as-is, so nothing is
  * transcoded client-side.
  */

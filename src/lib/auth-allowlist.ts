@@ -1,9 +1,9 @@
 /**
  * `AUTH_ALLOWED_EMAILS` gates who may create an account (sign-up) and who
- * may create a new family, but never who may join one via invite code (see
- * docs/specs/03-auth-and-families.md §5) — joining requires an account
- * first, so on a fully closed instance every invitee's email must also be
- * added to the allowlist before they can sign up and use their code.
+ * may create a new family, but never who may join one via invite code —
+ * joining requires an account first, so on a fully closed instance every
+ * invitee's email must also be added to the allowlist before they can sign
+ * up and use their code.
  * Unset/empty env var means an open instance — everyone is allowed.
  *
  * Takes `allowedEmails` explicitly (rather than reading `env` itself) so

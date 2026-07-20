@@ -24,7 +24,7 @@ import { requireFamily } from "@/lib/session";
 import { InboxUpload } from "./inbox-upload";
 
 // A family sends a handful of messages a day; anything older than the last 50
-// belongs to a history view nobody has asked for yet (00-overview.md §10).
+// belongs to a history view nobody has asked for yet.
 const MAX_MESSAGES = 50;
 
 type Channel = (typeof INBOX_CHANNELS)[number];

@@ -6,9 +6,9 @@ import { familyMembers } from "@/db/schema";
 
 /**
  * Canonical scoping helpers — every server action and page in the (app)
- * route group must start with one of these (see docs/specs/03 §4). Never
- * query domain tables without going through `requireFamily()` first: a
- * missing family scope is a security bug (multi-tenancy, spec 00 §6).
+ * route group must start with one of these. Never query domain tables
+ * without going through `requireFamily()` first: a missing family scope is
+ * a security bug (multi-tenancy).
  */
 
 export async function requireUser(): Promise<{ userId: string }> {

@@ -9,8 +9,7 @@ import { notifyUser } from "@/lib/reminders/send";
 import { daysBetween } from "@/lib/reminders/time";
 
 /**
- * Daily reminder job (docs/specs/07-reminders-notifications.md §2), suggested
- * 07:00 Europe/Rome. Two responsibilities:
+ * Daily reminder job, suggested 07:00 Europe/Rome. Two responsibilities:
  *   1. Notify family members about deadlines at 30 / 7 / 1 / 0 days out and the
  *      day after they lapse ("scaduta ieri").
  *   2. Generate today's therapy-intake rows, and retire therapies past their
@@ -22,7 +21,7 @@ import { daysBetween } from "@/lib/reminders/time";
  * The queries here are intentionally *not* family-scoped — this is a
  * system-level job authenticated by the cron bearer, not a user request, so it
  * must sweep every family. That is the one sanctioned exception to the
- * requireFamily rule (00-overview.md §6).
+ * requireFamily rule.
  */
 
 // The reminder fires when a deadline is exactly this many days away…

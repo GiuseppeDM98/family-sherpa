@@ -33,7 +33,7 @@ type Props = {
   assets: DeadlineFormAsset[];
   /** Asset-detail context: pins the asset and hides the select. */
   fixedAssetId?: string;
-  /** Drives the Italian vehicle smart defaults (spec 06 §2) when the category changes. */
+  /** Drives the Italian vehicle smart defaults when the category changes. */
   vehicleContext?: VehicleDeadlineContext;
 };
 
@@ -72,8 +72,8 @@ function buildInitialState(deadline: Props["deadline"], fixedAssetId?: string): 
 
 /**
  * Create/edit form shared between `/deadlines` and the asset detail
- * timeline (spec 06 §3). Smart defaults (bollo/rca annual, revisione
- * biennial + matriculation date, tagliando none) are only ever a suggestion
+ * timeline. Smart defaults (bollo/rca annual, revisione biennial +
+ * matriculation date, tagliando none) are only ever a suggestion
  * applied when the category changes — the user can always override them.
  */
 export function DeadlineFormDialog({

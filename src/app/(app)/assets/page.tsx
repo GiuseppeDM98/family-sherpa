@@ -21,7 +21,7 @@ const SECTION_LABELS: Record<AssetType, string> = {
 
 const SECTION_ORDER: AssetType[] = ["vehicle", "person", "home", "other"];
 
-/** Card metadata line: plate / birth date / address (spec 06 §2). */
+/** Card metadata line: plate / birth date / address. */
 function metadataLine(type: AssetType, metadata: Record<string, unknown>): string | null {
   switch (type) {
     case "vehicle":
@@ -47,7 +47,7 @@ export default async function AssetsPage() {
     .where(and(eq(assets.family_id, familyId), eq(assets.archived, false)));
 
   // One query for every asset's pending-deadline count/overdue flag, instead
-  // of one query per asset (00-overview.md perf guidance: no N+1).
+  // of one query per asset (no N+1).
   const pendingDeadlines = await db
     .select({ asset_id: deadlines.asset_id, due_date: deadlines.due_date })
     .from(deadlines)

@@ -1,5 +1,5 @@
 /**
- * Clock-time helpers for reminders (docs/specs/07-reminders-notifications.md §2).
+ * Clock-time helpers for reminders.
  *
  * `src/lib/date.ts` handles date-only math (no DST, a `YYYY-MM-DD` is just a
  * calendar label). This module adds the piece that *does* have to reason about
@@ -14,7 +14,7 @@
 
 import { APP_TIME_ZONE, todayInRome } from "@/lib/date";
 
-// Re-exported so the spec's three-function surface (`todayInRome`,
+// Re-exported so the three-function surface (`todayInRome`,
 // `romeTimeToUtcIso`, `daysBetween`) all resolve from this module, even though
 // the Rome-date math itself lives in date.ts (client-safe, no DST concern).
 export { todayInRome };

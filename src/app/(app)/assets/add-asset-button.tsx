@@ -21,7 +21,7 @@ const TYPE_OPTIONS: { type: AssetType; label: string; icon: LucideIcon }[] = [
   { type: "other", label: "Altro", icon: PackageIcon },
 ];
 
-/** "Aggiungi asset": a type picker, then the matching create form (spec 06 §2). */
+/** "Aggiungi asset": a type picker, then the matching create form. */
 export function AddAssetButton() {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [formType, setFormType] = useState<AssetType | null>(null);

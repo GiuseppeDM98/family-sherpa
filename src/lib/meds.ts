@@ -3,8 +3,8 @@ import { db } from "@/db";
 import { deadlines, type Medication } from "@/db/schema";
 
 /**
- * Medicine cabinet server-only logic (docs/specs/09-medicine-cabinet.md §1):
- * the expiry → deadline bridge. The expiry badge tier itself is client-safe
+ * Medicine cabinet server-only logic: the expiry → deadline bridge. The
+ * expiry badge tier itself is client-safe
  * and lives in `src/lib/meds-labels.ts` (no `@/db` import).
  */
 
@@ -12,8 +12,8 @@ type Executor = typeof db | Parameters<Parameters<typeof db.transaction>[0]>[0];
 
 /**
  * Keeps the medication's linked `farmaco` deadline in sync with its
- * `expiry_date` (spec 09 §1 "Expiry bridge"). Called on every
- * create/update/archive of a medication, from the manual cabinet actions and
+ * `expiry_date` ("Expiry bridge"). Called on every create/update/archive
+ * of a medication, from the manual cabinet actions and
  * from `materializeInboxMessage`'s box-photo path — pass the transaction's
  * `tx` there so the deadline lands atomically with the medication row.
  *

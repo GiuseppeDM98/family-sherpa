@@ -4,7 +4,7 @@ import { EyeIcon, EyeOffIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
-/** Masked codice fiscale ("RSSMRA…") with a reveal toggle (spec 06 §2). */
+/** Masked codice fiscale ("RSSMRA…") with a reveal toggle. */
 export function CfReveal({ value }: { value: string }) {
   const [revealed, setRevealed] = useState(false);
 
