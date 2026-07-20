@@ -214,19 +214,24 @@ curl.exe -i -H "Authorization: Bearer $secret" http://localhost:3000/api/cron/da
 
 ### Scheduling in production
 
-**Vercel Cron (`vercel.json`)** already declares both crons. But the **Hobby
-plan runs cron jobs at most once per day**, so the `*/15` therapy cron will not
-fire on Hobby (the daily one is fine).
+This repo has **no `vercel.json` crons** by default: Vercel's **Hobby plan runs
+cron jobs at most once per day**, which can't drive the every-15-minutes therapy
+endpoint (and rejects sub-daily schedules at deploy time). Scheduling is done
+with an external trigger instead.
 
-**Free alternative — [cron-job.org](https://cron-job.org)** (works on any plan).
-Create a job per endpoint, each with a custom request header
+**[cron-job.org](https://cron-job.org)** (free, works on any plan). Create a job
+per endpoint, each with a custom request header
 `Authorization: Bearer <your CRON_SECRET>`:
 
 - `https://<your-app>/api/cron/daily` — schedule 07:00, job timezone Europe/Rome.
 - `https://<your-app>/api/cron/therapy` — every 15 minutes.
 
-On **Vercel Pro** the `vercel.json` crons run natively and you can drop
-cron-job.org.
+Use the job's "Test run" to confirm a `200` with a JSON body (a `401` means the
+`Authorization` header or the `CRON_SECRET` don't match).
+
+**On Vercel Pro** you can instead let Vercel schedule them: add a `vercel.json`
+with a `crons` array (`0 5 * * *` for daily, `*/15 * * * *` for therapy) — if you
+name the bearer env var `CRON_SECRET`, Vercel Cron sends it automatically.
 
 ### Production environment variables (Vercel)
 
