@@ -1,11 +1,12 @@
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
-import { assets, deadlines, familyMembers, therapies, therapyIntakes } from "@/db/schema";
+import { assets, deadlines, familyMembers, therapies } from "@/db/schema";
 import { todayInRome } from "@/lib/date";
 import { hasValidCronAuth } from "@/lib/reminders/cron-auth";
+import { generateIntakesForDate } from "@/lib/reminders/intakes";
 import { deadlineReminderContent } from "@/lib/reminders/messages";
 import { notifyUser } from "@/lib/reminders/send";
-import { daysBetween, romeTimeToUtcIso } from "@/lib/reminders/time";
+import { daysBetween } from "@/lib/reminders/time";
 
 /**
  * Daily reminder job (docs/specs/07-reminders-notifications.md §2), suggested
@@ -95,22 +96,7 @@ async function generateTherapyIntakes(today: string): Promise<number> {
       await db.update(therapies).set({ active: false }).where(eq(therapies.id, therapy.id));
       continue;
     }
-    // Not started yet — skip until its start date.
-    if (therapy.start_date > today) continue;
-
-    for (const time of therapy.times) {
-      const scheduledAt = romeTimeToUtcIso(today, time);
-      // The unique (therapy_id, scheduled_at) index makes this a no-op when
-      // today's dose row already exists, so repeated runs never duplicate.
-      const inserted = await db
-        .insert(therapyIntakes)
-        .values({ therapy_id: therapy.id, scheduled_at: scheduledAt })
-        .onConflictDoNothing({
-          target: [therapyIntakes.therapy_id, therapyIntakes.scheduled_at],
-        })
-        .returning({ id: therapyIntakes.id });
-      if (inserted.length > 0) created++;
-    }
+    created += await generateIntakesForDate(therapy, today);
   }
 
   return created;
