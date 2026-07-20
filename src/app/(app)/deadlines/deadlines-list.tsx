@@ -5,6 +5,7 @@ import { DeadlineRow } from "@/components/deadlines/deadline-row";
 import type { DeadlineFormAsset, DeadlineRowData } from "@/components/deadlines/types";
 import { Button } from "@/components/ui/button";
 import type { ASSET_TYPES } from "@/db/enums";
+import { formatMonthLongIt } from "@/lib/format";
 
 export type DeadlineListRow = DeadlineRowData & {
   assetName: string | null;
@@ -36,15 +37,6 @@ function groupOf(row: DeadlineListRow): FilterGroup {
   if (HOME_CATEGORIES.has(row.category)) return "casa";
   if (PERSON_CATEGORIES.has(row.category)) return "persone";
   return "altro";
-}
-
-const MONTH_FORMATTER = new Intl.DateTimeFormat("it-IT", { month: "long", year: "numeric" });
-
-/** "2026-07" -> "Luglio 2026". */
-function monthLabel(monthKey: string): string {
-  const [year, month] = monthKey.split("-").map(Number) as [number, number];
-  const label = MONTH_FORMATTER.format(new Date(Date.UTC(year, month - 1, 1)));
-  return label.charAt(0).toUpperCase() + label.slice(1);
 }
 
 /** Filter chips + month grouping for the global scadenze list (spec 06 §3). */
@@ -96,7 +88,7 @@ export function DeadlinesList({
       ) : (
         months.map(([monthKey, monthRows]) => (
           <section key={monthKey} className="space-y-2">
-            <h2 className="text-sm font-medium">{monthLabel(monthKey)}</h2>
+            <h2 className="text-sm font-medium">{formatMonthLongIt(monthKey)}</h2>
             <div className="space-y-2">
               {monthRows.map((row) => (
                 <DeadlineRow
