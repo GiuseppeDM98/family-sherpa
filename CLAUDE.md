@@ -20,7 +20,7 @@ This project is built spec-by-spec. Each implementation session executes exactly
 - Every server action/page under `(app)` must start with `requireUser()`/`requireFamily()` from `src/lib/session.ts`. A missing family scope is a security bug.
 - Windows-specific tooling gotchas (pnpm not preinstalled, Turso CLI has no Windows binary, Next 16 needs `--webpack` for Serwist, shadcn CLI v4 preset system, etc.) are tracked in `AGENTS.md`, not here — check it before re-debugging something already solved.
 
-## What exists today (specs 01–07)
+## What exists today (specs 01–08)
 
 The durable map of the codebase. Per-session detail lives in `git log`; this section is what is *true now*.
 
@@ -33,25 +33,23 @@ The durable map of the codebase. Per-session detail lives in `git log`; this sec
 - **Channel abstraction** — `src/lib/inbound/types.ts` (`InboundMessage`, `OutboundChannel`). Telegram is the only implementation; WhatsApp must fit this seam without touching the pipeline.
 - **Assets & deadlines** — `(app)/assets` (+ `[id]` detail) and `(app)/deadlines`: CRUD for all four asset types, deadline timelines, mark-as-paid/done with recurrence roll-over. Recurrence math in `src/lib/reminders/recurrence.ts` (`nextDueDate`/`completeDeadline`), codice fiscale decode/validate in `src/lib/cf.ts`.
 - **Reminders & cron** — `src/lib/reminders/`: `time.ts` (DST-aware `romeTimeToUtcIso`/`daysBetween`; `todayInRome` re-exported from `src/lib/date.ts`), `messages.ts` (pure Italian copy), `send.ts` (`notifyUser` fan-out: web push to all devices + Telegram, per-channel dedupe on `notifications_log`, dead-subscription cleanup on 404/410), `cron-auth.ts` (bearer check). Two idempotent, bearer-gated endpoints under `api/cron/`: `daily` (deadline reminders at 30/7/1/0 days + "scaduta ieri"; generates today's therapy intakes) and `therapy` (dose-time reminders in a −20/+5 min window). They sweep **every** family — the sanctioned exception to `requireFamily`, being system jobs. web-push subscription flow: SW `push`/`notificationclick` in `src/app/sw.ts`, upsert route `api/push/subscribe`, `PushPermission` component (Settings card + self-hiding Home banner, iOS install hint). Scheduling is external (cron-job.org, or a `vercel.json` on Vercel Pro) — no `vercel.json` in the repo; `SETUP.md` §9 covers it.
+- **Expense dashboard** — `src/lib/analytics.ts` (`getCashFlowForecast`, `getAssetTco`, `getFamilySpendSummary`, plus the pure/unit-tested `projectRecurrences`/`groupByMonth`). Home (`/`) is now the dashboard: greeting, "Prossime scadenze" (reuses spec 06's `DeadlineRow`), a today's-meds strip, a 12-month Recharts cash-flow bar chart (peak month highlighted, tap-to-expand month detail, Italian peak callout), and a per-asset spend list. `(app)/assets/[id]` gained a "Costi" tab (`?tab=costi` deep-linkable): period selector, by-category bar chart, transaction list, manual "Aggiungi spesa" (`createTransaction` action). Fresh/empty families see an onboarding card instead of empty charts. Chart colors: a CVD-validated categorical palette (dataviz skill) fills `--chart-1..8` in `src/app/globals.css` (was grayscale shadcn placeholders); fixed category→color map in `src/lib/deadline-labels.ts`.
 
-Placeholder screens (spec-only so far): Home (dashboard), Medicine cabinet. Not implemented: dashboard (08), medicine-box enrichment (09), conversational editing and WhatsApp (post-MVP).
+Placeholder screens (spec-only so far): Medicine cabinet. Not implemented: medicine-box enrichment (09), conversational editing and WhatsApp (post-MVP).
 
 ## Current status
 
-### Latest — spec 07: Reminders (web push + Telegram + cron) (2026-07-20)
+### Latest — spec 08: Expense dashboard (predictive cash flow + asset TCO) (2026-07-20)
 
-The app now pays the user back: proactive deadline and therapy-dose reminders over web push and Telegram, driven by two secret-protected cron endpoints.
+Turns the deadlines/transactions already collected by specs 06–07 into foresight: the Home screen shows upcoming money pressure and each asset's real yearly cost.
 
-- **Env** (all validated in `env.ts`): `CRON_SECRET`, `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (mailto:/https:), `NEXT_PUBLIC_VAPID_PUBLIC_KEY` (client mirror). Generate keys with `npx web-push generate-vapid-keys`.
-- **`notifyUser`** writes the `notifications_log` row *before* sending (idempotency over retry — a crash mid-send never double-notifies), one row per channel with a `:push`/`:tg` dedupe suffix. It returns the count of channels actually dispatched (spec says `void`; the count lets the cron response's `sent` read 0 on an idempotent re-run — the one behavioural deviation).
-- **`/api/cron/daily`** (suggested 07:00 Rome): deadline reminders at `daysLeft ∈ {30,7,1,0}` and `−1`; generates today's `therapy_intakes` (unique `(therapy_id, scheduled_at)` skips existing) and deactivates therapies past `end_date`. **`/api/cron/therapy`** (every 15 min): intakes in `[now−20m, now+5m]`. Both `GET`/`POST`, bearer-gated.
-- **DST**: `romeTimeToUtcIso` maps an 08:00 dose to 06:00Z in summer / 07:00Z in winter (unit-tested across both boundaries).
-- **PWA push**: SW handlers, `api/push/subscribe` (upsert by endpoint), `PushPermission` (Settings + Home banner, iOS "installa l'app" hint), device list with delete.
-
-Verified end-to-end on the **dev** Turso DB (`pnpm build && pnpm start`): 401 without bearer (no side effects); `daily` fired real push + Telegram (`sent:4` = 2 deadlines × 2 channels), re-run `sent:0`; intake generation once (`intakesCreated:3 → 0`); a test therapy with an intake scheduled "now" → `therapy` `sent:2`, re-run `sent:0`. Push/Telegram delivery confirmed on desktop Chrome + the linked bot. Dead-subscription 404/410 cleanup verified by inspection only.
+- **`projectRecurrences`/`groupByMonth`** (pure, unit-tested): expand pending deadlines into every real + rolled-forward occurrence inside a date window, skip deadlines with no amount, then sum by month. `getCashFlowForecast` zero-fills every month in the window so the chart X axis is always contiguous.
+- **Deviation**: the "Costi" asset tab is available for every asset type, not just vehicle/home as literally scoped by the acceptance criteria — no reason to restrict it, any asset can have transactions.
+- Verified end-to-end (throwaway SQLite DB + `pnpm build && pnpm start` + curl-authenticated fetch of the RSC payload, see `AGENTS.md`): peak month and callout amount, bimonthly/annual/biennial recurrence projection, and both TCO periods all matched manual computation against the seed data; empty-family onboarding card renders with no chart errors.
+- No new env vars.
 
 ### Known limits carried forward
 
-- A message can still get stuck at `status='received'` if the function dies mid-run (e.g. the 60 s Vercel limit): the Inbox card stays on "In elaborazione…" forever. Recovering orphans needs a dedicated recovery cron (not built — spec 07's crons are reminders only).
+- A message can still get stuck at `status='received'` if the function dies mid-run (e.g. the 60 s Vercel limit): the Inbox card stays on "In elaborazione…" forever. Recovering orphans needs a dedicated recovery cron (not built).
 - Manually untested: **PDF and photo** ingestion (text and voice are verified end-to-end).
 - Web push is testable only in a production build (`pnpm build && pnpm start`) — the SW is disabled in `next dev`. `pnpm start` locally also needs `AUTH_TRUST_HOST=true` (see `AGENTS.md`).

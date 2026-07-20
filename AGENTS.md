@@ -178,6 +178,47 @@ pnpm tsx --env-file=.env your-scratch-script.ts
 `file:` URL — any non-empty dummy string works. As always, the script must live
 inside the repo (see "Running one-off scripts against the DB").
 
+## Recharts v3 Tooltip typing (spec 08)
+
+The `content` render-prop on `<Tooltip>` wants the function itself
+(`content={ChartTooltip}`), not a JSX element (`content={<ChartTooltip />}`) —
+the element form fails to typecheck because `<Tooltip>`'s generic parameters
+can't be inferred through a JSX child. And the render function's props type is
+**`TooltipContentProps`**, not `TooltipProps` (that one is for the `<Tooltip>`
+element itself and is missing `active`/`payload` — they're
+`PropertiesReadFromContext` on that type). Leave `TooltipContentProps`
+un-pinned (no `<number, string>`) — pinning the generic on the content
+function's parameter type makes it structurally incompatible with the
+generic `ContentType<ValueType, NameType>` the `<Tooltip>` prop actually
+expects, and the resulting error chain is long and unhelpful.
+
+## Chart color tokens are placeholders, not a real palette
+
+The shadcn-generated `--chart-1..5` tokens in `src/app/globals.css` ship as
+plain grayscale (`oklch(0.87 0 0)` etc.) — they're meant to be replaced, not
+reused as-is. When a spec needs charts, run the `dataviz` skill's
+`scripts/validate_palette.js` to get a CVD-safe categorical order, then fill
+those tokens (extend to `--chart-6..8` if more than 5 series/categories are
+possible) for both `:root` and `.dark`. Reference categories by a **fixed**
+name→slot map (e.g. `CATEGORY_CHART_COLORS` in `src/lib/deadline-labels.ts`)
+so the same category always gets the same color — never assign by array
+index/rank, which repaints colors when a filtered set changes.
+
+## Verifying a dashboard/RSC page without a browser
+
+Beyond the curl-a-signed-in-page trick in "Server Actions can't be driven
+with curl" above: a Server Component's props to a Client Component are
+serialized into the RSC flight payload (the `self.__next_f.push([...])`
+blocks in the HTML) even when nothing renders yet — so `curl`-ing a page and
+grepping that payload for prop names (e.g. `grep -o 'forecast\\":\[.\{0,2000\}'`)
+lets you check computed numbers (peak month, totals, category breakdowns)
+against a manual calculation without opening a browser. One gotcha: a
+**base-ui `Tabs` panel that isn't the active tab is not in the rendered
+DOM** (its content still shows up in the flight payload as serialized props,
+but the actual HTML text — e.g. a button label inside it — won't grep-match)
+even though the *trigger* label always renders. Pass the tab's query param
+(`?tab=costi`) to actually render that panel's content server-side.
+
 ## Testing web push locally (spec 07)
 
 - **The service worker is disabled in `next dev`** (`next.config.ts` sets

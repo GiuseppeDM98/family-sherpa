@@ -26,6 +26,9 @@ Unreleased changes — kept up to date session by session, published at cut time
 - Added medicine reminders: when a scheduled therapy dose is due, you get a notification with the medicine, the person, and the dosage.
 - Added push notifications: turn them on per device from Settings (or the prompt on the Home screen), see your registered devices, and remove any you no longer use. On iPhone, add the app to your Home Screen first, then enable them.
 - Added automatic Telegram reminders: once your account is linked, the same reminders also arrive as messages from the bot — no extra setup.
+- Added the Home dashboard: a greeting, your next five upcoming deadlines, a today's-medicine strip when a dose is due, and a 12-month cash-flow chart that highlights your peak spending month with a plain-language callout ("⚠️ A settembre hai 420 € di spese previste tra..."). Tap any month's bar to see exactly what's driving it.
+- Added a "Costo dei tuoi asset" summary on the Home dashboard: your last 12 months of spending per vehicle, person, or home, tap-through to each asset's full breakdown.
+- Added a "Costi" tab on every asset page: pick "ultimi 12 mesi" or "anno corrente", see the total and a breakdown by category, browse every past expense, and add one by hand with "Aggiungi spesa".
 
 ## 🔧 Improvements
 
