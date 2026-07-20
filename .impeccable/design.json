@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-20T00:00:00.000Z",
+  "title": "Design System: FamilySherpa",
+  "extensions": {
+    "colorMeta": {
+      "ink": { "role": "primary", "displayName": "Ink", "canonical": "oklch(0.145 0 0)", "tonalRamp": ["oklch(0.15 0 0)", "oklch(0.22 0 0)", "oklch(0.30 0 0)", "oklch(0.42 0 0)", "oklch(0.556 0 0)", "oklch(0.70 0 0)", "oklch(0.85 0 0)", "oklch(0.97 0 0)"] },
+      "primary": { "role": "primary", "displayName": "Charcoal Primary", "canonical": "oklch(0.205 0 0)", "tonalRamp": ["oklch(0.145 0 0)", "oklch(0.205 0 0)", "oklch(0.30 0 0)", "oklch(0.42 0 0)", "oklch(0.556 0 0)", "oklch(0.708 0 0)", "oklch(0.87 0 0)", "oklch(0.985 0 0)"] },
+      "muted-foreground": { "role": "neutral", "displayName": "Muted Foreground", "canonical": "oklch(0.556 0 0)", "tonalRamp": ["oklch(0.20 0 0)", "oklch(0.30 0 0)", "oklch(0.40 0 0)", "oklch(0.556 0 0)", "oklch(0.65 0 0)", "oklch(0.75 0 0)", "oklch(0.85 0 0)", "oklch(0.95 0 0)"] },
+      "surface": { "role": "neutral", "displayName": "Paper Surface", "canonical": "oklch(1 0 0)", "tonalRamp": ["oklch(0.145 0 0)", "oklch(0.205 0 0)", "oklch(0.30 0 0)", "oklch(0.556 0 0)", "oklch(0.75 0 0)", "oklch(0.922 0 0)", "oklch(0.97 0 0)", "oklch(1 0 0)"] },
+      "border-hairline": { "role": "neutral", "displayName": "Hairline Border", "canonical": "oklch(0.922 0 0)", "tonalRamp": ["oklch(0.30 0 0)", "oklch(0.45 0 0)", "oklch(0.60 0 0)", "oklch(0.75 0 0)", "oklch(0.85 0 0)", "oklch(0.922 0 0)", "oklch(0.96 0 0)", "oklch(0.99 0 0)"] },
+      "brand-navy": { "role": "neutral", "displayName": "Brand Navy (chrome only)", "canonical": "#0f172a", "tonalRamp": ["#020617", "#0f172a", "#1e293b", "#334155", "#475569", "#64748b", "#94a3b8", "#cbd5e1"] },
+      "warn-amber": { "role": "tertiary", "displayName": "Warn Amber", "canonical": "#f59e0b", "tonalRamp": ["#451a03", "#78350f", "#b45309", "#d97706", "#f59e0b", "#fbbf24", "#fcd34d", "#fef3c7"] },
+      "destructive": { "role": "tertiary", "displayName": "Calm Red", "canonical": "oklch(0.577 0.245 27.325)", "tonalRamp": ["oklch(0.30 0.12 27)", "oklch(0.40 0.18 27)", "oklch(0.50 0.22 27)", "oklch(0.577 0.245 27.325)", "oklch(0.66 0.20 27)", "oklch(0.75 0.15 27)", "oklch(0.85 0.09 27)", "oklch(0.94 0.04 27)"] }
+    },
+    "typographyMeta": {
+      "heading": { "displayName": "Heading / Card Title", "purpose": "Section and card titles; the most prominent text on most screens." },
+      "body": { "displayName": "Body", "purpose": "Default reading and data size; prose capped 65-75ch." },
+      "label": { "displayName": "Label / Nav", "purpose": "Nav labels, badges, metadata, small UI text." }
+    },
+    "shadows": [
+      { "name": "none", "value": "none", "purpose": "System is flat by default. No drop-shadow vocabulary." },
+      { "name": "card-hairline", "value": "0 0 0 1px oklch(0.145 0 0 / 0.10)", "purpose": "The only resting separation on cards: a 1px inset-style ring, not a shadow." },
+      { "name": "focus-ring", "value": "0 0 0 3px oklch(0.708 0 0 / 0.50)", "purpose": "Focus-visible halo on interactive elements." }
+    ],
+    "motion": [
+      { "name": "state-transition", "value": "150ms ease-out", "purpose": "Default for hover/focus/color state changes; conveys state, not choreography." },
+      { "name": "press-nudge", "value": "translateY(1px)", "purpose": "Active-press feedback on buttons." }
+    ],
+    "breakpoints": [
+      { "name": "md", "value": "768px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Default action button; the one high-contrast commitment on a quiet screen.",
+      "html": "<button class=\"ds-btn-primary\">Conferma</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; height: 32px; padding: 0 10px; border: 1px solid transparent; border-radius: 10px; background: oklch(0.205 0 0); color: oklch(1 0 0); font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background 150ms ease-out, transform 100ms ease-out; } .ds-btn-primary:hover { background: oklch(0.205 0 0 / 0.8); } .ds-btn-primary:focus-visible { outline: none; border-color: oklch(0.708 0 0); box-shadow: 0 0 0 3px oklch(0.708 0 0 / 0.5); } .ds-btn-primary:active { transform: translateY(1px); }"
+    },
+    {
+      "name": "Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary action; hairline border on the paper surface.",
+      "html": "<button class=\"ds-btn-outline\">Annulla</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; height: 32px; padding: 0 10px; border: 1px solid oklch(0.922 0 0); border-radius: 10px; background: oklch(1 0 0); color: oklch(0.145 0 0); font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background 150ms ease-out; } .ds-btn-outline:hover { background: oklch(0.97 0 0); } .ds-btn-outline:focus-visible { outline: none; border-color: oklch(0.708 0 0); box-shadow: 0 0 0 3px oklch(0.708 0 0 / 0.5); }"
+    },
+    {
+      "name": "Destructive Button",
+      "kind": "button",
+      "refersTo": "button-destructive",
+      "description": "Delete / destructive action as a tinted fill, never a solid red slab.",
+      "html": "<button class=\"ds-btn-destructive\">Elimina</button>",
+      "css": ".ds-btn-destructive { display: inline-flex; align-items: center; justify-content: center; height: 32px; padding: 0 10px; border: 1px solid transparent; border-radius: 10px; background: oklch(0.577 0.245 27.325 / 0.1); color: oklch(0.577 0.245 27.325); font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background 150ms ease-out; } .ds-btn-destructive:hover { background: oklch(0.577 0.245 27.325 / 0.2); }"
+    },
+    {
+      "name": "Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Flat container separated by a hairline ring, not a shadow.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-title\">Bollo auto</div><div class=\"ds-card-desc\">Scade il 30 settembre · € 212,00</div></div>",
+      "css": ".ds-card { display: flex; flex-direction: column; gap: 16px; padding: 16px; border-radius: 14px; background: oklch(1 0 0); color: oklch(0.145 0 0); box-shadow: 0 0 0 1px oklch(0.145 0 0 / 0.1); font-family: Inter, system-ui, sans-serif; } .ds-card-title { font-size: 1rem; font-weight: 500; line-height: 1.375; } .ds-card-desc { font-size: 0.875rem; color: oklch(0.556 0 0); }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Hairline field with a focus ring matching the button focus language.",
+      "html": "<input class=\"ds-input\" placeholder=\"Cerca un farmaco…\" />",
+      "css": ".ds-input { height: 32px; width: 100%; padding: 4px 10px; border: 1px solid oklch(0.922 0 0); border-radius: 10px; background: transparent; color: oklch(0.145 0 0); font-family: Inter, system-ui, sans-serif; font-size: 0.875rem; transition: border-color 150ms ease-out, box-shadow 150ms ease-out; } .ds-input::placeholder { color: oklch(0.556 0 0); } .ds-input:focus-visible { outline: none; border-color: oklch(0.708 0 0); box-shadow: 0 0 0 3px oklch(0.708 0 0 / 0.5); }"
+    },
+    {
+      "name": "Due-Soon Deadline Row",
+      "kind": "custom",
+      "refersTo": "card",
+      "description": "Signature pattern: a deadline row whose full border turns amber when due soon (never a side-stripe).",
+      "html": "<div class=\"ds-deadline ds-deadline--soon\"><span class=\"ds-deadline-icon\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"></circle><path d=\"M12 6v6l4 2\"></path></svg></span><span class=\"ds-deadline-body\"><span class=\"ds-deadline-title\">Revisione</span><span class=\"ds-deadline-meta\">Tra 5 giorni</span></span></div>",
+      "css": ".ds-deadline { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; border: 1px solid oklch(0.922 0 0); background: oklch(1 0 0); font-family: Inter, system-ui, sans-serif; } .ds-deadline--soon { border-color: #f59e0b; } .ds-deadline-icon { color: #d97706; display: inline-flex; } .ds-deadline-body { display: flex; flex-direction: column; } .ds-deadline-title { font-size: 0.875rem; font-weight: 500; color: oklch(0.145 0 0); } .ds-deadline-meta { font-size: 0.75rem; font-weight: 500; color: #d97706; }"
+    },
+    {
+      "name": "Bottom Tab Nav Item",
+      "kind": "nav",
+      "refersTo": "card",
+      "description": "Mobile bottom-bar nav item: icon over a small label; active is ink, inactive is muted.",
+      "html": "<nav class=\"ds-tabbar\"><a class=\"ds-tab ds-tab--active\" aria-current=\"page\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 10.5 12 3l9 7.5\"></path><path d=\"M5 9.5V21h14V9.5\"></path></svg><span>Home</span></a><a class=\"ds-tab\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"18\" rx=\"2\"></rect><path d=\"M3 10h18\"></path></svg><span>Scadenze</span></a></nav>",
+      "css": ".ds-tabbar { display: flex; justify-content: space-around; border-top: 1px solid oklch(0.922 0 0); background: oklch(1 0 0); font-family: Inter, system-ui, sans-serif; } .ds-tab { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 12px; font-size: 0.75rem; color: oklch(0.556 0 0); text-decoration: none; cursor: pointer; } .ds-tab:hover { color: oklch(0.145 0 0); } .ds-tab--active { color: oklch(0.205 0 0); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Calm Ledger",
+    "overview": "FamilySherpa is a quiet, trustworthy record of a household's obligations, kept so no one has to keep them in their head. The visual system exists to make that offloading feel like relief, not like another dashboard to manage. Surfaces are paper-plain with ink-black type and hairline borders; the neutral ramp runs at chroma 0, so when color appears it means something. Warmth is carried by tone, copy, and generous touch targets, never by decoration. The system is deliberately restrained so foresight can lead: every screen surfaces what's coming above what already happened.",
+    "keyCharacteristics": [
+      "Chroma-0 neutral surfaces; color reserved for meaning (warnings, errors, data).",
+      "Single typeface (Inter) across the whole product; no display/body split.",
+      "Flat by default: depth from hairline rings and tonal fills, not shadows.",
+      "Mobile-first: a bottom tab bar on phones, a left rail on desktop.",
+      "Warm without childish; reassurance from tone and space, never mascots or toy shapes."
+    ],
+    "rules": [
+      { "name": "The Meaning-Only Color Rule", "body": "The resting interface is chroma 0. Every hue that appears must carry information: amber = attention soon, red = overdue/error, a chart hue = a category. Color for decoration is forbidden.", "section": "colors" },
+      { "name": "The One Navy Rule", "body": "#0f172a lives in the app manifest and status bar and nowhere else. It is the frame around the window, never paint inside it.", "section": "colors" },
+      { "name": "The One Family Rule", "body": "Inter does all the work. Adding a second typeface is prohibited; warmth comes from tone and spacing.", "section": "typography" },
+      { "name": "The No-Display Rule", "body": "No fluid clamp() headings, no oversized hero type. A heading that grows to fill the viewport is shouting, which this system never does.", "section": "typography" },
+      { "name": "The Hairline-Not-Shadow Rule", "body": "Separation is drawn with a 1px ring or border and a tonal fill, never a box-shadow. A drop shadow reads as a foreign SaaS card.", "section": "elevation" },
+      { "name": "The Flat-At-Rest Rule", "body": "Surfaces are flat until the user touches them. Elevation-like feedback is a response to state, not a resting decoration.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep resting surfaces at chroma 0; introduce a hue only when it names something (amber = due soon, red = overdue, a fixed chart hue = a category).",
+      "Do draw separation with a 1px ring/border plus a tonal fill (bg-muted/50), never a drop shadow.",
+      "Do set every type element in Inter; carry hierarchy with size and weight, not a second face.",
+      "Do lead each screen with foresight above logs of what already happened.",
+      "Do keep the amber and red voices gentle (tinted fills, hairline borders); reassure, don't alarm.",
+      "Do assign chart colors in the fixed category order from src/lib/deadline-labels.ts; never cycle hues per render.",
+      "Do honor prefers-reduced-motion and keep transitions at 150-250ms conveying state only."
+    ],
+    "donts": [
+      "Don't build a cold government/bank portal: no dense, sterile, form-heavy layouts.",
+      "Don't turn warm into childish: no cartoon mascots, pastel bubbles, or toy-rounded shapes.",
+      "Don't ship a loud SaaS dashboard: no gradient hero-metrics, glassmorphism, neon accents, or gradient text.",
+      "Don't become a cluttered do-everything app: one clear primary task per screen.",
+      "Don't use #0f172a (brand navy) as a UI accent or surface; it is app chrome only.",
+      "Don't add box-shadows, colored side-stripe borders, or fluid clamp() hero type.",
+      "Don't use muted gray for primary reading text; body copy stays at ink contrast."
+    ]
+  }
+}

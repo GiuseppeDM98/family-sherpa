@@ -2,6 +2,10 @@
 
 This file is the source of truth for working in this repo: architecture, conventions, and what exists today. Read it — and `AGENTS.md` for environment/tooling gotchas — before making changes.
 
+## Design Context
+
+Product/design strategy lives in `PRODUCT.md` (root): register (**product**), platform (**web** PWA), the two-partner shared-household audience, positioning ("carries your family's mental load" — capture-and-forget, not track-and-manage), and the design principles that guide UI work — *offload never add*, *warm without childish*, *capture then disappear*, *foresight over history*, *reassure don't alarm*. Anti-references: cold gov/bank portals, childish clip-art family apps, loud SaaS dashboards, cluttered do-everything apps. Read `PRODUCT.md` before design decisions; the visual system (tokens, type, components) is captured in `DESIGN.md`.
+
 ## Rules
 
 1. **Before writing any code, read this file and the surrounding code you're about to touch.** Existing code, its comments, and its tests are the source of truth for how things actually work — prefer them over assumptions.
