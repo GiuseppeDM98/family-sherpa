@@ -3,14 +3,17 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { AddDeadlineButton } from "@/components/deadlines/add-deadline-button";
 import { DeadlineRow } from "@/components/deadlines/deadline-row";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { DeadlineListRow } from "@/app/(app)/deadlines/deadlines-list";
 import { db } from "@/db";
 import { assets, deadlines, transactions } from "@/db/schema";
 import type { ASSET_TYPES } from "@/db/enums";
+import { getAssetTco } from "@/lib/analytics";
 import { decryptField } from "@/lib/crypto";
 import { addMonthsToYmd, todayInRome } from "@/lib/date";
 import { formatDateIt, formatEuroCents } from "@/lib/format";
 import { requireFamily } from "@/lib/session";
+import { AssetCostTab } from "./asset-cost-tab";
 import { AssetDetailHeader } from "./asset-detail-header";
 import { CfReveal } from "./cf-reveal";
 
@@ -61,8 +64,15 @@ function headerSummary(type: AssetType, metadata: Record<string, unknown>): stri
   return parts.length > 0 ? parts.join(" · ") : null;
 }
 
-export default async function AssetDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function AssetDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ tab?: string }>;
+}) {
   const { id } = await params;
+  const { tab } = await searchParams;
   const { familyId } = await requireFamily();
   const todayYmd = todayInRome();
 
@@ -97,6 +107,12 @@ export default async function AssetDetailPage({ params }: { params: Promise<{ id
       ),
     );
   const tcoCents = recentTransactions.reduce((sum, row) => sum + row.amount_cents, 0);
+
+  const currentYear = todayYmd.slice(0, 4);
+  const [tco12m, tcoYear] = await Promise.all([
+    getAssetTco(familyId, asset.id, twelveMonthsAgo, todayYmd),
+    getAssetTco(familyId, asset.id, `${currentYear}-01-01`, `${currentYear}-12-31`),
+  ]);
 
   const codiceFiscale = asset.codice_fiscale_enc ? decryptField(asset.codice_fiscale_enc) : null;
   const notes = asset.notes_enc ? decryptField(asset.notes_enc) : null;
@@ -156,47 +172,60 @@ export default async function AssetDetailPage({ params }: { params: Promise<{ id
         </p>
       ) : null}
 
-      <div className="flex items-center justify-between gap-2">
-        <h2 className="text-sm font-medium">Scadenze</h2>
-        <AddDeadlineButton assets={[]} fixedAssetId={asset.id} vehicleContext={vehicleContext} />
-      </div>
+      <Tabs defaultValue={tab === "costi" ? "costi" : "scadenze"}>
+        <TabsList>
+          <TabsTrigger value="scadenze">Scadenze</TabsTrigger>
+          <TabsTrigger value="costi">Costi</TabsTrigger>
+        </TabsList>
 
-      {pending.length === 0 && history.length === 0 ? (
-        <p className="text-muted-foreground text-sm">Nessuna scadenza per questo asset.</p>
-      ) : (
-        <div className="space-y-2">
-          {pending.map((deadline) => (
-            <DeadlineRow
-              key={deadline.id}
-              deadline={deadline}
-              todayYmd={todayYmd}
-              assets={[]}
-              fixedAssetId={asset.id}
-              vehicleContext={vehicleContext}
-            />
-          ))}
-        </div>
-      )}
-
-      {history.length > 0 ? (
-        <details className="space-y-2">
-          <summary className="cursor-pointer text-sm font-medium">
-            Completate ({history.length})
-          </summary>
-          <div className="mt-2 space-y-2">
-            {history.map((deadline) => (
-              <DeadlineRow
-                key={deadline.id}
-                deadline={deadline}
-                todayYmd={todayYmd}
-                assets={[]}
-                fixedAssetId={asset.id}
-                vehicleContext={vehicleContext}
-              />
-            ))}
+        <TabsContent value="scadenze" className="space-y-2 pt-3">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-sm font-medium">Scadenze</h2>
+            <AddDeadlineButton assets={[]} fixedAssetId={asset.id} vehicleContext={vehicleContext} />
           </div>
-        </details>
-      ) : null}
+
+          {pending.length === 0 && history.length === 0 ? (
+            <p className="text-muted-foreground text-sm">Nessuna scadenza per questo asset.</p>
+          ) : (
+            <div className="space-y-2">
+              {pending.map((deadline) => (
+                <DeadlineRow
+                  key={deadline.id}
+                  deadline={deadline}
+                  todayYmd={todayYmd}
+                  assets={[]}
+                  fixedAssetId={asset.id}
+                  vehicleContext={vehicleContext}
+                />
+              ))}
+            </div>
+          )}
+
+          {history.length > 0 ? (
+            <details className="space-y-2">
+              <summary className="cursor-pointer text-sm font-medium">
+                Completate ({history.length})
+              </summary>
+              <div className="mt-2 space-y-2">
+                {history.map((deadline) => (
+                  <DeadlineRow
+                    key={deadline.id}
+                    deadline={deadline}
+                    todayYmd={todayYmd}
+                    assets={[]}
+                    fixedAssetId={asset.id}
+                    vehicleContext={vehicleContext}
+                  />
+                ))}
+              </div>
+            </details>
+          ) : null}
+        </TabsContent>
+
+        <TabsContent value="costi" className="pt-3">
+          <AssetCostTab assetId={asset.id} tco12m={tco12m} tcoYear={tcoYear} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

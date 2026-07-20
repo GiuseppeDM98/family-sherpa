@@ -12,7 +12,7 @@ import {
 import { isValidCodiceFiscale } from "@/lib/cf";
 import { encryptField } from "@/lib/crypto";
 import { db } from "@/db";
-import { assets } from "@/db/schema";
+import { assets, DEADLINE_CATEGORIES, transactions } from "@/db/schema";
 import { requireFamily } from "@/lib/session";
 
 type ActionResult<T = undefined> =
@@ -148,5 +148,45 @@ export async function archiveAsset(assetId: string): Promise<ActionResult> {
 
   revalidatePath("/assets");
   revalidatePath(`/assets/${assetId}`);
+  return { ok: true };
+}
+
+const TransactionInputSchema = z.object({
+  title: z.string().trim().min(1, "Il titolo è obbligatorio."),
+  category: z.enum(DEADLINE_CATEGORIES),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data non valida."),
+  amountCents: z.number().int().positive("L'importo deve essere maggiore di zero."),
+});
+
+/**
+ * "Aggiungi spesa" on the asset cost tab (docs/specs/08-expense-dashboard.md
+ * §3): a manual transaction not tied to any deadline (`source: 'manual'`).
+ */
+export async function createTransaction(
+  assetId: string,
+  rawInput: unknown,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const { familyId } = await requireFamily();
+  const parsed = TransactionInputSchema.safeParse(rawInput);
+  if (!parsed.success) return { ok: false, error: "Alcuni campi non sono validi." };
+
+  const [asset] = await db
+    .select({ id: assets.id })
+    .from(assets)
+    .where(and(eq(assets.id, assetId), eq(assets.family_id, familyId)));
+  if (!asset) return { ok: false, error: "Asset non trovato." };
+
+  await db.insert(transactions).values({
+    family_id: familyId,
+    asset_id: assetId,
+    category: parsed.data.category,
+    title: parsed.data.title,
+    date: parsed.data.date,
+    amount_cents: parsed.data.amountCents,
+    source: "manual",
+  });
+
+  revalidatePath(`/assets/${assetId}`);
+  revalidatePath("/");
   return { ok: true };
 }
