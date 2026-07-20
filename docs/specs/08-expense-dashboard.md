@@ -3,6 +3,7 @@ spec: 08
 title: Expense dashboard — predictive cash flow and asset TCO
 depends_on: [02, 06]
 complexity: medium
+status: implemented
 ---
 
 # 08 — Dashboard spese: cash flow predittivo e TCO per asset
