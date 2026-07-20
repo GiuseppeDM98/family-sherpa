@@ -16,7 +16,7 @@ import type { CabinetMedication } from "./types";
 
 const STATUS_BADGE_CLASS: Record<string, string> = {
   expired: "border-destructive text-destructive",
-  expiring: "border-amber-500 text-amber-600 dark:text-amber-500",
+  expiring: "border-warning text-warning",
 };
 
 export function MedicationCard({
@@ -66,10 +66,20 @@ export function MedicationCard({
           </div>
 
           <div className="flex gap-1.5">
-            <Button size="icon-sm" variant="outline" onClick={() => setEditOpen(true)}>
+            <Button
+              size="icon-sm"
+              variant="outline"
+              onClick={() => setEditOpen(true)}
+              aria-label="Modifica farmaco"
+            >
               <PencilIcon />
             </Button>
-            <Button size="icon-sm" variant="ghost" onClick={() => setArchiveOpen(true)}>
+            <Button
+              size="icon-sm"
+              variant="ghost"
+              onClick={() => setArchiveOpen(true)}
+              aria-label="Archivia farmaco"
+            >
               <Trash2Icon />
             </Button>
           </div>

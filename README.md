@@ -4,11 +4,9 @@
 
 Italian families juggle an absurd amount of recurring bureaucracy: bollo auto, revisione, RCA, TARI, PagoPA notices, ID card renewals, utility bills, pediatrician appointments, antibiotic schedules. FamilySherpa makes tracking all of it *passive*: you forward a voice note, a photo, or a PDF to a Telegram bot (or upload it in the app), and the AI extracts what it is, when it's due, how much it costs, and which family asset it belongs to. You tap **Conferma** and forget about it — the app remembers for you.
 
-> ⚠️ **Work in progress.** The app scaffold, database schema/encryption/seed layer, authentication + family onboarding, the Telegram inbound channel, the AI parsing pipeline, the asset/deadline hub, reminders + notifications, the expense dashboard, and the medicine cabinet are implemented. **The core loop works end to end**: send the bot a voice note, a photo, a PDF or a text message, and it comes back with what it understood plus one-tap confirm/cancel buttons; confirming writes real deadlines, expenses, therapies and medicines, which you can review and correct from the in-app Inbox, or manage by hand from the Asset, Scadenze and Armadietto screens (create/edit/archive assets, add deadlines with Italian smart defaults, mark them paid with automatic recurrence roll-over, photograph a medicine box or log a therapy and tick off each dose). The app then reminds you — via web push and Telegram — as deadlines and medicine doses come due, and the Home screen turns it all into foresight: a 12-month cash-flow forecast with a peak-spending callout, and each asset's real yearly cost. See [`CLAUDE.md`](CLAUDE.md) for the full architecture and conventions.
+**The core loop works end to end**: send the bot a voice note, a photo, a PDF or a text message, and it comes back with what it understood plus one-tap confirm/cancel buttons; confirming writes real deadlines, expenses, therapies and medicines, which you can review and correct from the in-app Inbox, or manage by hand from the Asset, Scadenze and Armadietto screens (create/edit/archive assets, add deadlines with Italian smart defaults, mark them paid with automatic recurrence roll-over, photograph a medicine box or log a therapy and tick off each dose). The app then reminds you — via web push and Telegram — as deadlines and medicine doses come due, and the Home screen turns it all into foresight: a 12-month cash-flow forecast with a peak-spending callout, and each asset's real yearly cost. See [`CLAUDE.md`](CLAUDE.md) for the full architecture and conventions.
 
 ## Demo
-
-Screenshots from the seeded demo family (`pnpm db:seed`) — never real personal data.
 
 | Home | Cash flow forecast |
 |---|---|
@@ -29,7 +27,7 @@ pnpm db:seed      # optional: populates a demo family with sample data
 pnpm dev
 ```
 
-Open `http://localhost:3000` — you'll be redirected to sign in. Sign up with an email/password, then create a family (or join one with an invite code from `/settings`). `pnpm build && pnpm start` produces the installable production build.
+Open `http://localhost:3000` — signed out, you'll land on the public welcome page; follow **Accedi** to sign in, or **Registrati** to create an account, then create a family (or join one with an invite code from `/settings`). `pnpm build && pnpm start` produces the installable production build.
 
 Every variable in `.env.example` is validated at startup, so a missing one fails fast with its name. Two are new and easy to miss: **`ANTHROPIC_API_KEY`** (bring your own key — parsing is billed per message) and **`GROQ_API_KEY`** (free tier, transcribes voice notes; set `STT_PROVIDER=openai` + `OPENAI_API_KEY` to use OpenAI instead).
 

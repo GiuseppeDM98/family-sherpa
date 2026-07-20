@@ -20,6 +20,20 @@ pnpm 10+ blocks native/postinstall build scripts by default. When `pnpm install`
 - Service worker source files (`src/app/sw.ts`) need `/// <reference lib="webworker" />` at the top or `tsc` fails on `ServiceWorkerGlobalScope` — the app's `tsconfig.json` uses the `dom` lib, not `webworker`.
 - `eslint.config.mjs`'s `globalIgnores` must list the Serwist-generated files by hand (`public/sw.js`, `public/sw.js.map`, `public/swe-worker*.js`) — ESLint 9 flat config does **not** read `.gitignore`, so a build artifact left over from a local `next build --webpack` gets linted and fails on generated code. Keep this list in sync with `.gitignore`'s own entries for the same files.
 
+## next-themes' `<ThemeProvider>` breaks under `next dev --webpack`
+
+Dark mode follows the OS via a tiny inline `.dark`-toggling script in
+`src/app/layout.tsx` (`matchMedia('(prefers-color-scheme: dark)')`), **not**
+next-themes' `<ThemeProvider>`. That provider compiles fine for production
+(`next build`/`next start`) but its client-component reference fails to resolve
+under `next dev --webpack` on Next 16 — every page throws `Element type is
+invalid. Received a promise that resolves to: undefined` at the root layout
+(confirmed on a fresh compile, not stale HMR). This project is pinned to
+`--webpack` for Serwist, so the provider is unusable in dev. The inline script
+has no client-component boundary, so it works identically in dev and prod with
+no flash; `sonner` still reads the theme via its own `useTheme()` (defaults to
+`"system"`) and is unaffected. Don't reintroduce `<ThemeProvider>`.
+
 ## Running standalone scripts with `tsx`
 
 `tsx` (used for `db:seed` and any future one-off script) does **not** auto-load `.env` the way `next dev`/`next build` do. Pass `--env-file=.env` explicitly (already wired into the `db:seed` npm script) — otherwise `src/lib/env.ts` throws "Invalid or missing environment variables" even though `.env` exists on disk.
@@ -55,6 +69,18 @@ renamed `middleware` → `proxy`). Two things bit us discovering this:
   middleware. `proxy.ts` defaults to the **Node.js runtime**, which has no such
   restriction — this is the actual reason to migrate, not just following the deprecation
   warning.
+
+The **matcher must exclude static assets**, or `public/` files 307 when logged
+out. `proxy.ts` runs `auth()` on every matched path and redirects unauthenticated
+requests, so `config.matcher` has to skip **any path with a file extension**
+(`"/((?!_next/image|.*\\..*).*)"`) — otherwise everything under `public/` (icons,
+the landing-page screenshots, favicon, `manifest.webmanifest`, `sw.js`) gets
+auth-gated and 307s to `/signin` for a logged-out visitor. This bit the public
+landing page: served to logged-out users, it couldn't load its own
+`/landing/*.png` images (raw request 307'd, the `_next/image` optimizer then
+400'd). Match real navigations only; static files never need auth. Related: a
+logged-out `/` **rewrites** to the public `/welcome` landing (URL stays clean);
+a logged-in `/welcome` redirects to `/`.
 
 ## Auth.js: write your own adapter if the schema uses snake_case
 
@@ -198,11 +224,15 @@ The shadcn-generated `--chart-1..5` tokens in `src/app/globals.css` ship as
 plain grayscale (`oklch(0.87 0 0)` etc.) — they're meant to be replaced, not
 reused as-is. When a spec needs charts, run the `dataviz` skill's
 `scripts/validate_palette.js` to get a CVD-safe categorical order, then fill
-those tokens (extend to `--chart-6..8` if more than 5 series/categories are
-possible) for both `:root` and `.dark`. Reference categories by a **fixed**
-name→slot map (e.g. `CATEGORY_CHART_COLORS` in `src/lib/deadline-labels.ts`)
-so the same category always gets the same color — never assign by array
-index/rank, which repaints colors when a filtered set changes.
+those tokens for both `:root` and `.dark`. The palette now runs `--chart-1..12`,
+extended from the original 8 so every one of the 12 deadline categories owns a
+**distinct** slot — no two share a hue in the global `/deadlines` list, where
+`CategoryBadge` tints each chip by it. Reference categories by a **fixed**
+name→slot map (`CATEGORY_CHART_COLORS` in `src/lib/deadline-labels.ts`) so the
+same category always gets the same color — never assign by array index/rank.
+**Adding a deadline category needs a new distinct `--chart-N` (light + dark)**,
+or two categories collide; sanity-check separation with a quick OKLab-distance
+check if unsure.
 
 ## Verifying a dashboard/RSC page without a browser
 

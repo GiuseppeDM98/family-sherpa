@@ -5,11 +5,11 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { deleteDeadline } from "@/app/(app)/deadlines/actions";
+import { CategoryBadge } from "@/components/deadlines/category-badge";
 import { ConfirmDialog } from "@/components/confirm-dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { CATEGORY_LABELS, RECURRENCE_LABELS } from "@/lib/deadline-labels";
+import { RECURRENCE_LABELS } from "@/lib/deadline-labels";
 import { formatDateIt, formatDueDateRelativeIt, formatEuroCents } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { DeadlineFormDialog } from "./deadline-form-dialog";
@@ -71,16 +71,11 @@ export function DeadlineRow({
   return (
     <>
       <Card>
-        <CardContent
-          className={cn(
-            "space-y-2 border-l-2 pl-3",
-            isOverdue ? "border-destructive" : isDueSoon ? "border-amber-500" : "border-transparent",
-          )}
-        >
+        <CardContent className="space-y-2">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0 space-y-1">
               <div className="flex flex-wrap items-center gap-1.5">
-                <Badge variant="outline">{CATEGORY_LABELS[deadline.category]}</Badge>
+                <CategoryBadge category={deadline.category} />
                 {deadline.recurrence !== "none" ? (
                   <span className="text-muted-foreground inline-flex items-center gap-0.5 text-xs">
                     <RepeatIcon className="size-3" aria-hidden />
@@ -95,7 +90,7 @@ export function DeadlineRow({
                   isOverdue
                     ? "text-destructive"
                     : isDueSoon
-                      ? "text-amber-600 dark:text-amber-500"
+                      ? "text-warning"
                       : "text-muted-foreground",
                 )}
               >
@@ -114,10 +109,20 @@ export function DeadlineRow({
                 <CheckIcon />
                 {deadline.amount_cents !== null ? "Segna pagata" : "Segna fatta"}
               </Button>
-              <Button size="icon-sm" variant="outline" onClick={() => setEditOpen(true)}>
+              <Button
+                size="icon-sm"
+                variant="outline"
+                onClick={() => setEditOpen(true)}
+                aria-label="Modifica scadenza"
+              >
                 <PencilIcon />
               </Button>
-              <Button size="icon-sm" variant="ghost" onClick={() => setDeleteOpen(true)}>
+              <Button
+                size="icon-sm"
+                variant="ghost"
+                onClick={() => setDeleteOpen(true)}
+                aria-label="Elimina scadenza"
+              >
                 <Trash2Icon />
               </Button>
             </div>

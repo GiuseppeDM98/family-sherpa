@@ -4,7 +4,7 @@ import { CashFlowChart } from "@/app/(app)/dashboard/cash-flow-chart";
 import { AssetSpendList } from "@/app/(app)/dashboard/asset-spend-list";
 import { OnboardingCard } from "@/app/(app)/dashboard/onboarding-card";
 import { buildPeakCallout, findPeakMonth } from "@/app/(app)/dashboard/peak-callout";
-import { DeadlineRow } from "@/components/deadlines/deadline-row";
+import { UpcomingDeadlines } from "@/app/(app)/dashboard/upcoming-deadlines";
 import { PushPermission } from "@/components/push-permission";
 import { Card, CardContent } from "@/components/ui/card";
 import { db } from "@/db";
@@ -48,11 +48,6 @@ export default async function HomePage() {
     .where(and(eq(deadlines.family_id, familyId), eq(deadlines.status, "pending")))
     .orderBy(asc(deadlines.due_date))
     .limit(5);
-
-  const familyAssets = await db
-    .select({ id: assets.id, name: assets.name, type: assets.type })
-    .from(assets)
-    .where(and(eq(assets.family_id, familyId), eq(assets.archived, false)));
 
   const pendingTherapyIntakes = await db
     .select({ scheduled_at: therapyIntakes.scheduled_at })
@@ -105,17 +100,7 @@ export default async function HomePage() {
             {upcomingRows.length === 0 ? (
               <p className="text-muted-foreground text-sm">Nessuna scadenza in vista.</p>
             ) : (
-              <div className="space-y-2">
-                {upcomingRows.map((row) => (
-                  <DeadlineRow
-                    key={row.id}
-                    deadline={row}
-                    assetName={row.assetName}
-                    todayYmd={todayYmd}
-                    assets={familyAssets}
-                  />
-                ))}
-              </div>
+              <UpcomingDeadlines deadlines={upcomingRows} todayYmd={todayYmd} />
             )}
           </section>
 

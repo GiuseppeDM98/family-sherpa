@@ -3,13 +3,14 @@ name: FamilySherpa
 description: The calm ledger that carries a family's mental load.
 colors:
   ink: "oklch(0.145 0 0)"
-  surface: "oklch(1 0 0)"
+  surface: "oklch(0.994 0.005 75)"
   primary: "oklch(0.205 0 0)"
-  muted-foreground: "oklch(0.556 0 0)"
-  muted-surface: "oklch(0.97 0 0)"
-  border-hairline: "oklch(0.922 0 0)"
+  muted-foreground: "oklch(0.556 0.007 75)"
+  muted-surface: "oklch(0.967 0.008 75)"
+  border-hairline: "oklch(0.921 0.007 75)"
   brand-navy: "#0f172a"
-  warn-amber: "#f59e0b"
+  warning: "#b45309"
+  warning-dark: "#fbbf24"
   destructive: "oklch(0.577 0.245 27.325)"
   chart-1: "#2a78d6"
   chart-2: "#008300"
@@ -19,6 +20,10 @@ colors:
   chart-6: "#eb6834"
   chart-7: "#4a3aa7"
   chart-8: "#e34948"
+  chart-9: "#1499c2"
+  chart-10: "#8a5cc4"
+  chart-11: "#c74d99"
+  chart-12: "#6d6459"
 typography:
   heading:
     fontFamily: "Inter, system-ui, sans-serif"
@@ -87,14 +92,14 @@ components:
 
 **Creative North Star: "The Calm Ledger"**
 
-FamilySherpa is a quiet, trustworthy record of a household's obligations — bollo, revisione, TARI, bills, medicine schedules — kept so that no one has to keep them in their head. The visual system exists to make that offloading feel like *relief*, not like another dashboard to manage. Surfaces are paper-plain, near-white in light mode and near-black in dark, with ink-black type and hairline borders. There is almost no color at rest: the neutral ramp runs at chroma 0, so when color does appear (an amber "due soon", a red "overdue", a chart hue) it *means* something. Warmth is carried by tone, copy, and generous touch targets — the two-partner household using this in stolen phone moments should feel a steady companion looking after them, never a bureaucratic form or a growth-metrics console.
+FamilySherpa is a quiet, trustworthy record of a household's obligations — bollo, revisione, TARI, bills, medicine schedules — kept so that no one has to keep them in their head. The visual system exists to make that offloading feel like *relief*, not like another dashboard to manage. Surfaces are paper-plain — a **warm off-white** in light mode and a warm near-black in dark, with ink-black type and hairline borders. The neutral ramp carries only a *sub-perceptual* warm tint (~0.006 chroma, hue 75) toward the brand's warmth — enough to feel like a calm companion rather than a clinical portal, never enough to read as a nameable colour (it stays well below the chroma that turns into "AI cream"). So when a *nameable* colour does appear (an amber "due soon", a red "overdue", a category-tinted chip, a chart hue) it still *means* something. Warmth is carried by tone, copy, and generous touch targets — the two-partner household using this in stolen phone moments should feel a steady companion looking after them, never a bureaucratic form or a growth-metrics console.
 
 The system is deliberately restrained so foresight can lead. The Home dashboard, the deadline timelines, the medicine checklist — each surfaces *what's coming* more loudly than *what happened*, and the chrome gets out of the way so it can. Density is comfortable, not tight: this is a calm utility, not a power tool, and legibility for tired, distracted, mixed-age users wins over information density.
 
 This system explicitly rejects the four things FamilySherpa exists to replace: the **cold government/bank portal** (sterile, form-heavy, stressful), the **childish "family app"** (cartoon mascots, pastel bubbles, toy-rounded UI that trivializes real responsibilities), the **loud SaaS dashboard** (gradient hero-metrics, glassmorphism, neon accents), and the **cluttered do-everything app** (feature soup where every screen competes for attention).
 
 **Key Characteristics:**
-- Chroma-0 neutral surfaces; color reserved for meaning (warnings, errors, data).
+- Warm near-neutral surfaces (a whisper of warm chroma, not chroma-0); nameable color reserved for meaning (warnings, errors, category, data).
 - Single typeface (Inter) across the whole product — no display/body split.
 - Flat by default: depth comes from hairline rings and tonal fills, not shadows.
 - Mobile-first: a bottom tab bar on phones, a left rail on desktop.
@@ -113,17 +118,17 @@ A near-monochrome neutral system where color is a signal, never decoration.
 - **Muted Foreground** (`oklch(0.556 0 0)`): secondary text — descriptions, inactive nav labels, timestamps. Passes as body-adjacent, never as primary reading text.
 
 ### Tertiary
-- **Warn Amber** (`#f59e0b`, `amber-500`): the single warmth accent, used *only* for "in scadenza"/"in scadenza a breve" — a due-soon deadline border, an expiring-medicine badge. It is the interface raising a gentle hand, not an alarm.
-- **Chart Palette** (`#2a78d6` blue → `#008300` green → `#e87ba4` magenta → `#eda100` yellow → `#1baf7a` aqua → `#eb6834` orange → `#4a3aa7` violet → `#e34948` red): a CVD-validated categorical set (validated with `scripts/validate_palette.js`) filling `--chart-1..8`. Assigned to deadline categories in a **fixed order that never cycles** (`src/lib/deadline-labels.ts`): bollo→blue, bolletta→green, medico→magenta, and so on. Data viz is the one place the system is allowed to be colorful.
+- **Warning Amber** (`--warning`: `#b45309` light / `#fbbf24` dark): the single warmth accent, used *only* for "in scadenza"/"in scadenza a breve" — a due-soon deadline's date text, an expiring-medicine badge. It is the interface raising a gentle hand, not an alarm. It is a **semantic token**, not a raw Tailwind `amber-*` class: the light value is deepened to `amber-700` so it clears WCAG AA (≥4.5:1) as small text on white — the brighter `amber-500`/`amber-600` it replaced only reached ~3.2:1 — and the dark value lifts to `amber-400` to stay legible on the near-black surface. Never reintroduce a bare `text-amber-500`/`border-amber-500`; go through `text-warning`/`border-warning` so contrast and dark mode stay controlled in one place.
+- **Chart Palette** (`#2a78d6` blue → `#008300` green → `#e87ba4` magenta → `#eda100` yellow → `#1baf7a` aqua → `#eb6834` orange → `#4a3aa7` violet → `#e34948` red): a CVD-validated categorical set (validated with `scripts/validate_palette.js`) filling `--chart-1..8`. Assigned to deadline categories in a **fixed order that never cycles** (`src/lib/deadline-labels.ts`): bollo→blue, bolletta→green, medico→magenta, and so on. Beyond charts, this same fixed hue also softly tints the **deadline category chip** (`CategoryBadge`, `src/components/deadlines/category-badge.tsx`): a ~15% `color-mix` fill + a stronger border, label text left at ink/near-white contrast — so a category is decodable by hue at a glance. This is the one sanctioned place category color leaves data-viz. Each of the 12 categories owns a **distinct** slot (`--chart-1..12`, extended from the original 8 so no two categories ever share a hue in the deadline list); the label always backs the colour up, so a chip is never colour-only.
 
 ### Neutral
-- **Surface** (`oklch(1 0 0)`, pure white / `oklch(0.145 0 0)` dark): the base background and card fill.
-- **Hairline Border** (`oklch(0.922 0 0)` / `oklch(1 0 0 / 10%)` dark): every divider, input stroke, and nav edge. Depth is drawn with these, not with shadow.
+- **Surface** (`oklch(0.994 0.005 75)`, warm off-white / `oklch(0.155 0.006 75)` warm near-black dark): the base background and card fill. Warmed a hair off pure white/black toward the brand's warmth; ink text stays chroma-0 for crisp legibility.
+- **Hairline Border** (`oklch(0.921 0.007 75)` / `oklch(1 0 0 / 10%)` dark): every divider, input stroke, and nav edge. Depth is drawn with these, not with shadow.
 - **Brand Navy** (`#0f172a`, `slate-900`): the app *chrome* color only — PWA `theme_color`, `background_color`, and iOS status bar. It anchors the installed-app frame; it is **not** a UI surface or accent token inside the app.
 - **Destructive** (`oklch(0.577 0.245 27.325)`, red): errors and overdue ("scaduta") deadlines. Rendered as a *tinted* fill (`destructive/10`) on buttons, not a solid slab — even the error voice stays calm.
 
 ### Named Rules
-**The Meaning-Only Color Rule.** The resting interface is chroma 0. Every hue that appears must carry information — amber = attention soon, red = overdue/error, a chart hue = a specific category. Color for decoration is forbidden; if a color can't name what it means, it doesn't belong.
+**The Meaning-Only Color Rule.** The resting interface is *near* chroma 0: surfaces carry only a sub-perceptual warm tint (~0.006 chroma) for cohesion — never a nameable colour, and ink text stays chroma-0. Every *nameable* hue that appears must carry information — amber = attention soon, red = overdue/error, a category hue = a specific deadline category (on its chip and in charts alike). Colour for decoration is forbidden; if a colour can't name what it means, it doesn't belong.
 
 **The One Navy Rule.** `#0f172a` lives in the app manifest and status bar and nowhere else. It is the frame around the window, never paint inside it. Do not reach for it as a UI accent.
 
@@ -185,7 +190,7 @@ Buttons, cards and inputs should feel **soft and reassuring**: quiet, hairline-e
 ## 6. Do's and Don'ts
 
 ### Do:
-- **Do** keep resting surfaces at chroma 0; introduce a hue only when it names something (amber = due soon, red = overdue, a fixed chart hue = a category).
+- **Do** keep resting surfaces at *near* chroma 0 (only the sub-perceptual warm tint); introduce a nameable hue only when it names something (amber = due soon, red = overdue, a fixed category hue = a category on its chip or chart).
 - **Do** draw separation with a 1px ring/border plus a tonal fill (`bg-muted/50`) — never a drop shadow.
 - **Do** set every type element in Inter; carry hierarchy with size and weight (`500` for headings/labels, `400` for body), not with a second face.
 - **Do** lead each screen with foresight — what's coming due, the cash-flow peak, the next dose — above logs of what already happened.

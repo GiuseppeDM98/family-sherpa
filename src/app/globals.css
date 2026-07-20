@@ -17,6 +17,10 @@
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar: var(--sidebar);
+  --color-chart-12: var(--chart-12);
+  --color-chart-11: var(--chart-11);
+  --color-chart-10: var(--chart-10);
+  --color-chart-9: var(--chart-9);
   --color-chart-8: var(--chart-8);
   --color-chart-7: var(--chart-7);
   --color-chart-6: var(--chart-6);
@@ -29,6 +33,7 @@
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-warning: var(--warning);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -51,23 +56,33 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
+  /* Warm-paper neutrals. The surfaces carry a whisper of warm chroma
+     (~0.006, hue 75) toward the brand's warmth instead of clinical pure white,
+     so the app feels like a calm companion, not a bank portal — while ink text
+     stays chroma-0 for crisp legibility. Kept far below the 0.03+ chroma that
+     reads as "AI cream". */
+  --background: oklch(0.994 0.005 75);
   --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
+  --card: oklch(0.994 0.005 75);
   --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
+  --popover: oklch(0.994 0.005 75);
   --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.205 0 0);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
+  --secondary: oklch(0.967 0.008 75);
   --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
+  --muted: oklch(0.967 0.008 75);
+  --muted-foreground: oklch(0.556 0.007 75);
+  --accent: oklch(0.967 0.008 75);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
+  /* "In scadenza" attention amber. Deepened from amber-500 (#f59e0b) to
+     amber-700 (#b45309) so it clears WCAG AA (4.5:1) as small text on white —
+     the bright amber only reached ~3.2:1. One token drives border, badge and
+     meta text alike; see .dark for the light-on-dark counterpart. */
+  --warning: #b45309;
+  --border: oklch(0.921 0.007 75);
+  --input: oklch(0.921 0.007 75);
   --ring: oklch(0.708 0 0);
   /* Dashboard chart palette (dataviz skill, validated with
      scripts/validate_palette.js): fixed categorical hue order, blue first. */
@@ -79,33 +94,46 @@
   --chart-6: #eb6834; /* orange */
   --chart-7: #4a3aa7; /* violet */
   --chart-8: #e34948; /* red */
+  /* Slots 9–12 extend the categorical set to 12 so every deadline category
+     gets its own hue (no two share a slot). Chosen to keep a comfortable OKLab
+     separation from the first 8 and from each other; the label always backs
+     the colour up, so a chip is never colour-only. */
+  --chart-9: #1499c2; /* cyan — tari */
+  --chart-10: #8a5cc4; /* purple — farmaco */
+  --chart-11: #c74d99; /* magenta-rose — abbonamento */
+  --chart-12: #6d6459; /* taupe — altro */
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
+  --sidebar: oklch(0.984 0.006 75);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent: oklch(0.967 0.008 75);
   --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-border: oklch(0.921 0.007 75);
   --sidebar-ring: oklch(0.708 0 0);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
+  /* Warm near-black: the same hue-75 warmth as light mode, carried on the dark
+     surface ramp (depth via lightness, not shadow). Text stays chroma-0 light. */
+  --background: oklch(0.155 0.006 75);
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
+  --card: oklch(0.215 0.008 75);
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
+  --popover: oklch(0.215 0.008 75);
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.922 0 0);
   --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
+  --secondary: oklch(0.278 0.008 75);
   --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
+  --muted: oklch(0.278 0.008 75);
+  --muted-foreground: oklch(0.712 0.007 75);
+  --accent: oklch(0.278 0.008 75);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
+  /* Bright amber-400 (#fbbf24): needs to read light on the near-black surface
+     (~7.9:1 on the dark card), the mirror of the deepened light-mode amber. */
+  --warning: #fbbf24;
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
@@ -117,11 +145,15 @@
   --chart-6: #d95926; /* orange */
   --chart-7: #9085e9; /* violet */
   --chart-8: #e66767; /* red */
-  --sidebar: oklch(0.205 0 0);
+  --chart-9: #3ab0d6; /* cyan — tari */
+  --chart-10: #a884dc; /* purple — farmaco */
+  --chart-11: #d977ad; /* magenta-rose — abbonamento */
+  --chart-12: #9a8f80; /* taupe — altro */
+  --sidebar: oklch(0.215 0.008 75);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent: oklch(0.278 0.008 75);
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
@@ -136,5 +168,43 @@
   }
   html {
     @apply font-sans;
+  }
+}
+
+/* ----------------------------------------------------------------------------
+   Landing page (/welcome) — brand-surface entrance motion.
+   Reduced-motion-safe by construction: content is fully visible by default and
+   the reveal only applies when the user has NOT asked for reduced motion, so a
+   reduced-motion visitor (or a no-JS/headless render) never sees a blank page.
+---------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: no-preference) {
+  .lp-reveal {
+    opacity: 0;
+    animation: lp-fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .lp-sun {
+    animation: lp-sun-rise 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+@keyframes lp-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes lp-sun-rise {
+  from {
+    opacity: 0;
+    transform: translateY(46px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

@@ -95,13 +95,28 @@ export function TherapyCard({
           </div>
 
           <div className="flex gap-1.5">
-            <Button size="icon-sm" variant="outline" onClick={() => setEditTimesOpen(true)}>
+            <Button
+              size="icon-sm"
+              variant="outline"
+              onClick={() => setEditTimesOpen(true)}
+              aria-label="Modifica orari"
+            >
               <PencilIcon />
             </Button>
-            <Button size="icon-sm" variant="outline" onClick={() => setPauseOpen(true)}>
+            <Button
+              size="icon-sm"
+              variant="outline"
+              onClick={() => setPauseOpen(true)}
+              aria-label="Metti in pausa la terapia"
+            >
               <PauseIcon />
             </Button>
-            <Button size="icon-sm" variant="ghost" onClick={() => setDeleteOpen(true)}>
+            <Button
+              size="icon-sm"
+              variant="ghost"
+              onClick={() => setDeleteOpen(true)}
+              aria-label="Elimina terapia"
+            >
               <Trash2Icon />
             </Button>
           </div>

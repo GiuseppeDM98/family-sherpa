@@ -28,12 +28,15 @@ export const RECURRENCE_LABELS: Record<(typeof RECURRENCES)[number], string> = {
 };
 
 /**
- * Fixed category -> chart color mapping (dataviz skill: "assign categorical
- * hues in fixed order, never cycled"). Slots are the `--chart-1..8`
- * tokens (src/app/globals.css). Categories sharing a slot never co-occur in the
- * same chart in practice — each asset's TCO breakdown only ever shows the
- * categories relevant to its own type (vehicle: bollo/revisione/rca/tagliando;
- * home: bolletta/condominio/tari; person: medico/farmaco/documento).
+ * Fixed category -> color mapping (dataviz skill: "assign categorical hues in
+ * fixed order, never cycled"). Each of the 12 categories owns a **distinct**
+ * `--chart-N` slot (src/app/globals.css) — no two share a hue — so the mapping
+ * is unambiguous both in per-asset TCO charts and in the global `/deadlines`
+ * list, where the `CategoryBadge` tints every chip by this hue.
+ *
+ * WARNING: if you add a deadline category, add a matching `--chart-N` token in
+ * globals.css (light + dark) and a distinct slot here — don't reuse an existing
+ * one, or two categories will collide in the deadline list.
  */
 export const CATEGORY_CHART_COLORS: Record<(typeof DEADLINE_CATEGORIES)[number], string> = {
   bollo: "var(--chart-1)",
@@ -44,8 +47,8 @@ export const CATEGORY_CHART_COLORS: Record<(typeof DEADLINE_CATEGORIES)[number],
   revisione: "var(--chart-6)",
   rca: "var(--chart-7)",
   condominio: "var(--chart-8)",
-  tari: "var(--chart-3)",
-  farmaco: "var(--chart-4)",
-  abbonamento: "var(--chart-5)",
-  altro: "var(--chart-6)",
+  tari: "var(--chart-9)",
+  farmaco: "var(--chart-10)",
+  abbonamento: "var(--chart-11)",
+  altro: "var(--chart-12)",
 };

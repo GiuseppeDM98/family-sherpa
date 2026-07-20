@@ -32,9 +32,17 @@ Unreleased changes — kept up to date session by session, published at cut time
 - Added the medicine cabinet (Armadietto): every medicine in one list, sorted by what's expiring soonest, with a search box and colour-coded expiry badges. Add one by photographing the box — FamilySherpa reads the name, format, and expiry off it — or by hand.
 - Added the Terapie screen: a daily checklist of today's doses you can mark "Fatto" or "Salta", a card for each active therapy showing its schedule, day-by-day progress, and the last 7 days at a glance, plus the ability to pause a therapy, adjust its times, or create one by hand instead of through the bot.
 - Added expiry tracking for medicines: one nearing its expiry date shows up alongside your other deadlines and gets reminded on the same 30/7/1/0-day schedule.
+- Added automatic dark mode: the app now follows your device's light or dark appearance.
+- Added a public landing page: opening a self-hosted instance's link while signed out now shows a welcome page explaining what FamilySherpa is and how it works, instead of jumping straight to the sign-in form.
+
+## 🐛 Bug Fixes
+
+- Fixed the "Altro" screen, which showed a misleading "In arrivo…" (coming soon) label above links that already worked.
 
 ## 🔧 Improvements
 
+- Refreshed the visual design: warmer paper-toned surfaces, colour-coded category badges (bollo, TARI, medico… each recognisable at a glance), and a calmer, glance-first Home that leads with what's coming due rather than stacking edit/delete buttons on every row.
+- Improved accessibility: screen-reader names on the edit, pause and delete icon buttons, and higher-contrast text for due-soon deadlines and expiring medicines.
 - Improved the Home screen with a gentle prompt to enable notifications, which disappears once they're on.
 - Redesigned the app icon.
 
@@ -50,4 +58,4 @@ Unreleased changes — kept up to date session by session, published at cut time
 - Added SETUP.md with full step-by-step environment setup instructions (database, Telegram bot, local webhook tunneling, Windows-specific notes).
 - Documented the AI provider keys you need to supply: an Anthropic API key for parsing, and a Groq key (free tier) for voice transcription — with OpenAI as an alternative transcription provider.
 - Documented how to schedule the reminder jobs when self-hosting (`SETUP.md` §9): Vercel Cron, or the free cron-job.org alternative for sub-daily runs, plus the VAPID and CRON_SECRET keys to generate and the production environment variables.
-- Added real screenshots of the app to the README.
+- Added real screenshots of the app to the README, refreshed to reflect the redesigned interface.

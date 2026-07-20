@@ -53,3 +53,8 @@ pnpm-debug.log*
 
 # Local Claude settings
 .claude/settings.local.json
+
+# Impeccable: critique snapshots are generated, point-in-time review reports
+# (a local backlog for /impeccable polish). The design-system sidecar
+# (.impeccable/design.json) stays tracked.
+.impeccable/critique/
