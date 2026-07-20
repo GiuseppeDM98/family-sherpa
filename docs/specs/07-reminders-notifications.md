@@ -3,6 +3,7 @@ spec: 07
 title: Reminders — web push, Telegram notifications, cron endpoints
 depends_on: [04, 06]
 complexity: medium-high
+status: implemented
 ---
 
 # 07 — Reminder e notifiche: web push + Telegram + cron
