@@ -16,4 +16,9 @@ export const TEST_ENV = {
   NEXT_PUBLIC_TELEGRAM_BOT_USERNAME: "FamilySherpaBot",
   ANTHROPIC_API_KEY: "test-anthropic-key",
   GROQ_API_KEY: "test-groq-key",
+  CRON_SECRET: "test-cron-secret",
+  VAPID_PUBLIC_KEY: "test-vapid-public-key",
+  VAPID_PRIVATE_KEY: "test-vapid-private-key",
+  VAPID_SUBJECT: "mailto:test@familysherpa.dev",
+  NEXT_PUBLIC_VAPID_PUBLIC_KEY: "test-vapid-public-key",
 } as const;

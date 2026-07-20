@@ -27,6 +27,15 @@ const serverSchema = z
     STT_PROVIDER: z.enum(STT_PROVIDERS).default("groq"),
     GROQ_API_KEY: z.string().optional(),
     OPENAI_API_KEY: z.string().optional(),
+    // Reminders / cron (spec 07).
+    CRON_SECRET: z.string().min(1),
+    VAPID_PUBLIC_KEY: z.string().min(1),
+    VAPID_PRIVATE_KEY: z.string().min(1),
+    // web-push requires a `mailto:`/`https:` contact URI, not a bare address.
+    VAPID_SUBJECT: z.string().refine(
+      (value) => value.startsWith("mailto:") || value.startsWith("https://"),
+      "VAPID_SUBJECT must be a mailto: or https:// URI",
+    ),
   })
   // The key needed depends on which provider is selected, so it can't be a
   // per-field `.min(1)`: requiring both would force everyone to hold a key for
@@ -46,6 +55,8 @@ const serverSchema = z
 const clientSchema = z.object({
   NEXT_PUBLIC_APP_URL: z.url(),
   NEXT_PUBLIC_TELEGRAM_BOT_USERNAME: z.string().min(1),
+  // Same value as VAPID_PUBLIC_KEY — the browser needs it to subscribe.
+  NEXT_PUBLIC_VAPID_PUBLIC_KEY: z.string().min(1),
 });
 
 function parseEnv() {
