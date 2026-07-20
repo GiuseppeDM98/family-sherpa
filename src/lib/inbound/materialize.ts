@@ -10,10 +10,12 @@ import {
   therapies,
   transactions,
   type ASSET_TYPES,
+  type Therapy,
 } from "@/db/schema";
 import { encryptField } from "@/lib/crypto";
 import { addDaysToYmd, todayInRome } from "@/lib/date";
 import { syncMedicationExpiryDeadline } from "@/lib/meds";
+import { generateIntakesForDate } from "@/lib/reminders/intakes";
 import { defaultTherapyTimes } from "./therapy-times";
 
 /**
@@ -85,7 +87,13 @@ export async function materializeInboxMessage(
   inboxMessageId: string,
   itemsOverride?: ParseResultItem[],
 ): Promise<MaterializationResult> {
-  return db.transaction(async (tx) => {
+  // Collected inside the transaction, consumed after it commits (see below) —
+  // generateIntakesForDate writes through the plain `db` connection, not `tx`,
+  // so calling it before commit could leave an intake row referencing a
+  // therapy that a later item in the loop caused to roll back.
+  const newTherapies: Array<Pick<Therapy, "id" | "times" | "start_date" | "end_date">> = [];
+
+  const result = await db.transaction(async (tx) => {
     const [message] = await tx
       .select()
       .from(inboxMessages)
@@ -231,8 +239,11 @@ export async function materializeInboxMessage(
               active: true,
               source_message_id: inboxMessageId,
             })
-            .returning({ id: therapies.id });
-          if (row) result.therapyIds.push(row.id);
+            .returning();
+          if (row) {
+            result.therapyIds.push(row.id);
+            newTherapies.push(row);
+          }
           break;
         }
 
@@ -271,6 +282,15 @@ export async function materializeInboxMessage(
 
     return result;
   });
+
+  // start_date is always today for an AI-parsed therapy (set above), so every
+  // therapy created here needs today's intakes right away — matching what the
+  // manual "crea terapia" action does (spec 09 §2), not just the next cron run.
+  for (const therapy of newTherapies) {
+    await generateIntakesForDate(therapy, therapy.start_date);
+  }
+
+  return result;
 }
 
 /** Where to send the user after confirming, based on what was actually created. */
