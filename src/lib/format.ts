@@ -20,6 +20,33 @@ export function formatDateIt(ymd: string): string {
   return `${day}/${month}/${year}`;
 }
 
+const MONTH_SHORT_FORMATTER = new Intl.DateTimeFormat("it-IT", { month: "short" });
+
+/** "2026-08" -> "ago" (dashboard cash-flow chart X-axis ticks, docs/specs/08 §2). */
+export function formatMonthShortIt(monthKey: string): string {
+  const [year, month] = monthKey.split("-").map(Number) as [number, number];
+  return MONTH_SHORT_FORMATTER.format(new Date(Date.UTC(year, month - 1, 1))).replace(".", "");
+}
+
+/** "2026-08" -> "Agosto 2026" (dashboard month-detail heading). */
+export function formatMonthLongIt(monthKey: string): string {
+  const [year, month] = monthKey.split("-").map(Number) as [number, number];
+  const label = new Intl.DateTimeFormat("it-IT", { month: "long", year: "numeric" }).format(
+    new Date(Date.UTC(year, month - 1, 1)),
+  );
+  return label.charAt(0).toUpperCase() + label.slice(1);
+}
+
+/** 875000 -> "8.750 €" (compact euro for chart ticks, no decimals). */
+const COMPACT_EURO_FORMATTER = new Intl.NumberFormat("it-IT", {
+  style: "currency",
+  currency: "EUR",
+  maximumFractionDigits: 0,
+});
+export function formatEuroCentsCompact(cents: number): string {
+  return COMPACT_EURO_FORMATTER.format(cents / 100);
+}
+
 const RELATIVE_FORMATTER = new Intl.RelativeTimeFormat("it", { numeric: "auto" });
 
 const RELATIVE_UNITS: ReadonlyArray<[Intl.RelativeTimeFormatUnit, number]> = [
