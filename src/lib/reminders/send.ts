@@ -34,8 +34,17 @@ export type NotifyPayload = {
   familyId: string;
 };
 
-// VAPID identifies this server to the push services; set once at module load.
-webpush.setVapidDetails(env.VAPID_SUBJECT, env.VAPID_PUBLIC_KEY, env.VAPID_PRIVATE_KEY);
+// VAPID identifies this server to the push services. Configured lazily on the
+// first real send, NOT at module load: web-push validates the key format inside
+// setVapidDetails, and `next build` imports this module to analyze the cron
+// routes — doing it at import would fail the build under CI's dummy keys, even
+// though no push is ever sent there.
+let isVapidConfigured = false;
+function ensureVapidConfigured(): void {
+  if (isVapidConfigured) return;
+  webpush.setVapidDetails(env.VAPID_SUBJECT, env.VAPID_PUBLIC_KEY, env.VAPID_PRIVATE_KEY);
+  isVapidConfigured = true;
+}
 
 /**
  * Claims one channel's dedupe key by inserting its `notifications_log` row.
@@ -81,6 +90,7 @@ async function sendPush(payload: NotifyPayload, userId: string): Promise<number>
   if (subscriptions.length === 0) return 0;
   if (!(await claimChannel("push", payload, userId))) return 0;
 
+  ensureVapidConfigured();
   const body = JSON.stringify({
     title: payload.title,
     body: payload.body,
