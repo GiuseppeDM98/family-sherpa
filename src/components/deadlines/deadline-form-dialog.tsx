@@ -44,6 +44,7 @@ type FormState = {
   dueDate: string;
   amountCents: number | null;
   recurrence: Recurrence;
+  remindAt: string;
   notes: string;
 };
 
@@ -56,6 +57,7 @@ function buildInitialState(deadline: Props["deadline"], fixedAssetId?: string): 
       dueDate: deadline.due_date,
       amountCents: deadline.amount_cents,
       recurrence: deadline.recurrence,
+      remindAt: deadline.remind_at ?? "",
       notes: "",
     };
   }
@@ -66,6 +68,7 @@ function buildInitialState(deadline: Props["deadline"], fixedAssetId?: string): 
     dueDate: todayInRome(),
     amountCents: null,
     recurrence: "none",
+    remindAt: "",
     notes: "",
   };
 }
@@ -124,6 +127,7 @@ export function DeadlineFormDialog({
       dueDate: state.dueDate,
       amountCents: state.amountCents,
       recurrence: state.recurrence,
+      remindAt: state.remindAt || null,
       notes: state.notes,
     };
 
@@ -226,6 +230,16 @@ export function DeadlineFormDialog({
                 </option>
               ))}
             </NativeSelect>
+          </Field>
+
+          <Field label="Avvisami il" hint="Facoltativo — un promemoria extra, oltre a quelli automatici.">
+            <Input
+              type="date"
+              value={state.remindAt}
+              onChange={(event) =>
+                setState((current) => ({ ...current, remindAt: event.target.value }))
+              }
+            />
           </Field>
 
           <Field label="Note">

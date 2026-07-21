@@ -20,6 +20,7 @@ export default async function DeadlinesPage() {
       recurrence: deadlines.recurrence,
       status: deadlines.status,
       asset_id: deadlines.asset_id,
+      remind_at: deadlines.remind_at,
       assetName: assets.name,
       assetType: assets.type,
     })

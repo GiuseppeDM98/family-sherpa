@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DEADLINE_CATEGORIES, RECURRENCES, type ASSET_TYPES } from "@/db/enums";
 import type { ParseResultItem } from "@/lib/ai/parse-schema";
+import { formatEuroCents } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { confirmInboxMessage, rejectInboxMessage } from "../actions";
 
@@ -26,6 +27,7 @@ const ITEM_TITLES: Record<ParseResultItem["type"], string> = {
   transaction: "💸 Spesa",
   therapy: "💊 Terapia",
   medication: "💊 Farmaco",
+  complete_deadline: "✅ Scadenza completata",
 };
 
 const RECURRENCE_LABELS: Record<(typeof RECURRENCES)[number], string> = {
@@ -330,6 +332,18 @@ export function InboxItemsForm({ inboxMessageId, initialItems, assets }: Props) 
                   </p>
                 ) : null}
               </>
+            ) : null}
+
+            {item.type === "complete_deadline" ? (
+              // No editable fields: the matched deadline is fixed. The user can
+              // only keep it (Conferma) or drop it (Rimuovi).
+              <p className="text-muted-foreground text-sm">
+                Segno «{item.match_label}» come{" "}
+                {item.actual_amount_cents === null
+                  ? "fatta"
+                  : `pagata (${formatEuroCents(item.actual_amount_cents)})`}
+                .
+              </p>
             ) : null}
 
             {item.type === "medication" ? (

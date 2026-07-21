@@ -18,6 +18,7 @@ const DEADLINE_RESULT: ParseResult = {
       recurrence: "annual",
       asset_id: null,
       asset_suggestion: null,
+      remind_at: null,
     },
   ],
   summary_it: "Ho trovato una scadenza: bollo della Panda, 87,50 €, entro il 31/01.",
@@ -65,6 +66,32 @@ describe("formatItemLine", () => {
         person_suggestion: "Sofia",
       }),
     ).toBe("• 💊 Amoxicillina — 1 misurino ogni 12 ore");
+  });
+
+  it("renders a completed deadline as paid with its amount", () => {
+    expect(
+      plain(
+        formatItemLine({
+          type: "complete_deadline",
+          deadline_id: "44444444-4444-4444-4444-444444444444",
+          match_label: "Tagliando Opel",
+          actual_amount_cents: 25400,
+          completed_date: "2026-07-21",
+        }),
+      ),
+    ).toBe("• ✅ Tagliando Opel — pagato 254,00 €");
+  });
+
+  it("renders a completed deadline with no amount as 'fatto'", () => {
+    expect(
+      formatItemLine({
+        type: "complete_deadline",
+        deadline_id: "44444444-4444-4444-4444-444444444444",
+        match_label: "Visita pediatra",
+        actual_amount_cents: null,
+        completed_date: null,
+      }),
+    ).toBe("• ✅ Visita pediatra — fatto");
   });
 
   it("renders a medication with its expiry, or just its name", () => {

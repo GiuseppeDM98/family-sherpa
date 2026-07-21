@@ -51,6 +51,28 @@ export function deadlineReminderContent(params: {
   return { title: heading, body: parts.join(" — ") };
 }
 
+/**
+ * Copy for a deadline's custom reminder date — the extra nudge the user asked
+ * for on a specific day, separate from the automatic 30/7/1/0-day milestones.
+ * It names the deadline and when it is actually due, so an early heads-up is
+ * still actionable.
+ */
+export function customReminderContent(params: {
+  title: string;
+  assetName: string | null;
+  amountCents: number | null;
+  dueDate: string;
+}): ReminderContent {
+  const { title, assetName, amountCents, dueDate } = params;
+
+  const parts = [title];
+  if (assetName) parts.push(assetName);
+  if (amountCents !== null) parts.push(formatEuroCents(amountCents));
+  parts.push(`scade il ${shortDayMonth(dueDate)}`);
+
+  return { title: "⏰ Promemoria", body: parts.join(" — ") };
+}
+
 /** Copy for a therapy-intake (dose-time) reminder. */
 export function therapyReminderContent(params: {
   medicationName: string;

@@ -191,6 +191,10 @@ export const deadlines = sqliteTable(
     title: text("title").notNull(),
     due_date: text("due_date").notNull(),
     amount_cents: integer("amount_cents"),
+    // Optional extra reminder date (YYYY-MM-DD): an additional nudge on top of
+    // the automatic 30/7/1/0-day offsets, not a replacement. Absolute, so it is
+    // dropped on recurrence roll-over (see completeDeadlineTx).
+    remind_at: text("remind_at"),
     recurrence: text("recurrence", { enum: RECURRENCES })
       .notNull()
       .default("none"),

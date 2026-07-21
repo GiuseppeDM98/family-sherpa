@@ -4,7 +4,7 @@ import { assets, deadlines, familyMembers, therapies } from "@/db/schema";
 import { todayInRome } from "@/lib/date";
 import { hasValidCronAuth } from "@/lib/reminders/cron-auth";
 import { generateIntakesForDate } from "@/lib/reminders/intakes";
-import { deadlineReminderContent } from "@/lib/reminders/messages";
+import { customReminderContent, deadlineReminderContent } from "@/lib/reminders/messages";
 import { notifyUser } from "@/lib/reminders/send";
 import { daysBetween } from "@/lib/reminders/time";
 
@@ -41,6 +41,7 @@ async function processDeadlineReminders(
       familyId: deadlines.family_id,
       title: deadlines.title,
       dueDate: deadlines.due_date,
+      remindAt: deadlines.remind_at,
       amountCents: deadlines.amount_cents,
       assetName: assets.name,
     })
@@ -55,26 +56,52 @@ async function processDeadlineReminders(
     const daysLeft = daysBetween(today, deadline.dueDate);
     const isReminderDay =
       REMINDER_DAYS_AHEAD.has(daysLeft) || daysLeft === OVERDUE_REMINDER_DAY;
-    if (!isReminderDay) continue;
+    // A custom reminder date fires independently of the automatic offsets, and
+    // can coincide with one on the same day — the distinct dedupe keys below
+    // keep both from being suppressed as duplicates.
+    const isCustomReminderDay = deadline.remindAt === today;
+    if (!isReminderDay && !isCustomReminderDay) continue;
 
     processed++;
-    const content = deadlineReminderContent({
-      title: deadline.title,
-      assetName: deadline.assetName,
-      amountCents: deadline.amountCents,
-      dueDate: deadline.dueDate,
-      daysLeft,
-    });
+    const recipients = membersByFamily.get(deadline.familyId) ?? [];
 
-    for (const userId of membersByFamily.get(deadline.familyId) ?? []) {
-      sent += await notifyUser(userId, {
-        ...content,
-        url: "/deadlines",
-        kind: "deadline_reminder",
-        refId: deadline.id,
-        dedupeKey: `deadline:${deadline.id}:d:${daysLeft}:u:${userId}`,
-        familyId: deadline.familyId,
+    if (isReminderDay) {
+      const content = deadlineReminderContent({
+        title: deadline.title,
+        assetName: deadline.assetName,
+        amountCents: deadline.amountCents,
+        dueDate: deadline.dueDate,
+        daysLeft,
       });
+      for (const userId of recipients) {
+        sent += await notifyUser(userId, {
+          ...content,
+          url: "/deadlines",
+          kind: "deadline_reminder",
+          refId: deadline.id,
+          dedupeKey: `deadline:${deadline.id}:d:${daysLeft}:u:${userId}`,
+          familyId: deadline.familyId,
+        });
+      }
+    }
+
+    if (isCustomReminderDay) {
+      const content = customReminderContent({
+        title: deadline.title,
+        assetName: deadline.assetName,
+        amountCents: deadline.amountCents,
+        dueDate: deadline.dueDate,
+      });
+      for (const userId of recipients) {
+        sent += await notifyUser(userId, {
+          ...content,
+          url: "/deadlines",
+          kind: "deadline_reminder",
+          refId: deadline.id,
+          dedupeKey: `deadline:${deadline.id}:custom:u:${userId}`,
+          familyId: deadline.familyId,
+        });
+      }
     }
   }
 

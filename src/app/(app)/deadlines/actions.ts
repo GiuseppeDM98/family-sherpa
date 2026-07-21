@@ -27,6 +27,7 @@ const DeadlineInputSchema = z.object({
   dueDate: z.string().regex(YMD_REGEX, "Data non valida."),
   amountCents: z.number().int().nonnegative().nullable(),
   recurrence: z.enum(RECURRENCES),
+  remindAt: z.string().regex(YMD_REGEX, "Data non valida.").nullable(),
   notes: z.string().trim().optional(),
 });
 
@@ -65,6 +66,7 @@ export async function createDeadline(
       due_date: parsed.data.dueDate,
       amount_cents: parsed.data.amountCents,
       recurrence: parsed.data.recurrence,
+      remind_at: parsed.data.remindAt,
       source: "manual",
       notes_enc: parsed.data.notes ? encryptField(parsed.data.notes) : null,
     })
@@ -103,6 +105,7 @@ export async function updateDeadline(deadlineId: string, rawInput: unknown): Pro
       due_date: parsed.data.dueDate,
       amount_cents: parsed.data.amountCents,
       recurrence: parsed.data.recurrence,
+      remind_at: parsed.data.remindAt,
       notes_enc: parsed.data.notes ? encryptField(parsed.data.notes) : null,
     })
     .where(eq(deadlines.id, deadlineId));

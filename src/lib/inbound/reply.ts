@@ -12,6 +12,7 @@ const TYPE_EMOJI: Record<ParseResultItem["type"], string> = {
   transaction: "💸",
   therapy: "💊",
   medication: "💊",
+  complete_deadline: "✅",
 };
 
 /** The parts of an item worth showing: label first, then whatever fields exist. */
@@ -31,6 +32,13 @@ function itemDetails(item: ParseResultItem): string[] {
       return [item.name, item.expiry_date ? formatDateIt(item.expiry_date) : null].filter(
         (part): part is string => part !== null,
       );
+    case "complete_deadline":
+      return [
+        item.match_label,
+        item.actual_amount_cents === null
+          ? "fatto"
+          : `pagato ${formatEuroCents(item.actual_amount_cents)}`,
+      ];
   }
 }
 

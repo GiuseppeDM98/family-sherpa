@@ -71,7 +71,25 @@ describe("buildExtractionSystemPrompt", () => {
 
   it("keeps the spec's extraction rules", () => {
     expect(prompt).toContain("Regole di estrazione:");
-    expect(prompt).toContain("11. confidence:");
+    expect(prompt).toContain("13. confidence:");
+  });
+
+  it("resolves the sender line when a name is given, and omits it otherwise", () => {
+    expect(buildExtractionSystemPrompt("2026-07-17", [VEHICLE], [], "Giuseppe")).toContain(
+      "Chi ti scrive è Giuseppe.",
+    );
+    expect(buildExtractionSystemPrompt("2026-07-17", [VEHICLE])).not.toContain("Chi ti scrive");
+  });
+
+  it("interpolates the open deadlines, or says there are none", () => {
+    const withDeadline = buildExtractionSystemPrompt("2026-07-17", [VEHICLE], [
+      { id: "d1", title: "Tagliando Opel", assetName: "Opel Corsa", dueDate: "2026-02-15", amountCents: 23000 },
+    ]);
+    expect(withDeadline).toContain("titolo: Tagliando Opel");
+    expect(withDeadline).toContain("asset: Opel Corsa");
+    expect(buildExtractionSystemPrompt("2026-07-17", [VEHICLE])).toContain(
+      "(nessuna scadenza aperta)",
+    );
   });
 
   it("never sends a codice fiscale — the prompt only knows the listed fields", () => {
@@ -88,12 +106,13 @@ describe("EXTRACTION_SYSTEM_PROMPT", () => {
 });
 
 describe("FEW_SHOT_EXAMPLES", () => {
-  it("has the three examples from the spec", () => {
-    expect(FEW_SHOT_EXAMPLES).toHaveLength(3);
+  it("has the four examples from the spec", () => {
+    expect(FEW_SHOT_EXAMPLES).toHaveLength(4);
     expect(FEW_SHOT_EXAMPLES.map((example) => example.output.items[0]?.type)).toEqual([
       "deadline",
       "transaction",
       "therapy",
+      "complete_deadline",
     ]);
   });
 

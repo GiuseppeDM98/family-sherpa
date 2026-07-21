@@ -16,6 +16,7 @@ export type DeadlineRowData = {
   recurrence: (typeof RECURRENCES)[number];
   status: (typeof DEADLINE_STATUSES)[number];
   asset_id: string | null;
+  remind_at: string | null;
 };
 
 export type DeadlineFormAsset = { id: string; name: string; type: (typeof ASSET_TYPES)[number] };

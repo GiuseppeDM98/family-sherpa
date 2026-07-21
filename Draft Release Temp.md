@@ -34,6 +34,9 @@ Unreleased changes — kept up to date session by session, published at cut time
 - Added expiry tracking for medicines: one nearing its expiry date shows up alongside your other deadlines and gets reminded on the same 30/7/1/0-day schedule.
 - Added automatic dark mode: the app now follows your device's light or dark appearance.
 - Added a public landing page: opening a self-hosted instance's link while signed out now shows a welcome page explaining what FamilySherpa is and how it works, instead of jumping straight to the sign-in form.
+- Added a custom reminder date: pick "Avvisami il" on any deadline (in the app, or by voice/text through the bot) to get an extra reminder on that date, on top of the automatic 30/7/1/0-day schedule.
+- Added recognition of who a message is about even when it's not named: "ricordami di prendere la medicina ogni sera" now defaults to whoever sent the message, creating them as a family member if needed.
+- Added completing an existing deadline by voice or text: "ho pagato la bolletta della luce" now closes the matching open deadline and logs the real expense, instead of adding a duplicate.
 
 ## 🐛 Bug Fixes
 

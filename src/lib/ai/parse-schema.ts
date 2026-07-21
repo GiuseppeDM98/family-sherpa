@@ -29,6 +29,7 @@ const DeadlineItem = z.object({
   ]),
   asset_id: z.string().nullable(), // matched existing asset, or null
   asset_suggestion: z.string().nullable(), // e.g. "Panda di Giulia" if no match but an asset seems implied
+  remind_at: z.string().regex(YMD_REGEX).nullable(), // optional extra reminder date, on top of the automatic offsets
 });
 
 const TransactionItem = z.object({
@@ -59,11 +60,26 @@ const MedicationItem = z.object({
   expiry_date: z.string().regex(YMD_REGEX).nullable(),
 });
 
+/**
+ * The completion of an EXISTING open deadline (e.g. "ho fatto il tagliando
+ * dell'Opel, 254 €"). `deadline_id` is picked from the open-deadlines list
+ * injected into the prompt; `match_label` is the human title carried along so
+ * the reply can name it without a DB lookup.
+ */
+const CompleteDeadlineItem = z.object({
+  type: z.literal("complete_deadline"),
+  deadline_id: z.string(),
+  match_label: z.string(),
+  actual_amount_cents: z.number().int().positive().nullable(),
+  completed_date: z.string().regex(YMD_REGEX).nullable(), // defaults to today when null
+});
+
 export const ParseResultItemSchema = z.discriminatedUnion("type", [
   DeadlineItem,
   TransactionItem,
   TherapyItem,
   MedicationItem,
+  CompleteDeadlineItem,
 ]);
 
 export const ParseResultSchema = z.object({
@@ -79,6 +95,7 @@ export type DeadlineParseItem = z.infer<typeof DeadlineItem>;
 export type TransactionParseItem = z.infer<typeof TransactionItem>;
 export type TherapyParseItem = z.infer<typeof TherapyItem>;
 export type MedicationParseItem = z.infer<typeof MedicationItem>;
+export type CompleteDeadlineParseItem = z.infer<typeof CompleteDeadlineItem>;
 
 /**
  * JSON Schema for the `report_extraction` tool, derived from the Zod schema
@@ -94,32 +111,39 @@ export const PARSE_RESULT_JSON_SCHEMA = (() => {
 })();
 
 /**
- * Nulls out `asset_id`/`person_asset_id` values that don't belong to the
- * family. The prompt lists the family's real assets, but the few-shot examples
- * contain placeholder ids, and a hallucinated id would otherwise reach the DB
- * as a foreign key violation at confirmation time — far from the cause. A
- * dropped id degrades to "no asset linked", which the user can fix in the
- * Inbox form.
+ * Reconciles the model's references against what the family actually owns:
+ *
+ * - `asset_id`/`person_asset_id` values not in `knownAssetIds` are nulled. The
+ *   prompt lists the family's real assets, but the few-shot examples contain
+ *   placeholder ids, and a hallucinated id would otherwise reach the DB as a
+ *   foreign key violation at confirmation time — far from the cause. A dropped
+ *   id degrades to "no asset linked", which the user can fix in the Inbox form.
+ * - `complete_deadline` items whose `deadline_id` is not in `knownDeadlineIds`
+ *   are dropped entirely: unlike an asset, there is nothing to degrade to —
+ *   completing a deadline that isn't a real open one of this family is either a
+ *   copied few-shot placeholder or a hallucination, and must not be confirmable.
  */
-export function dropUnknownAssetIds(
+export function dropUnknownReferences(
   parseResult: ParseResult,
   knownAssetIds: ReadonlySet<string>,
+  knownDeadlineIds: ReadonlySet<string>,
 ): ParseResult {
   const keepOrNull = (assetId: string | null) =>
     assetId && knownAssetIds.has(assetId) ? assetId : null;
 
-  return {
-    ...parseResult,
-    items: parseResult.items.map((item) => {
-      switch (item.type) {
-        case "deadline":
-        case "transaction":
-          return { ...item, asset_id: keepOrNull(item.asset_id) };
-        case "therapy":
-          return { ...item, person_asset_id: keepOrNull(item.person_asset_id) };
-        case "medication":
-          return item;
-      }
-    }),
-  };
+  const items = parseResult.items.flatMap((item): ParseResultItem[] => {
+    switch (item.type) {
+      case "deadline":
+      case "transaction":
+        return [{ ...item, asset_id: keepOrNull(item.asset_id) }];
+      case "therapy":
+        return [{ ...item, person_asset_id: keepOrNull(item.person_asset_id) }];
+      case "medication":
+        return [item];
+      case "complete_deadline":
+        return knownDeadlineIds.has(item.deadline_id) ? [item] : [];
+    }
+  });
+
+  return { ...parseResult, items };
 }

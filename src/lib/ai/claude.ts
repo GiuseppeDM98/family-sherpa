@@ -11,6 +11,7 @@ import {
   FEW_SHOT_EXAMPLES,
   resolveFewShotExample,
   type PromptAsset,
+  type PromptOpenDeadline,
 } from "./prompts";
 
 /**
@@ -42,13 +43,17 @@ export type ExtractionRequest = {
   transcription?: string;
   media?: { buffer: Buffer; mimeType: string };
   assets: readonly PromptAsset[];
+  /** Open deadlines the model can complete instead of duplicating. */
+  openDeadlines?: readonly PromptOpenDeadline[];
+  /** Display name of the family member who sent the message, for the person default. */
+  senderName?: string;
   today: string;
 };
 
 const EXTRACTION_TOOL: Anthropic.Tool = {
   name: EXTRACTION_TOOL_NAME,
   description:
-    "Registra gli elementi actionable estratti dal messaggio di un familiare: scadenze, spese già sostenute, terapie e farmaci. Va usato per ogni messaggio, anche quando non c'è nulla da salvare (in quel caso items è vuoto).",
+    "Registra gli elementi actionable estratti dal messaggio di un familiare: scadenze, spese già sostenute, terapie, farmaci e il completamento di una scadenza esistente. Va usato per ogni messaggio, anche quando non c'è nulla da salvare (in quel caso items è vuoto).",
   input_schema: PARSE_RESULT_JSON_SCHEMA as Anthropic.Tool.InputSchema,
 };
 
@@ -166,7 +171,12 @@ function findExtractionCall(content: Anthropic.ContentBlock[]): Anthropic.ToolUs
 export async function extractParseResult(request: ExtractionRequest): Promise<ParseResult> {
   const client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
   const messages = buildMessages(request);
-  const system = buildExtractionSystemPrompt(request.today, request.assets);
+  const system = buildExtractionSystemPrompt(
+    request.today,
+    request.assets,
+    request.openDeadlines,
+    request.senderName,
+  );
 
   let lastError = "";
 

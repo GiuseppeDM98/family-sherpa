@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import type { ParseResult, ParseResultItem } from "@/lib/ai/parse-schema";
 import { ParseResultSchema } from "@/lib/ai/parse-schema";
 import { db } from "@/db";
@@ -16,6 +16,10 @@ import { encryptField } from "@/lib/crypto";
 import { addDaysToYmd, todayInRome } from "@/lib/date";
 import { syncMedicationExpiryDeadline } from "@/lib/meds";
 import { generateIntakesForDate } from "@/lib/reminders/intakes";
+import {
+  completeDeadlineTx,
+  DeadlineAlreadyCompletedError,
+} from "@/lib/reminders/recurrence";
 import { defaultTherapyTimes } from "./therapy-times";
 
 /**
@@ -34,6 +38,7 @@ export type MaterializationResult = {
   transactionIds: string[];
   therapyIds: string[];
   medicationIds: string[];
+  completedDeadlineIds: string[];
 };
 
 /** The message was already confirmed or rejected — the caller should say so, not retry. */
@@ -126,6 +131,16 @@ export async function materializeInboxMessage(
       familyAssets.map((asset) => [asset.name.trim().toLowerCase(), asset.id]),
     );
 
+    // The open deadlines a `complete_deadline` item is allowed to reference:
+    // its `deadline_id` is client-influenced (it survives from the parse result
+    // through the confirm button), so completing another family's deadline —
+    // or one that isn't even open — must be impossible.
+    const openDeadlineRows = await tx
+      .select({ id: deadlines.id })
+      .from(deadlines)
+      .where(and(eq(deadlines.family_id, familyId), eq(deadlines.status, "pending")));
+    const openDeadlineIds = new Set(openDeadlineRows.map((row) => row.id));
+
     /**
      * Resolves an item's asset: an explicit id (checked against the family —
      * `itemsOverride` is client input, and linking another family's asset would
@@ -176,6 +191,7 @@ export async function materializeInboxMessage(
       transactionIds: [],
       therapyIds: [],
       medicationIds: [],
+      completedDeadlineIds: [],
     };
 
     for (const item of items) {
@@ -191,6 +207,7 @@ export async function materializeInboxMessage(
               due_date: item.due_date,
               amount_cents: item.amount_cents,
               recurrence: item.recurrence,
+              remind_at: item.remind_at,
               source: "parser",
               source_message_id: inboxMessageId,
               notes_enc: notesEnc,
@@ -271,6 +288,35 @@ export async function materializeInboxMessage(
           }
           break;
         }
+
+        case "complete_deadline": {
+          if (!openDeadlineIds.has(item.deadline_id)) {
+            throw new MaterializationError(
+              `Deadline ${item.deadline_id} is not an open deadline of family ${familyId}`,
+            );
+          }
+          // Money named → mark paid and log the actual spend; no amount → just
+          // "done" (e.g. "ho fatto la visita"), mirroring the manual dialog.
+          try {
+            await completeDeadlineTx(tx, item.deadline_id, {
+              paid: item.actual_amount_cents != null,
+              actualAmountCents: item.actual_amount_cents ?? undefined,
+              date: item.completed_date ?? undefined,
+            });
+          } catch (error) {
+            // Can only happen when the same message completes one deadline
+            // twice: the whole transaction rolls back, so surface it clearly.
+            if (error instanceof DeadlineAlreadyCompletedError) {
+              throw new MaterializationError(
+                `Deadline ${item.deadline_id} was already completed`,
+                { cause: error },
+              );
+            }
+            throw error;
+          }
+          result.completedDeadlineIds.push(item.deadline_id);
+          break;
+        }
       }
     }
 
@@ -295,6 +341,12 @@ export async function materializeInboxMessage(
 /** Where to send the user after confirming, based on what was actually created. */
 export function materializationTarget(result: MaterializationResult): string {
   if (isEmpty(result)) return "/inbox";
-  if (result.deadlineIds.length > 0 || result.transactionIds.length > 0) return "/deadlines";
+  if (
+    result.deadlineIds.length > 0 ||
+    result.transactionIds.length > 0 ||
+    result.completedDeadlineIds.length > 0
+  ) {
+    return "/deadlines";
+  }
   return "/meds";
 }

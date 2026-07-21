@@ -173,7 +173,11 @@ linked to a *person* whose real id happened to match the example's home id.
 Placeholder ids in `src/lib/ai/prompts.ts` are deliberately **not** uuid-shaped
 (`esempio-asset-casa`) so that a copied id can never collide with a real
 `crypto.randomUUID()` and always gets nulled by `dropUnknownAssetIds`. Never
-"tidy" them into uuids.
+"tidy" them into uuids. The same rule applies to any other id class injected
+into the prompt — the `{{open_deadlines}}` few-shot for `complete_deadline`
+uses a non-uuid placeholder (`esempio-scadenza`) for the same reason, and
+`dropUnknownAssetIds` was generalized into `dropUnknownReferences` (which also
+takes `knownDeadlineIds`) so both id classes get scrubbed the same way.
 
 ## Whisper (Groq/OpenAI) rejects Telegram's `.oga` extension
 

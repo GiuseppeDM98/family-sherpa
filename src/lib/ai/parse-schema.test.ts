@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
-  dropUnknownAssetIds,
+  dropUnknownReferences,
   PARSE_RESULT_JSON_SCHEMA,
   ParseResultSchema,
   type ParseResult,
@@ -8,6 +8,7 @@ import {
 
 const VEHICLE_ID = "11111111-1111-1111-1111-111111111111";
 const PERSON_ID = "22222222-2222-2222-2222-222222222222";
+const DEADLINE_ID = "44444444-4444-4444-4444-444444444444";
 
 function deadlinePayload(overrides: Record<string, unknown> = {}) {
   return {
@@ -21,6 +22,7 @@ function deadlinePayload(overrides: Record<string, unknown> = {}) {
         recurrence: "annual",
         asset_id: VEHICLE_ID,
         asset_suggestion: null,
+        remind_at: null,
         ...overrides,
       },
     ],
@@ -85,6 +87,54 @@ describe("ParseResultSchema", () => {
     expect(ParseResultSchema.safeParse(deadlinePayload({ amount_cents: null })).success).toBe(
       true,
     );
+  });
+
+  it("accepts a deadline with a custom reminder date", () => {
+    expect(
+      ParseResultSchema.safeParse(deadlinePayload({ remind_at: "2026-01-24" })).success,
+    ).toBe(true);
+  });
+
+  it("rejects a deadline whose remind_at is not YYYY-MM-DD", () => {
+    expect(
+      ParseResultSchema.safeParse(deadlinePayload({ remind_at: "24/01/2026" })).success,
+    ).toBe(false);
+  });
+
+  it("accepts a complete_deadline item (paid, with an actual amount)", () => {
+    const result = ParseResultSchema.safeParse({
+      items: [
+        {
+          type: "complete_deadline",
+          deadline_id: DEADLINE_ID,
+          match_label: "Tagliando Opel",
+          actual_amount_cents: 25400,
+          completed_date: "2026-07-21",
+        },
+      ],
+      summary_it: "Segno come fatto il tagliando dell'Opel.",
+      confidence: "high",
+      notes: null,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts a complete_deadline item with no amount and no date (done, today)", () => {
+    const result = ParseResultSchema.safeParse({
+      items: [
+        {
+          type: "complete_deadline",
+          deadline_id: DEADLINE_ID,
+          match_label: "Visita pediatra",
+          actual_amount_cents: null,
+          completed_date: null,
+        },
+      ],
+      summary_it: "Segno come fatta la visita.",
+      confidence: "high",
+      notes: null,
+    });
+    expect(result.success).toBe(true);
   });
 
   it("rejects a due date that is not YYYY-MM-DD", () => {
@@ -186,12 +236,13 @@ describe("PARSE_RESULT_JSON_SCHEMA", () => {
   });
 });
 
-describe("dropUnknownAssetIds", () => {
+describe("dropUnknownReferences", () => {
   const known = new Set([VEHICLE_ID, PERSON_ID]);
+  const knownDeadlines = new Set([DEADLINE_ID]);
 
   it("keeps ids that belong to the family", () => {
     const parsed = ParseResultSchema.parse(deadlinePayload());
-    expect(dropUnknownAssetIds(parsed, known).items[0]).toMatchObject({
+    expect(dropUnknownReferences(parsed, known, knownDeadlines).items[0]).toMatchObject({
       asset_id: VEHICLE_ID,
     });
   });
@@ -200,7 +251,9 @@ describe("dropUnknownAssetIds", () => {
     const parsed = ParseResultSchema.parse(
       deadlinePayload({ asset_id: "99999999-9999-9999-9999-999999999999" }),
     );
-    expect(dropUnknownAssetIds(parsed, known).items[0]).toMatchObject({ asset_id: null });
+    expect(dropUnknownReferences(parsed, known, knownDeadlines).items[0]).toMatchObject({
+      asset_id: null,
+    });
   });
 
   it("nulls out an unknown therapy person while keeping the suggestion", () => {
@@ -220,7 +273,7 @@ describe("dropUnknownAssetIds", () => {
       confidence: "high",
       notes: null,
     });
-    expect(dropUnknownAssetIds(parsed, known).items[0]).toMatchObject({
+    expect(dropUnknownReferences(parsed, known, knownDeadlines).items[0]).toMatchObject({
       person_asset_id: null,
       person_suggestion: "Sofia",
     });
@@ -241,6 +294,42 @@ describe("dropUnknownAssetIds", () => {
       confidence: "high",
       notes: null,
     });
-    expect(dropUnknownAssetIds(parsed, known)).toEqual(parsed);
+    expect(dropUnknownReferences(parsed, known, knownDeadlines)).toEqual(parsed);
+  });
+
+  it("keeps a complete_deadline that references a real open deadline", () => {
+    const parsed = ParseResultSchema.parse({
+      items: [
+        {
+          type: "complete_deadline",
+          deadline_id: DEADLINE_ID,
+          match_label: "Tagliando Opel",
+          actual_amount_cents: 25400,
+          completed_date: "2026-07-21",
+        },
+      ],
+      summary_it: "…",
+      confidence: "high",
+      notes: null,
+    });
+    expect(dropUnknownReferences(parsed, known, knownDeadlines).items).toHaveLength(1);
+  });
+
+  it("drops a complete_deadline whose deadline_id is not a known open deadline", () => {
+    const parsed = ParseResultSchema.parse({
+      items: [
+        {
+          type: "complete_deadline",
+          deadline_id: "esempio-scadenza",
+          match_label: "Tagliando Opel",
+          actual_amount_cents: 25400,
+          completed_date: "2026-07-21",
+        },
+      ],
+      summary_it: "…",
+      confidence: "high",
+      notes: null,
+    });
+    expect(dropUnknownReferences(parsed, known, knownDeadlines).items).toHaveLength(0);
   });
 });

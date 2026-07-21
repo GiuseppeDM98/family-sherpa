@@ -1,10 +1,10 @@
 import { and, eq } from "drizzle-orm";
 import { extractParseResult } from "@/lib/ai/claude";
-import { dropUnknownAssetIds, type ParseResult } from "@/lib/ai/parse-schema";
-import type { PromptAsset } from "@/lib/ai/prompts";
+import { dropUnknownReferences, type ParseResult } from "@/lib/ai/parse-schema";
+import type { PromptAsset, PromptOpenDeadline } from "@/lib/ai/prompts";
 import { getSttProvider } from "@/lib/ai/stt";
 import { db } from "@/db";
-import { assets, inboxMessages } from "@/db/schema";
+import { assets, deadlines, inboxMessages, users } from "@/db/schema";
 import { todayInRome } from "@/lib/date";
 import { sendTelegramConfirmation } from "@/lib/telegram/outbound";
 import { composeReply } from "./reply";
@@ -37,6 +37,40 @@ async function loadPromptAssets(familyId: string): Promise<PromptAsset[]> {
 }
 
 /**
+ * The family's open (pending) deadlines, so the model can complete an existing
+ * obligation ("ho fatto il tagliando dell'Opel") instead of duplicating it.
+ * The asset name is joined in to help the model disambiguate "il tagliando
+ * dell'Opel" from another vehicle's.
+ */
+async function loadOpenDeadlines(familyId: string): Promise<PromptOpenDeadline[]> {
+  const rows = await db
+    .select({
+      id: deadlines.id,
+      title: deadlines.title,
+      dueDate: deadlines.due_date,
+      amountCents: deadlines.amount_cents,
+      assetName: assets.name,
+    })
+    .from(deadlines)
+    .leftJoin(assets, eq(deadlines.asset_id, assets.id))
+    .where(and(eq(deadlines.family_id, familyId), eq(deadlines.status, "pending")));
+
+  return rows.map((row) => ({
+    id: row.id,
+    title: row.title,
+    assetName: row.assetName,
+    dueDate: row.dueDate,
+    amountCents: row.amountCents,
+  }));
+}
+
+/** The sender's display name, for the "reference person defaults to sender" rule. */
+async function loadSenderName(userId: string): Promise<string | undefined> {
+  const [row] = await db.select({ name: users.name }).from(users).where(eq(users.id, userId));
+  return row?.name?.trim() || undefined;
+}
+
+/**
  * Transcribes (voice only) and extracts. Split out so the pipeline below reads
  * as its two real phases — understand the message, then answer it — rather than
  * one long function.
@@ -56,17 +90,28 @@ async function parseMessage(
       .where(eq(inboxMessages.id, inboxMessageId));
   }
 
-  const familyAssets = await loadPromptAssets(msg.familyId);
+  const [familyAssets, openDeadlines, senderName] = await Promise.all([
+    loadPromptAssets(msg.familyId),
+    loadOpenDeadlines(msg.familyId),
+    loadSenderName(msg.userId),
+  ]);
+
   const parseResult = await extractParseResult({
     contentType: msg.contentType,
     text: msg.rawText,
     transcription,
     media: msg.media,
     assets: familyAssets,
+    openDeadlines,
+    senderName,
     today: todayInRome(),
   });
 
-  return dropUnknownAssetIds(parseResult, new Set(familyAssets.map((asset) => asset.id)));
+  return dropUnknownReferences(
+    parseResult,
+    new Set(familyAssets.map((asset) => asset.id)),
+    new Set(openDeadlines.map((deadline) => deadline.id)),
+  );
 }
 
 /**
