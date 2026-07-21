@@ -97,7 +97,7 @@ export default function WelcomePage() {
               style={{ animationDelay: "160ms" }}
             >
               Inoltra un vocale, una foto o un PDF. L&apos;AI capisce cosa è, quando scade e quanto
-              costa — tu tocchi <span className="font-medium text-[#f2ede3]">Conferma</span> e te ne
+              costa, tu tocchi <span className="font-medium text-[#f2ede3]">Conferma</span> e te ne
               dimentichi. A ricordartelo, per tempo, ci pensa FamilySherpa.
             </p>
             <div className="lp-reveal mt-8 flex flex-wrap items-center gap-3" style={{ animationDelay: "240ms" }}>
@@ -118,7 +118,7 @@ export default function WelcomePage() {
               </a>
             </div>
             <p className="lp-reveal mt-5 text-sm text-[#8b93a3]" style={{ animationDelay: "300ms" }}>
-              Installalo sul tuo, porta la tua chiave AI. I tuoi dati restano tuoi.
+              Crea la tua istanza, porta la tua chiave AI. I tuoi dati restano tuoi.
             </p>
           </div>
 
@@ -157,7 +157,7 @@ export default function WelcomePage() {
           <p className="mt-4 max-w-2xl text-lg text-[#6f675b] text-pretty">
             La tachipirina «due volte al giorno per cinque giorni», l&apos;aerosol mattina e sera, la
             visita dal pediatra, il farmaco che scade nell&apos;armadietto. Vive tutto nella testa di
-            qualcuno — e quello che sta nella testa, prima o poi, sfugge.
+            qualcuno, e quello che sta nella testa, prima o poi, sfugge.
           </p>
           <ul className="mt-8 flex flex-wrap gap-2.5">
             {[
@@ -193,17 +193,17 @@ export default function WelcomePage() {
               {
                 n: "1",
                 t: "Inoltra",
-                d: "Un vocale, una foto o un PDF al bot Telegram — o caricali dall'app. Come lo diresti a voce.",
+                d: "Un vocale, una foto o un PDF al bot Telegram, o caricali dall'app. Come lo diresti a voce.",
               },
               {
                 n: "2",
                 t: "L'AI capisce",
-                d: "Estrae cos'è, quando scade, quanto costa e a quale asset appartiene — pensato per la burocrazia italiana.",
+                d: "Estrae cos'è, quando scade, quanto costa e a quale asset appartiene, pensato per la burocrazia italiana.",
               },
               {
                 n: "3",
                 t: "Conferma e dimentica",
-                d: "Un tocco su Conferma. Poi ci pensa lui: push e Telegram quando la scadenza — o la prossima dose — si avvicina.",
+                d: "Un tocco su Conferma. Poi ci pensa lui: push e Telegram quando la scadenza, o la prossima dose, si avvicina.",
               },
             ].map((step) => (
               <div key={step.n}>
@@ -226,7 +226,7 @@ export default function WelcomePage() {
             </h2>
             <p className="mt-4 text-lg text-[#6f675b] text-pretty">
               La Home ti mostra cosa sta arrivando, il picco di spesa dei prossimi dodici mesi e
-              quanto ti costa davvero ogni asset — l&apos;auto, la casa, un figlio. Guardi avanti, non
+              quanto ti costa davvero ogni asset, l&apos;auto, la casa, un figlio. Guardi avanti, non
               indietro.
             </p>
             <ul className="mt-6 space-y-2.5 text-[#4a453c]">
@@ -264,7 +264,7 @@ export default function WelcomePage() {
           </h2>
           <p className="mt-4 max-w-2xl text-lg text-[#c7cdd9] text-pretty">
             FamilySherpa è open source (AGPL-3.0) e self-hostable: te lo installi sul tuo server, con
-            la tua chiave AI. I campi sensibili — codice fiscale, note mediche — sono cifrati a
+            la tua chiave AI. I campi sensibili, codice fiscale, note mediche, sono cifrati a
             riposo, e il codice fiscale non viene mai inviato all&apos;AI.
           </p>
           <dl className="mt-10 grid gap-8 sm:grid-cols-3">
