@@ -264,8 +264,7 @@ export default function WelcomePage() {
           </h2>
           <p className="mt-4 max-w-2xl text-lg text-[#c7cdd9] text-pretty">
             FamilySherpa è open source (AGPL-3.0) e self-hostable: te lo installi sul tuo server, con
-            la tua chiave AI. I campi sensibili, codice fiscale, note mediche, sono cifrati a
-            riposo, e il codice fiscale non viene mai inviato all&apos;AI.
+            la tua chiave AI. I campi sensibili, codice fiscale, note mediche e simili sono cifrati, e il codice fiscale non viene mai inviato all&apos;AI.
           </p>
           <dl className="mt-10 grid gap-8 sm:grid-cols-3">
             {[
