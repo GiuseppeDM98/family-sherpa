@@ -277,15 +277,16 @@ TURSO_DATABASE_URL="file:verify.db" TURSO_AUTH_TOKEN="dummy" pnpm db:seed
 
 - **Branches**: `main` is both the default and the integration branch (`git branch -a`: `main` and
   `origin/main` only). The history (98 commits) is linear, with no merge commits and no pull
-  requests: work has landed directly on `main`. A session branch reaches `main` by fast-forward
-  merge and push, or through a pull request — the owner's call; CI runs on both.
+  requests: work has landed directly on `main`. A session closes on a session branch from `main`,
+  with one commit and a pull request on GitHub, merged by the owner (decided 2026-10-27); CI runs on
+  the pull request.
 - **`SESSION_NOTES.md`**: the session's working file in the root (rule 9). **Not in `.gitignore`
   yet**: until it is added, check `git status` before the commit. Before the closing prompt it ends
   with one block per thing learned or decided — *Cosa*, *Perché*, *Nota* (traps and measurements,
   each with its date), *Dove va a fine sessione*, with these destinations in this repo:
   `AGENTS.md` (an environment or tooling lesson valid for the whole repo) · `doc/guide/<tema>.md`
-  (a domain lesson; the folder does not exist yet, the first such lesson creates it — `docs/` holds
-  only the README screenshots) · `WORKFLOW.md` (a session rule) · `CLAUDE.md` ("What exists today"
+  (a domain lesson; the folder exists since 2026-10-27 with `dipendenze.md` — `docs/` holds only
+  the README screenshots) · `WORKFLOW.md` (a session rule) · `CLAUDE.md` ("What exists today"
   for the codebase map, "Current status" for project state) · `SETUP.md` (a setup or self-hosting
   step) · `PRODUCT.md` / `DESIGN.md` (a product or visual-system decision) · a comment at the right
   line (the why of one line). Every entry is written into its destination before closing; then the
@@ -293,9 +294,9 @@ TURSO_DATABASE_URL="file:verify.db" TURSO_AUTH_TOKEN="dummy" pnpm db:seed
 - **Verification outcome**: `CLAUDE.md` → `## Current status` → the `### Latest — <title> (<date>)`
   entry, replaced each session; what stays open goes in `### Known limits carried forward`. The
   signals (check results, test counts, tour findings) go in the commit message.
-- **Dependency guide**: `pnpm-lock.yaml` exists, so rule 8 applies (`pnpm audit --json`).
-  `doc/guide/dipendenze.md` does **not exist yet** (2026-10-27): the next session that runs the
-  audit creates it.
+- **Dependency guide**: `pnpm-lock.yaml` exists, so rule 8 applies (`pnpm audit --json`), compared
+  with `doc/guide/dipendenze.md` (created 2026-10-27: audit date, framework versions, open
+  advisories with the owner's decision).
 - **`Draft Release Temp.md`**: not kept at the moment. It existed from the spec sessions until the
   v1.0 notes (deleted in `34fc3d7`, 2026-07-21); its last model — title `# Release notes — v1.0`,
   a short intro, then one section per product area — is in `git show cccd288:"Draft Release Temp.md"`.

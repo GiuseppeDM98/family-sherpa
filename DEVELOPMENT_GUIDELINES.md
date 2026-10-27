@@ -260,12 +260,12 @@ How many commits to make is WORKFLOW.md's call: one per session. When a session 
 ## 🎨 Design System
 
 Before implementing any UI feature, read **DESIGN.md** — it is the authoritative source for:
-- OKLCH color tokens and semantic color names
-- Typography scale with exact values (`text-[44px]`, `text-[22px]`, `font-mono`, etc.)
-- Layout vocabulary (`desktop:grid-cols-[2fr_1fr]`, hero patterns, `divide-y` lists)
-- Breakpoint rules (`desktop:` at 1440px — never use `lg:` for wide-screen layouts)
-- Animation standards (spring physics: stiffness 400, damping 35)
-- Anti-patterns (no decorative progress bars, no nested card-within-card, no hardcoded hex colors)
+- Color: warm near-neutral OKLCH tokens in `src/app/globals.css` (surfaces carry a sub-perceptual warm tint, ink stays chroma 0); the **Meaning-Only Color** rule — a nameable hue appears only when it means something (`text-warning` = due soon, `destructive` = overdue/error, a category hue); the **One Navy** rule — `#0f172a` is app chrome only (manifest, status bar), never a UI accent
+- Typography: Inter only (`next/font` in `src/app/layout.tsx`), a fixed rem scale — no display face, no fluid `clamp()` headings
+- Elevation: flat, with hairline rings (`ring-1 ring-foreground/10`) and tonal fills (`bg-muted/50`), not box-shadows
+- Components: buttons and inputs `rounded-lg` (10px) at `h-8`, cards `rounded-xl`; destructive is a tinted fill, never a solid slab
+- Layout: mobile-first — a fixed bottom tab bar becoming a left rail (`md:w-56`) at `md:` (`src/components/nav/app-nav.tsx`)
+- Motion: 150–250ms, conveying state only, honoring `prefers-reduced-motion`; chart colors follow the fixed category order of `src/lib/deadline-labels.ts` (`CATEGORY_CHART_COLORS`), never cycled
 
 CLAUDE.md contains a summary of design intent; DESIGN.md is the full spec.
 

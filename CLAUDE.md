@@ -14,7 +14,7 @@ Product/design strategy lives in `PRODUCT.md` (root): register (**product**), pl
 2. Stay inside the scope of what was asked. If you notice something missing or broken elsewhere, note it at the end of the session — do not implement it unprompted.
 3. If a requirement is ambiguous, or something you're asked to build turns out to be technically wrong (e.g. an API changed), stop and tell the user before improvising.
 4. Follow the user's explicit requirements literally — they are the definition of done.
-5. **At the end of every session**, tell the user (a) what was implemented, (b) exactly what to test manually and how, step by step (commands, URLs, example messages to send), and (c) which env vars/external setup they must configure themselves.
+5. **At the end of every session**, tell the user (a) what was implemented, (b) only what could not be automated (e.g. a real Telegram round trip, a push notification seen on a device), with how to do it — everything else is automated and shown, per `WORKFLOW.md` § 2 — and (c) which env vars/external setup they must configure themselves.
 
 ## Project conventions
 
@@ -25,6 +25,7 @@ Product/design strategy lives in `PRODUCT.md` (root): register (**product**), pl
 - Never commit secrets. Every new env var must be added to `.env.example` with a comment.
 - Every server action/page under `(app)` must start with `requireUser()`/`requireFamily()` from `src/lib/session.ts`. A missing family scope is a security bug.
 - Windows-specific tooling gotchas (pnpm not preinstalled, Turso CLI has no Windows binary, Next 16 needs `--webpack` for Serwist, shadcn CLI v4 preset system, etc.) are tracked in `AGENTS.md`, not here — check it before re-debugging something already solved.
+- Dependencies: the last audit, the framework versions and every open advisory with the owner's decision are in `doc/guide/dipendenze.md` (`WORKFLOW.md` rule 8).
 
 ## What exists today
 
@@ -69,9 +70,8 @@ keyboard (no new conversational state):
   (`completeDeadlineTx`, see AGENTS.md "Transactional helpers that also run
   standalone") since `materialize` already runs inside its own transaction and
   SQLite can't nest them.
-- `pnpm lint/typecheck/test (212)/build` all pass. No new env vars; custom
-  reminders need the `daily` cron scheduled externally (same setup as before,
-  `SETUP.md` §9).
+- No new env vars; custom reminders need the `daily` cron scheduled
+  externally (same setup as before, `SETUP.md` §9).
 
 ### Known limits carried forward
 
