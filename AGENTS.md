@@ -1,6 +1,6 @@
 # AGENTS.md — working notes for AI coding sessions
 
-Environment/tooling patterns discovered while working on this repo. Read this *in addition to* `CLAUDE.md` (workflow rules and architecture). This file is about *how to get things done on this machine/repo*, not what to build.
+Environment/tooling patterns discovered while working on this repo. Read this *in addition to* `CLAUDE.md` (project rules and architecture) and `WORKFLOW.md` (session and verification rules). This file is about *how to get things done on this machine/repo*, not what to build.
 
 ## Environment
 

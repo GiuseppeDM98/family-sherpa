@@ -1,5 +1,7 @@
 # FamilySherpa — instructions for AI coding sessions
 
+> **Read [`WORKFLOW.md`](WORKFLOW.md) before starting any session**: the standing rules for branches, commits and guided verification, and what they mean in this repo (§ 3).
+
 This file is the source of truth for working in this repo: architecture, conventions, and what exists today. Read it — and `AGENTS.md` for environment/tooling gotchas — before making changes.
 
 ## Design Context
