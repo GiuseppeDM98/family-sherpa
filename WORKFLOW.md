@@ -231,6 +231,8 @@ gotchas, most of them Windows-specific), `SETUP.md` (from a fresh clone to a run
 
 - Package manager: **pnpm** (`pnpm-lock.yaml`; CI uses pnpm 11 and Node 22; this machine has
   Node 24). If `pnpm` is missing, `npm install -g pnpm` (`AGENTS.md`, not corepack).
+- **First gate: `node ~/.claude/processi-collaudo.mjs --radice .` must say 0** (collaudo scripts and
+  services alive in the repo, §2; `--chiudi` closes this session's). Zero, or the gates below do not start.
 - The four checks, from `package.json`, all required by `SETUP.md` §7 and run by CI on every push
   and pull request to `main`:
   - `pnpm lint` → `eslint .`
